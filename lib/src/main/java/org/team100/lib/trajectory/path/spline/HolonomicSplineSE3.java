@@ -37,36 +37,31 @@ public class HolonomicSplineSE3 {
     }
 
     public HolonomicSplineSE3(WaypointSE3 p0, WaypointSE3 p1, double mN0, double mN1) {
-        double scale0 = mN0 * p0.pose().getTranslation().getDistance(p1.pose().getTranslation());
-        double scale1 = mN1 * p0.pose().getTranslation().getDistance(p1.pose().getTranslation());
+        double distance = p0.pose().getTranslation().getDistance(p1.pose().getTranslation());
+        double scale0 = mN0 * distance;
+        double scale1 = mN1 * distance;
 
-        DirectionSE3 course0 = p0.course();
-        DirectionSE3 course1 = p1.course();
-
+        // endpoints
         double x0 = p0.pose().getTranslation().getX();
         double x1 = p1.pose().getTranslation().getX();
-        // first derivatives are just the course
-        double dx0 = course0.x * scale0;
-        double dx1 = course1.x * scale1;
-        // second derivatives are zero at the ends
-        double ddx0 = 0;
-        double ddx1 = 0;
-
         double y0 = p0.pose().getTranslation().getY();
         double y1 = p1.pose().getTranslation().getY();
-        // first derivatives are just the course
-        double dy0 = course0.y * scale0;
-        double dy1 = course1.y * scale1;
-        // second derivatives are zero at the ends
-        double ddy0 = 0;
-        double ddy1 = 0;
-
         double z0 = p0.pose().getTranslation().getZ();
         double z1 = p1.pose().getTranslation().getZ();
-        // first derivatives are just the course
-        double dz0 = course0.z * scale0;
-        double dz1 = course1.z * scale1;
-        // second derivatives are zero at the ends
+
+        // first derivatives are the course
+        double dx0 = p0.course().x * scale0;
+        double dx1 = p1.course().x * scale1;
+        double dy0 = p0.course().y * scale0;
+        double dy1 = p1.course().y * scale1;
+        double dz0 = p0.course().z * scale0;
+        double dz1 = p1.course().z * scale1;
+
+        // second derivatives are zero
+        double ddx0 = 0;
+        double ddx1 = 0;
+        double ddy0 = 0;
+        double ddy1 = 0;
         double ddz0 = 0;
         double ddz1 = 0;
 
@@ -96,12 +91,13 @@ public class HolonomicSplineSE3 {
                     rollDelta, pitchDelta, yawDelta);
         }
 
-        double droll0 = course0.roll * mN0;
-        double droll1 = course1.roll * mN1;
-        double dpitch0 = course0.pitch * mN0;
-        double dpitch1 = course1.pitch * mN1;
-        double dyaw0 = course0.yaw * mN0;
-        double dyaw1 = course1.yaw * mN1;
+        // first derivatives are the course
+        double droll0 = p0.course().roll * mN0;
+        double droll1 = p1.course().roll * mN1;
+        double dpitch0 = p0.course().pitch * mN0;
+        double dpitch1 = p1.course().pitch * mN1;
+        double dyaw0 = p0.course().yaw * mN0;
+        double dyaw1 = p1.course().yaw * mN1;
 
         // second derivatives are zero
         double ddroll0 = 0;

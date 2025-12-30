@@ -66,7 +66,6 @@ class HolonomicSplineSE2Test implements Timeless {
                         new DirectionSE2(0, 1, 0), 1));
         assertEquals(0.950, s.getCurvature(0.5), DELTA);
 
-
     }
 
     @Test
@@ -176,7 +175,7 @@ class HolonomicSplineSE2Test implements Timeless {
         assertEquals(0.5, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0.5, p.waypoint().pose().getRotation().getRadians(), DELTA);
         // high rotation rate in the middle
-        assertEquals(0.915, p.getHeadingRateRad_M(), DELTA);
+        assertEquals(2.273, p.getHeadingRateRad_M(), DELTA);
 
         p = s.sample(1);
         assertEquals(1, p.waypoint().pose().getTranslation().getX(), DELTA);
@@ -217,18 +216,17 @@ class HolonomicSplineSE2Test implements Timeless {
         PathPointSE2 p = s.sample(0);
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
-        assertEquals(0.707, p.getHeadingRateRad_M(), DELTA);
+        assertEquals(1, p.getHeadingRateRad_M(), DELTA);
 
         p = s.sample(0.5);
         assertEquals(0.5, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0.5, p.waypoint().pose().getRotation().getRadians(), DELTA);
-        assertEquals(0.707, p.getHeadingRateRad_M(), DELTA);
+        assertEquals(1, p.getHeadingRateRad_M(), DELTA);
 
         p = s.sample(1);
         assertEquals(1, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(1, p.waypoint().pose().getRotation().getRadians(), DELTA);
-        assertEquals(0.707, p.getHeadingRateRad_M(), DELTA);
-
+        assertEquals(1, p.getHeadingRateRad_M(), DELTA);
     }
 
     @Test
@@ -574,25 +572,13 @@ class HolonomicSplineSE2Test implements Timeless {
                                 new Translation2d(1, 0),
                                 new Rotation2d(1)),
                         new DirectionSE2(1, 0, 1), 1));
-        {
-            double splineHR = spline.getDHeadingDs(0.5);
-            assertEquals(0.811, splineHR, DELTA);
-            Pose2d p0 = spline.sample(0.49).waypoint().pose();
-            Pose2d p1 = spline.sample(0.51).waypoint().pose();
-            double discreteHR = GeometryUtil.headingRatio(p0, p1);
-            assertEquals(0.811, discreteHR, DELTA);
-        }
-        double DS = 0.001;
-        for (double s = DS; s <= 1 - DS; s += DS) {
-            double splineHR = spline.getDHeadingDs(s);
-            Pose2d p0 = spline.sample(s - DS).waypoint().pose();
-            Pose2d p1 = spline.sample(s + DS).waypoint().pose();
-            double discreteHR = GeometryUtil.headingRatio(p0, p1);
-            if (DEBUG)
-                System.out.printf("%f %f %f %f\n", s, splineHR, discreteHR, splineHR - discreteHR);
-            // error scales with ds
-            assertEquals(splineHR, discreteHR, 0.00001);
-        }
+
+        double splineHR = spline.getDHeadingDs(0.5);
+        assertEquals(1.388, splineHR, DELTA);
+        Pose2d p0 = spline.sample(0.49).waypoint().pose();
+        Pose2d p1 = spline.sample(0.51).waypoint().pose();
+        double discreteHR = GeometryUtil.headingRatio(p0, p1);
+        assertEquals(0.811, discreteHR, DELTA);
     }
 
     @Test

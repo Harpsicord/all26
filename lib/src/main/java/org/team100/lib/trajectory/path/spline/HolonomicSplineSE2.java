@@ -207,16 +207,9 @@ public class HolonomicSplineSE2 {
      * Since s is not time, it is not "velocity" in the usual sense.
      */
     private double getVelocity(double s) {
-        //
-        //
         double dx = dx(s);
         double dy = dy(s);
-        double dtheta = dtheta(s);
-        // return Math.hypot(dx, dy);
-        //
-        //
-        // now yields SE(2) L2 norm, not just cartesian.
-        return Math.sqrt(dx * dx + dy * dy + dtheta * dtheta);
+        return Math.hypot(dx, dy);
     }
 
     /**

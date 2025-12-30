@@ -15,6 +15,7 @@ import org.team100.lib.trajectory.timing.TimingConstraintFactory;
 import org.team100.lib.trajectory.timing.TrajectoryFactory;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /** big looping trajectory for testing */
 public class BigLoop implements Function<Pose2d, Trajectory100> {
@@ -33,15 +34,15 @@ public class BigLoop implements Function<Pose2d, Trajectory100> {
         Pose2d p1 = new Pose2d(
                 p0.getX() + 2,
                 p0.getY() - 2,
-                p0.getRotation());
+                p0.getRotation().plus(Rotation2d.kCCW_Pi_2));
         Pose2d p2 = new Pose2d(
                 p0.getX() + 4,
                 p0.getY(),
-                p0.getRotation());
+                p0.getRotation().plus(Rotation2d.k180deg));
         Pose2d p3 = new Pose2d(
                 p0.getX() + 2,
                 p0.getY() + 2,
-                p0.getRotation());
+                p0.getRotation().plus(Rotation2d.kCW_Pi_2));
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(
                         p0,
