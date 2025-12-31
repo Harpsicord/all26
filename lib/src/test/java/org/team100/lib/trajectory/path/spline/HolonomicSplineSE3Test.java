@@ -55,25 +55,102 @@ public class HolonomicSplineSE3Test implements Timeless {
     }
 
     @Test
-    void testHelix() {
+    void testZeroCurvature() {
+        // from (0,0,0) to (1,1,1) in a straight line
+        WaypointSE3 w0 = new WaypointSE3(
+                new Pose3d(
+                        new Translation3d(0, 0, 0),
+                        new Rotation3d(0, 0, 0)),
+                new DirectionSE3(1, 1, 1, 0, 0, 0), 1);
+        WaypointSE3 w1 = new WaypointSE3(
+                new Pose3d(
+                        new Translation3d(1, 1, 1),
+                        new Rotation3d(0, 0, 0)),
+                new DirectionSE3(1, 1, 1, 0, 0, 0), 1);
+        HolonomicSplineSE3 spline = new HolonomicSplineSE3(w0, w1);
+        PathPointSE3 p = spline.sample(0.5);
+        Vector<N3> K = p.curvature();
+        assertEquals(0, K.get(0), DELTA);
+        assertEquals(0, K.get(1), DELTA);
+        assertEquals(0, K.get(2), DELTA);
+    }
+
+    @Test
+    void testZeroHeadingRate() {
+        // from (0,0,0) to (1,1,1) in a straight line
+        WaypointSE3 w0 = new WaypointSE3(
+                new Pose3d(
+                        new Translation3d(0, 0, 0),
+                        new Rotation3d(0, 0, 0)),
+                new DirectionSE3(1, 1, 1, 0, 0, 0), 1);
+        WaypointSE3 w1 = new WaypointSE3(
+                new Pose3d(
+                        new Translation3d(1, 1, 1),
+                        new Rotation3d(0, 0, 0)),
+                new DirectionSE3(1, 1, 1, 0, 0, 0), 1);
+        HolonomicSplineSE3 spline = new HolonomicSplineSE3(w0, w1);
+        PathPointSE3 p = spline.sample(0.5);
+        Vector<N3> H = p.headingRate();
+        assertEquals(0, H.get(0), DELTA);
+        assertEquals(0, H.get(1), DELTA);
+        assertEquals(0, H.get(2), DELTA);
+    }
+
+    /**
+     * https://colab.research.google.com/drive/1iZU72lggE4oH551WXamc-9_Mh_1zR0kV#scrollTo=IFKxOJBoXLEr
+     */
+    @Test
+    void testHelixCurvature() {
         // vector should point roughly in the direction of motion
         WaypointSE3 w0 = new WaypointSE3(
                 new Pose3d(
                         new Translation3d(0, 0, 0),
                         new Rotation3d(0, -Math.PI / 4, 0)),
-                new DirectionSE3(1, 0, 1, 0, 0, 1), 1);
+                new DirectionSE3(1, 0, 1, 0, 0, 2), 1);
         WaypointSE3 w1 = new WaypointSE3(
                 new Pose3d(
                         new Translation3d(1, 1, 1),
                         new Rotation3d(0, -Math.PI / 4, Math.PI / 2)),
-                new DirectionSE3(0, 1, 1, 0, 0, 1), 1);
+                new DirectionSE3(0, 1, 1, 0, 0, 2), 1);
         HolonomicSplineSE3 spline = new HolonomicSplineSE3(w0, w1);
         for (double s = 0; s <= 1; s += 0.1) {
             PathPointSE3 p = spline.sample(s);
             Vector<N3> K = p.curvature();
+            // Rotation3d r = p.waypoint().pose().getRotation();
+            // System.out.printf("R (%5.3f, %5.3f, %5.3f)\n", r.getX(), r.getY(), r.getZ());
             // curvature should be roughly towards (0,1) with z of ~zero.
             System.out.printf("K = (%5.3f, %5.3f, %5.3f)\n",
                     K.get(0), K.get(1), K.get(2));
+        }
+        spline.dump();
+    }
+
+    /**
+     * https://colab.research.google.com/drive/1iZU72lggE4oH551WXamc-9_Mh_1zR0kV#scrollTo=IFKxOJBoXLEr
+     */
+    @Test
+    void testHelixHeading() {
+        // vector should point roughly in the direction of motion
+        WaypointSE3 w0 = new WaypointSE3(
+                new Pose3d(
+                        new Translation3d(0, 0, 0),
+                        new Rotation3d(0, -Math.PI / 4, 0)),
+                new DirectionSE3(1, 0, 1, 0, 0, 2), 1);
+        WaypointSE3 w1 = new WaypointSE3(
+                new Pose3d(
+                        new Translation3d(1, 1, 1),
+                        new Rotation3d(0, -Math.PI / 4, Math.PI / 2)),
+                new DirectionSE3(0, 1, 1, 0, 0, 2), 1);
+        HolonomicSplineSE3 spline = new HolonomicSplineSE3(w0, w1);
+        for (double s = 0; s <= 1; s += 0.1) {
+            PathPointSE3 p = spline.sample(s);
+            Vector<N3> H = p.headingRate();
+            // in the helix, the heading only changes about the z axis
+            // and it should be roughly constant.
+            // total heading change is 1.5ish, total path length is around 1.9
+            // so heading change per meter is around 0.8.
+            System.out.printf("H = (%5.3f, %5.3f, %5.3f)\n",
+                    H.get(0), H.get(1), H.get(2));
         }
         spline.dump();
     }

@@ -261,7 +261,7 @@ public class HolonomicSplineSE3 {
     protected double getVelocity(double t) {
         double dx = dx(t);
         double dy = dy(t);
-        double dz = dy(t);
+        double dz = dz(t);
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 
