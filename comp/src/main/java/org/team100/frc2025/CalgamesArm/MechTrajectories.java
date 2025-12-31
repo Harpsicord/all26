@@ -10,7 +10,7 @@ import org.team100.lib.subsystems.prr.AnalyticalJacobian;
 import org.team100.lib.subsystems.prr.ElevatorArmWristKinematics;
 import org.team100.lib.subsystems.se2.commands.GoToPosePosition;
 import org.team100.lib.trajectory.TrajectoryPlanner;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TorqueConstraint;
@@ -47,7 +47,7 @@ public class MechTrajectories extends Command {
         // take longer to compute, so if it takes too long, make these
         // numbers bigger!
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
-        PathFactory pathFactory = new PathFactory(0.05, 0.01, 0.01, 0.1);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.05, 0.01, 0.01, 0.1);
         m_planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
     }
 

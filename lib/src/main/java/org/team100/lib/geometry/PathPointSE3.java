@@ -13,12 +13,13 @@ public class PathPointSE3 {
     private final WaypointSE3 m_waypoint;
     /**
      * The curvature vector is the path-length-derivative of the unit tangent
-     * vector.
+     * vector. It's an R3 vector here but it's constrained to the plane
+     * perpendicular to the tangent vector, T, i.e. the course.
      * 
      * It points in the direction of the center of curvature.
      * https://en.wikipedia.org/wiki/Center_of_curvature
      * 
-     * Its magnitude is "k", 1/radius of osculating circle, rad/m
+     * Its magnitude is "κ", 1/radius of osculating circle, rad/m
      * https://en.wikipedia.org/wiki/Osculating_circle
      */
     private final Vector<N3> m_K;
@@ -35,6 +36,9 @@ public class PathPointSE3 {
      */
     public PathPointSE3(WaypointSE3 waypoint, Vector<N3> K, Vector<N3> H) {
         m_waypoint = waypoint;
+        Vector<N3> T = waypoint.course().translation();
+        if (K.dot(T) > 1e-6)
+            throw new IllegalArgumentException("K must be perpendicular to T");
         m_K = K;
         m_H = H;
     }

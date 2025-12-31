@@ -14,10 +14,10 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N3;
 
 /**
- * Holonomic spline in the SE(3) manifold, the space of Pose3d.
+ * Holonomic spline in the SE(3) manifold.
  * 
- * Internally this is six independent one-dimensional splines (x, y, z, roll,
- * pitch, yaw), with respect to a parameter [0,1].
+ * The six dimensions (x, y, z, roll, pitch, yaw) of the Pose3d, p, are
+ * independent one-dimensional splines, with respect to a parameter s∈[0,1].
  */
 public class HolonomicSplineSE3 {
     private static final boolean DEBUG = false;
@@ -140,12 +140,109 @@ public class HolonomicSplineSE3 {
      * @param s [0,1]
      */
     public PathPointSE3 sample(double s) {
-        Pose3d pose = new Pose3d(new Translation3d(x(s), y(s), z(s)), getHeading(s));
-        DirectionSE3 course = getCourse(s);
+        Pose3d pose = new Pose3d(new Translation3d(x(s), y(s), z(s)), heading(s));
+        DirectionSE3 course = course(s);
         WaypointSE3 waypoint = new WaypointSE3(pose, course, 1);
         Vector<N3> K = K(s);
         Vector<N3> H = headingRate(s);
         return new PathPointSE3(waypoint, K, H);
+    }
+
+    ////////////////////////////////////////////////////////////
+    ///
+    /// position, p
+
+    private double x(double s) {
+        return m_x.getPosition(s);
+    }
+
+    private double y(double s) {
+        return m_y.getPosition(s);
+    }
+
+    private double z(double s) {
+        return m_z.getPosition(s);
+    }
+
+    private Rotation3d heading(double s) {
+        return new Rotation3d(
+                m_roll0.plus(new Rotation2d(m_roll.getPosition(s))).getRadians(),
+                m_pitch0.plus(new Rotation2d(m_pitch.getPosition(s))).getRadians(),
+                m_yaw0.plus(new Rotation2d(m_yaw.getPosition(s))).getRadians());
+    }
+
+    ////////////////////////////////////////////////////////////
+    ///
+    /// first derivative, dp/ds or pprime
+
+    private double dx(double s) {
+        return m_x.getVelocity(s);
+    }
+
+    private double dy(double s) {
+        return m_y.getVelocity(s);
+    }
+
+    private double dz(double s) {
+        return m_z.getVelocity(s);
+    }
+
+    private double droll(double s) {
+        return m_roll.getVelocity(s);
+    }
+
+    private double dpitch(double s) {
+        return m_pitch.getVelocity(s);
+    }
+
+    private double dyaw(double s) {
+        return m_yaw.getVelocity(s);
+    }
+
+    private DirectionSE3 course(double s) {
+        double dx = dx(s);
+        double dy = dy(s);
+        double dz = dz(s);
+        double dr = droll(s);
+        double dp = dpitch(s);
+        double dyaw = dyaw(s);
+        return new DirectionSE3(dx, dy, dz, dr, dp, dyaw);
+    }
+
+    /** Magnitude of translational part of dp/ds */
+    private double pprimeTranslationNorm(double s) {
+        double dx = dx(s);
+        double dy = dy(s);
+        double dz = dz(s);
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    /** Heading angular velocity with respect to s. */
+    private Vector<N3> headingRate(double s) {
+        // drad/ds
+        double droll = droll(s);
+        double dpitch = dpitch(s);
+        double dyaw = dyaw(s);
+        // dm/ds
+        double v = pprimeTranslationNorm(s);
+        // drad/ds / dm/ds = drad/dm
+        return VecBuilder.fill(droll / v, dpitch / v, dyaw / v);
+    }
+
+    ////////////////////////////////////////////////////////////
+    ///
+    /// second derivative, d^2q/ds^2 or pprimeprime
+
+    private double ddx(double s) {
+        return m_x.getAcceleration(s);
+    }
+
+    private double ddy(double s) {
+        return m_y.getAcceleration(s);
+    }
+
+    private double ddz(double s) {
+        return m_z.getAcceleration(s);
     }
 
     /**
@@ -153,7 +250,7 @@ public class HolonomicSplineSE3 {
      * 
      * see MATH.md.
      */
-    double getCurvature(double s) {
+    double curvature(double s) {
         return K(s).norm();
     }
 
@@ -174,96 +271,7 @@ public class HolonomicSplineSE3 {
         return K;
     }
 
-    /**
-     * The heading rate is the path-length derivative of the heading vector.
-     */
-    Vector<N3> headingRate(double s) {
-        // these are relative to parameter, not path length
-        double droll = droll(s);
-        double dpitch = dpitch(s);
-        double dyaw = dyaw(s);
-        // meters per parameter
-        double v = getVelocity(s);
-        // roll/s / m/s = roll/ms etc
-        return VecBuilder.fill(droll/v, dpitch/v, dyaw/v);
-    }
-
-    double x(double s) {
-        return m_x.getPosition(s);
-    }
-
-    double y(double s) {
-        return m_y.getPosition(s);
-    }
-
-    double z(double s) {
-        return m_z.getPosition(s);
-    }
-
-    public DirectionSE3 getCourse(double s) {
-        double dx = dx(s);
-        double dy = dy(s);
-        double dz = dz(s);
-        double dr = droll(s);
-        double dp = dpitch(s);
-        double dyaw = dyaw(s);
-        return new DirectionSE3(dx, dy, dz, dr, dp, dyaw);
-    }
-
-    protected Rotation3d getHeading(double s) {
-        return new Rotation3d(
-                m_roll0.plus(new Rotation2d(m_roll.getPosition(s))).getRadians(),
-                m_pitch0.plus(new Rotation2d(m_pitch.getPosition(s))).getRadians(),
-                m_yaw0.plus(new Rotation2d(m_yaw.getPosition(s))).getRadians());
-
-    }
-
-    double dx(double s) {
-        return m_x.getVelocity(s);
-    }
-
-    double dy(double s) {
-        return m_y.getVelocity(s);
-    }
-
-    double dz(double s) {
-        return m_z.getVelocity(s);
-    }
-
-    double droll(double s) {
-        return m_roll.getVelocity(s);
-    }
-
-    double dpitch(double s) {
-        return m_pitch.getVelocity(s);
-    }
-
-    double dyaw(double s) {
-        return m_yaw.getVelocity(s);
-    }
-
-    double ddx(double s) {
-        return m_x.getAcceleration(s);
-    }
-
-    double ddy(double s) {
-        return m_y.getAcceleration(s);
-    }
-
-    double ddz(double s) {
-        return m_z.getAcceleration(s);
-    }
-
-    /**
-     * Velocity is the change in position per parameter, p: ds/dp (meters per p).
-     * Since p is not time, it is not "velocity" in the usual sense.
-     */
-    protected double getVelocity(double t) {
-        double dx = dx(t);
-        double dy = dy(t);
-        double dz = dz(t);
-        return Math.sqrt(dx * dx + dy * dy + dz * dz);
-    }
+    ////////////////////////////////////////////////////////////
 
     /**
      * Print samples for testing.
@@ -277,7 +285,7 @@ public class HolonomicSplineSE3 {
     public void dump() {
         Translation3d arrow = new Translation3d(0.1, 0, 0);
         for (double s = 0; s <= 1; s += 0.05) {
-            Rotation3d h = getHeading(s);
+            Rotation3d h = heading(s);
             if (DEBUG)
                 System.out.printf("heading %5.3f %5.3f %5.3f\n", h.getX(), h.getY(), h.getZ());
             Translation3d t = arrow.rotateBy(h);

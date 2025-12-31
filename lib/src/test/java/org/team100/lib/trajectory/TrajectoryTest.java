@@ -12,11 +12,11 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.trajectory.examples.TrajectoryExamples;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
 import org.team100.lib.trajectory.timing.TimedState;
 import org.team100.lib.trajectory.timing.TimingConstraint;
+import org.team100.lib.trajectory.timing.TrajectoryFactory;
 import org.team100.lib.trajectory.timing.YawRateConstraint;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -39,7 +39,7 @@ public class TrajectoryTest {
                 new ConstantConstraint(log, 1, 0.1),
                 new YawRateConstraint(log, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectoryPlanner p = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(p);
         Trajectory100 t = ex.restToRest(
@@ -52,7 +52,7 @@ public class TrajectoryTest {
     @Test
     void testTurnInPlace() throws InterruptedException {
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(List.of(new ConstantConstraint(log, 1, 0.1)));
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectoryPlanner p = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(p);
         Trajectory100 t = ex.restToRest(
@@ -86,7 +86,7 @@ public class TrajectoryTest {
                 new ConstantConstraint(log, 2, 0.5),
                 new YawRateConstraint(log, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         Trajectory100 trajectory = planner.generateTrajectory(waypoints, 0, 0);
 
@@ -108,7 +108,7 @@ public class TrajectoryTest {
                 new ConstantConstraint(log, 2, 0.5),
                 new YawRateConstraint(log, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         Trajectory100 trajectory = planner.generateTrajectory(waypoints, 0, 0);
         double duration = trajectory.duration();
@@ -162,7 +162,7 @@ public class TrajectoryTest {
                 new ConstantConstraint(log, 2, 0.5),
                 new YawRateConstraint(log, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectoryPlanner p = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(
@@ -190,7 +190,7 @@ public class TrajectoryTest {
                 new ConstantConstraint(log, 2, 0.5),
                 new YawRateConstraint(log, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectoryPlanner p = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(

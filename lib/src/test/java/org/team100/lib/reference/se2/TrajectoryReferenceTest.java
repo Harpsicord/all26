@@ -17,7 +17,7 @@ import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.Trajectory100;
 import org.team100.lib.trajectory.TrajectoryPlanner;
 import org.team100.lib.trajectory.examples.TrajectoryExamples;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
 import org.team100.lib.trajectory.timing.TrajectoryFactory;
@@ -31,7 +31,7 @@ public class TrajectoryReferenceTest implements Timeless {
 
     SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(logger);
     List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(logger);
-    PathFactory pathFactory = new PathFactory();
+    PathFactorySE2 pathFactory = new PathFactorySE2();
     TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
     TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
 

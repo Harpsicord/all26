@@ -9,7 +9,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.tank.TankDrive;
 import org.team100.lib.trajectory.Trajectory100;
 import org.team100.lib.trajectory.TrajectoryPlanner;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TrajectoryFactory;
 import org.team100.lib.trajectory.timing.TimedState;
@@ -43,7 +43,7 @@ public class ToPoseWithTrajectory extends Command {
         m_viz = viz;
         List<TimingConstraint> constraints = List.of(new ConstantConstraint(log, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         m_planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         m_controller = new LTVUnicycleController(0.020);
         addRequirements(drive);

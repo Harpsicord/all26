@@ -21,7 +21,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.trajectory.Trajectory100;
 import org.team100.lib.trajectory.path.Path100;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -263,7 +263,7 @@ public class TrajectoryFactoryTest {
                         new DirectionSE2(0, 1, 0), 1.2));
         long startTimeNs = System.nanoTime();
         final int iterations = 100;
-        PathFactory pathFactory = new PathFactory(0.1, 0.05, 0.05, 0.2);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.2);
         Path100 path = pathFactory.fromWaypoints(waypoints);
         Trajectory100 t = new Trajectory100();
         TrajectoryFactory m_trajectoryFactory = new TrajectoryFactory(new ArrayList<>());

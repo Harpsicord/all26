@@ -15,7 +15,7 @@ import org.team100.lib.state.ModelSE2;
 import org.team100.lib.trajectory.Trajectory100;
 import org.team100.lib.trajectory.TrajectoryPlanner;
 import org.team100.lib.trajectory.examples.TrajectoryExamples;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimedState;
 import org.team100.lib.trajectory.timing.TimingConstraint;
@@ -257,7 +257,7 @@ public class AnalyticalJacobianTest {
 
         List<TimingConstraint> constraints = List.of(new ConstantConstraint(logger, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         Pose2d start = new Pose2d(1, -1, Rotation2d.kZero);
         Pose2d end = new Pose2d(2, 1, Rotation2d.k180deg);

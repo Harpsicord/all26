@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.tools.StandardJavaFileManager.PathFactory;
+
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.PathPointSE2;
@@ -45,7 +47,7 @@ class Path100Test {
     @Test
     void testEmpty() {
         List<HolonomicSplineSE2> splines = new ArrayList<>();
-        PathFactory pathFactory = new PathFactory(0.1, 0.1, 0.1, 0.1);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.1, 0.1, 0.1);
         Path100 path = pathFactory.fromSplines(splines);
         assertEquals(0, path.length(), 0.001);
     }

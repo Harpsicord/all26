@@ -20,7 +20,11 @@ public class PathPointSE2 {
     private final double m_s;
     /** Change in heading per meter of motion, rad/m. */
     private final double m_headingRateRad_M;
-    /** Change in course per change in distance, rad/m. */
+    /**
+     * Change in course per change in distance, rad/m.
+     * This is a signed quantity indicating the direction from the tangent vector
+     * (course), it's not just the magnitude of curvature.
+     */
     private final double m_curvatureRad_M;
 
     /**

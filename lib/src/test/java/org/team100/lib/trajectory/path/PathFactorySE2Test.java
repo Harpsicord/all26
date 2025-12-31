@@ -20,7 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
-public class PathFactoryTest implements Timeless {
+public class PathFactorySE2Test implements Timeless {
     private static final boolean DEBUG = false;
     private static final double DELTA = 0.01;
 
@@ -43,7 +43,7 @@ public class PathFactoryTest implements Timeless {
                                 new Translation2d(1, 1),
                                 new Rotation2d()),
                         new DirectionSE2(0, 1, 0), 1));
-        PathFactory pathFactory = new PathFactory(0.1, 0.01, 0.01, 0.1);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.01, 0.01, 0.1);
         Path100 path = pathFactory.fromWaypoints(waypoints);
 
         assertEquals(54, path.length());
@@ -70,7 +70,7 @@ public class PathFactoryTest implements Timeless {
                                 new Translation2d(1, 0),
                                 new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1));
-        PathFactory pathFactory = new PathFactory(0.1, 0.01, 0.01, 0.1);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.01, 0.01, 0.1);
         Path100 path = pathFactory.fromWaypoints(waypoints);
         assertEquals(17, path.length());
         PathPointSE2 p = path.getPoint(0);
@@ -97,7 +97,7 @@ public class PathFactoryTest implements Timeless {
                                 new Translation2d(0, 0),
                                 Rotation2d.kCCW_90deg),
                         new DirectionSE2(0, 0, 1), 1));
-        PathFactory pathFactory = new PathFactory(0.1, 0.01, 0.01, 0.1);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.01, 0.01, 0.1);
         assertThrows(IllegalArgumentException.class,
                 () -> pathFactory.fromWaypoints(waypoints));
     }
@@ -126,7 +126,7 @@ public class PathFactoryTest implements Timeless {
                                 new Translation2d(1, 1),
                                 new Rotation2d()),
                         new DirectionSE2(0, 1, 0), 1));
-        PathFactory pathFactory = new PathFactory(0.1, 0.01, 0.01, 0.1);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.01, 0.01, 0.1);
         assertThrows(IllegalArgumentException.class,
                 () -> pathFactory.fromWaypoints(waypoints));
     }
@@ -150,7 +150,7 @@ public class PathFactoryTest implements Timeless {
                                 new Translation2d(2, 0),
                                 new Rotation2d(1)),
                         new DirectionSE2(1, 0, 0), 1));
-        PathFactory pathFactory = new PathFactory(0.1, 0.01, 0.01, 0.1);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.01, 0.01, 0.1);
         Path100 trajectory = pathFactory.fromWaypoints(waypoints);
         TrajectoryPlotter.plot(trajectory, 0.1);
         assertEquals(59, trajectory.length(), 0.001);
@@ -170,7 +170,7 @@ public class PathFactoryTest implements Timeless {
                 new DirectionSE2(1, 5, 0), 1.2);
         HolonomicSplineSE2 s = new HolonomicSplineSE2(p1, p2);
 
-        PathFactory pathFactory = new PathFactory(0.1, 0.05, 0.05, 0.1);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.1);
         List<PathPointSE2> samples = pathFactory.samplesFromSpline(s);
 
         double arclength = 0;
@@ -206,7 +206,7 @@ public class PathFactoryTest implements Timeless {
                                 Rotation2d.kZero),
                         new DirectionSE2(0, 1, 0), 1));
         List<HolonomicSplineSE2> splines = List.of(s0);
-        PathFactory pathFactory = new PathFactory(0.1, 0.001, 0.001, 0.001);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.001, 0.001, 0.001);
         List<PathPointSE2> motion = pathFactory.samplesFromSplines(splines);
         for (PathPointSE2 p : motion) {
             if (DEBUG)
@@ -239,7 +239,7 @@ public class PathFactoryTest implements Timeless {
         final double SPLINE_SAMPLE_TOLERANCE_M = 0.05;
         final double SPLINE_SAMPLE_TOLERANCE_RAD = 0.2;
         for (int i = 0; i < iterations; ++i) {
-            t = new PathFactory(
+            t = new PathFactorySE2(
                     0.1,
                     SPLINE_SAMPLE_TOLERANCE_M,
                     SPLINE_SAMPLE_TOLERANCE_M,

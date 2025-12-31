@@ -50,7 +50,7 @@ public class SplineToVectorSeries {
         XYSeries series = new XYSeries(name);
         for (HolonomicSplineSE2 spline : splines) {
             for (double s = 0; s <= 1.001; s += DS) {
-                double x = spline.x(s);
+                double x = spline.sample(s).waypoint().pose().getX();
                 series.add(s, x);
             }
         }

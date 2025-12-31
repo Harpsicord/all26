@@ -3,6 +3,7 @@ package org.team100.lib.geometry;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.geometry.Twist3d;
@@ -20,6 +21,10 @@ public class Metrics {
      * Always non-negative.
      */
     public static double translationalDistance(Pose2d a, Pose2d b) {
+        return a.getTranslation().getDistance(b.getTranslation());
+    }
+
+    public static double translationalDistance(Pose3d a, Pose3d b) {
         return a.getTranslation().getDistance(b.getTranslation());
     }
 
@@ -51,6 +56,10 @@ public class Metrics {
      */
     public static double translationalNorm(Twist2d a) {
         return Math.hypot(a.dx, a.dy);
+    }
+
+    public static double translationalNorm(Twist3d a) {
+        return Math.sqrt(a.dx * a.dx + a.dy * a.dy + a.dz * a.dz);
     }
 
     /** The magnitude of the translational velocity. */

@@ -1,8 +1,14 @@
 package org.team100.lib.geometry;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Twist3d;
+import edu.wpi.first.math.numbers.N3;
+
 /**
  * A direction (i.e. unit-length vector) in the SE3 manifold,
- * rigid transformations in three dimensions (which have six dimensions).
+ * rigid transformations in three dimensions (which have six dimensions),
+ * including both translational and rotational motion.
  * 
  * This is useful for representing spline controls for Pose3d.
  * 
@@ -28,6 +34,20 @@ public class DirectionSE3 {
         roll = proll / h;
         pitch = ppitch / h;
         yaw = pyaw / h;
+    }
+
+    public Twist3d minus(DirectionSE3 other) {
+        return new Twist3d(
+                x - other.x,
+                y - other.y,
+                z - other.z,
+                roll - other.roll,
+                pitch - other.pitch,
+                yaw - other.yaw);
+    }
+
+    public Vector<N3> translation() {
+        return VecBuilder.fill(x, y, z);
     }
 
     @Override

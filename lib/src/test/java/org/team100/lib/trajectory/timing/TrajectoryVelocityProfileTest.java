@@ -15,7 +15,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.Trajectory100;
 import org.team100.lib.trajectory.path.Path100;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -39,7 +39,7 @@ public class TrajectoryVelocityProfileTest implements Timeless {
                     new Pose2d(5, 0, new Rotation2d(0)), 0, 1.2), 0, 0) };
 
     private static List<WaypointSE2> waypointList = Arrays.asList(WAYPOINTS).stream().map(p -> p.waypoint()).toList();
-    private static PathFactory pathFactory = new PathFactory(0.1, 0.1, 0.1, 0.1);
+    private static PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.1, 0.1, 0.1);
     private static Path100 path = pathFactory.fromWaypoints(waypointList);
 
     /**

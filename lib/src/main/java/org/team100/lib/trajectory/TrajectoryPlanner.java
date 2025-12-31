@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.trajectory.path.Path100;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TrajectoryFactory;
 
 /**
@@ -21,10 +21,10 @@ import org.team100.lib.trajectory.timing.TrajectoryFactory;
 public class TrajectoryPlanner {
     private static final boolean DEBUG = false;
 
-    private final PathFactory m_pathFactory;
+    private final PathFactorySE2 m_pathFactory;
     private final TrajectoryFactory m_trajectoryFactory;
 
-    public TrajectoryPlanner(PathFactory pathFactory, TrajectoryFactory trajectoryFactory) {
+    public TrajectoryPlanner(PathFactorySE2 pathFactory, TrajectoryFactory trajectoryFactory) {
         m_pathFactory = pathFactory;
         m_trajectoryFactory = trajectoryFactory;
     }

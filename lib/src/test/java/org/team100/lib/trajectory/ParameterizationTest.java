@@ -14,12 +14,12 @@ import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.path.spline.HolonomicSplineSE2;
 import org.team100.lib.trajectory.path.spline.SplineToVectorSeries;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
 import org.team100.lib.trajectory.timing.TimingConstraint;
+import org.team100.lib.trajectory.timing.TrajectoryFactory;
 import org.team100.lib.trajectory.timing.YawRateConstraint;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -40,18 +40,17 @@ public class ParameterizationTest {
     @Test
     void testSplineStraight() {
         // a straight line in x, since the direction is also +x
-        // note the zero scale here to force zero velocity at the ends
         HolonomicSplineSE2 spline = new HolonomicSplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
                                 new Rotation2d(0)),
-                        new DirectionSE2(1, 0, 0), 0), // <<< scale = ZERO
+                        new DirectionSE2(1, 0, 0), 0.001),
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(1, 0),
                                 new Rotation2d(0)),
-                        new DirectionSE2(1, 0, 0), 0)); // << scale = ZERO
+                        new DirectionSE2(1, 0, 0), 0.001));
         XYSeries sx = SplineToVectorSeries.x("x", List.of(spline));
         XYSeries sxPrime = SplineToVectorSeries.xPrime("xprime", List.of(spline));
         XYSeries sxPrimePrime = SplineToVectorSeries.xPrimePrime("xprimeprime", List.of(spline));
@@ -115,7 +114,7 @@ public class ParameterizationTest {
                                 new Rotation2d(0)),
                         new DirectionSE2(1, 0, 0), 1));
 
-        PathFactory pathFactory = new PathFactory(0.1, 0.02, 0.2, 0.1);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.02, 0.2, 0.1);
         List<PathPointSE2> poses = pathFactory.samplesFromSplines(List.of(spline));
 
         XYSeries sx = PathToVectorSeries.x("spline", poses);
@@ -129,7 +128,7 @@ public class ParameterizationTest {
                 new ConstantConstraint(log, 2, 0.5),
                 new YawRateConstraint(log, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectoryPlanner p = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(

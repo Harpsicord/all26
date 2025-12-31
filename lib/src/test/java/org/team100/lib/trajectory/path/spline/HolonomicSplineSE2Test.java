@@ -21,7 +21,7 @@ import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.Trajectory100;
 import org.team100.lib.trajectory.TrajectoryPlotter;
 import org.team100.lib.trajectory.path.Path100;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraint;
@@ -50,7 +50,7 @@ class HolonomicSplineSE2Test implements Timeless {
                                 new Translation2d(1, 0),
                                 new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1));
-        assertEquals(0, s.getCurvature(0.5), DELTA);
+        assertEquals(0, s.sample(0.5).getCurvatureRad_M(), DELTA);
 
         // left turn
         s = new HolonomicSplineSE2(
@@ -64,7 +64,7 @@ class HolonomicSplineSE2Test implements Timeless {
                                 new Translation2d(1, 1),
                                 new Rotation2d()),
                         new DirectionSE2(0, 1, 0), 1));
-        assertEquals(0.950, s.getCurvature(0.5), DELTA);
+        assertEquals(0.950, s.sample(0.5).getCurvatureRad_M(), DELTA);
 
     }
 
@@ -356,10 +356,8 @@ class HolonomicSplineSE2Test implements Timeless {
                 // circle.
                 // 3/10/25 i made generation coarser so it's less accurate.
                 actualAzimuthError = Math.max(actualAzimuthError, Math.abs(error.getRadians()));
-
-                double k = spline.getCurvature(s);
-
-                double dh = spline.getDHeadingDs(s);
+                double k = spline.sample(s).getCurvatureRad_M();
+                double dh = spline.sample(s).getHeadingRateRad_M();
                 if (DEBUG)
                     System.out.printf("%f, %f, %f, %f, %f\n", s, p.getX(), p.getY(), k, dh);
             }
@@ -485,7 +483,7 @@ class HolonomicSplineSE2Test implements Timeless {
                 System.out.printf("spline %s\n", s);
         }
 
-        PathFactory pathFactory = new PathFactory(0.1, 0.05, 0.05, 0.05);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.05);
         Path100 path = pathFactory.fromSplines(splines);
         if (DEBUG)
             System.out.printf("path %s\n", path);
@@ -513,8 +511,9 @@ class HolonomicSplineSE2Test implements Timeless {
                                 Rotation2d.kZero),
                         new DirectionSE2(0, 1, 0), 1.2));
         if (DEBUG) {
-            for (double t = 0; t < 1; t += 0.03) {
-                System.out.printf("%5.3f %5.3f\n", s0.x(t), s0.y(t));
+            for (double s = 0; s < 1; s += 0.03) {
+                Pose2d pose = s0.sample(s).waypoint().pose();
+                System.out.printf("%5.3f %5.3f\n", pose.getX(), pose.getY());
             }
         }
 
@@ -523,7 +522,7 @@ class HolonomicSplineSE2Test implements Timeless {
         TrajectoryPlotter plotter = new TrajectoryPlotter(0.1);
         plotter.plot("splines", splines);
 
-        PathFactory pathFactory = new PathFactory(0.1, 0.05, 0.05, 0.05);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.05);
         List<PathPointSE2> motion = pathFactory.samplesFromSplines(splines);
         if (DEBUG) {
             for (PathPointSE2 p : motion) {
@@ -573,7 +572,7 @@ class HolonomicSplineSE2Test implements Timeless {
                                 new Rotation2d(1)),
                         new DirectionSE2(1, 0, 1), 1));
 
-        double splineHR = spline.getDHeadingDs(0.5);
+        double splineHR = spline.sample(0.5).getHeadingRateRad_M();
         assertEquals(1.388, splineHR, DELTA);
         Pose2d p0 = spline.sample(0.49).waypoint().pose();
         Pose2d p1 = spline.sample(0.51).waypoint().pose();
@@ -596,7 +595,7 @@ class HolonomicSplineSE2Test implements Timeless {
                         new DirectionSE2(0, 1, 0), 1));
         // verify one point
         {
-            double splineCurvature = spline.getCurvature(0.5);
+            double splineCurvature = spline.sample(0.5).getCurvatureRad_M();
             assertEquals(0.950, splineCurvature, DELTA);
             Pose2d p0 = spline.sample(0.49).waypoint().pose();
             Pose2d p1 = spline.sample(0.50).waypoint().pose();
@@ -608,7 +607,7 @@ class HolonomicSplineSE2Test implements Timeless {
         // verify all the points
         double DS = 0.01;
         for (double s = DS; s <= 1 - DS; s += DS) {
-            double splineCurvature = spline.getCurvature(s);
+            double splineCurvature = spline.sample(s).getCurvatureRad_M();
             Pose2d p0 = spline.sample(s - DS).waypoint().pose();
             Pose2d p1 = spline.sample(s).waypoint().pose();
             Pose2d p2 = spline.sample(s + DS).waypoint().pose();
@@ -636,7 +635,7 @@ class HolonomicSplineSE2Test implements Timeless {
                                 new Translation2d(1, 0),
                                 new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1));
-        double splineCurvature = spline.getCurvature(0.5);
+        double splineCurvature = spline.sample(0.5).getCurvatureRad_M();
         assertEquals(0, splineCurvature, DELTA);
         Pose2d p0 = spline.sample(0.49).waypoint().pose();
         Pose2d p1 = spline.sample(0.50).waypoint().pose();

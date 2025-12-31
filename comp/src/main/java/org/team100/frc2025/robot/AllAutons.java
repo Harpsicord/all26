@@ -13,7 +13,7 @@ import org.team100.lib.logging.Logging;
 import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.trajectory.TrajectoryPlanner;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
 import org.team100.lib.trajectory.timing.TrajectoryFactory;
@@ -42,7 +42,7 @@ public class AllAutons {
         List<TimingConstraint> constraints = new TimingConstraintFactory(machinery.m_swerveKinodynamics)
                 .medium(autoLog);
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         final TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
 
         // WARNING! The glass widget will override the default, so check it!

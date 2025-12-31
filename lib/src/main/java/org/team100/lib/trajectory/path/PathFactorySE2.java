@@ -13,7 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
-public class PathFactory {
+public class PathFactorySE2 {
     private static final boolean DEBUG = false;
     /*
      * Maximum distance of the secant lines to the continuous spline. The resulting
@@ -39,14 +39,14 @@ public class PathFactory {
     private final double maxDy;
     private final double maxDTheta;
 
-    public PathFactory() {
+    public PathFactorySE2() {
         this(TRAJECTORY_STEP_M,
                 SPLINE_SAMPLE_TOLERANCE_M,
                 SPLINE_SAMPLE_TOLERANCE_M,
                 SPLINE_SAMPLE_TOLERANCE_RAD);
     }
 
-    public PathFactory(
+    public PathFactorySE2(
             double maxNorm,
             double maxDx,
             double maxDy,
@@ -97,6 +97,9 @@ public class PathFactory {
         return result;
     }
 
+    /**
+     * For testing only. Do not call this directly
+     */
     public Path100 fromSplines(List<? extends HolonomicSplineSE2> splines) {
         return new Path100(samplesFromSplines(splines));
     }

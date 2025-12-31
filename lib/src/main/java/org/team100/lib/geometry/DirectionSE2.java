@@ -7,7 +7,8 @@ import edu.wpi.first.math.geometry.Twist2d;
 
 /**
  * A direction (i.e. unit-length vector) in the SE(2) manifold, describing the
- * evolution of Pose2d over some parameterization.
+ * evolution of Pose2d over some parameterization, including both translational
+ * and rotational motion.
  * 
  * SE(2) is the space of rigid transformations in two dimensions (thus SE(2) is
  * three-dimensional, x, y, and theta).

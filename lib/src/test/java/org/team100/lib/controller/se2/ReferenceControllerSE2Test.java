@@ -26,7 +26,7 @@ import org.team100.lib.trajectory.Trajectory100;
 import org.team100.lib.trajectory.TrajectoryPlanner;
 import org.team100.lib.trajectory.examples.TrajectoryExamples;
 import org.team100.lib.trajectory.path.Path100;
-import org.team100.lib.trajectory.path.PathFactory;
+import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
 import org.team100.lib.trajectory.timing.TrajectoryFactory;
@@ -46,7 +46,7 @@ public class ReferenceControllerSE2Test implements Timeless {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(logger);
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(logger);
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         // stepTime();
         TrajectoryExamples ex = new TrajectoryExamples(planner);
@@ -102,7 +102,7 @@ public class ReferenceControllerSE2Test implements Timeless {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(logger);
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(logger);
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
-        PathFactory pathFactory = new PathFactory();
+        PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         stepTime();
         TrajectoryExamples ex = new TrajectoryExamples(planner);
@@ -158,7 +158,7 @@ public class ReferenceControllerSE2Test implements Timeless {
 
         double stepSize = 2;
 
-        PathFactory pathFactory = new PathFactory(stepSize, 2, 0.25, 0.1);
+        PathFactorySE2 pathFactory = new PathFactorySE2(stepSize, 2, 0.25, 0.1);
         Path100 path = pathFactory.fromWaypoints(waypoints);
         assertFalse(path.isEmpty());
 
