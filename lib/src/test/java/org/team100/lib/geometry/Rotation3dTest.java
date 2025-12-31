@@ -9,6 +9,20 @@ import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 
 public class Rotation3dTest {
+
+    private Rotation3d lerp(Rotation3d a, Rotation3d b, double t) {
+        Quaternion dq = a.getQuaternion().log(b.getQuaternion());
+        return new Rotation3d(a.getQuaternion().exp(dq.times(t)));
+    }
+
+    @Test
+    void testQuaternion() {
+        Rotation3d a = new Rotation3d(1, 0, 0);
+        Rotation3d b = new Rotation3d(0, 1, 0);
+        Rotation3d i = lerp(a, b, 1);
+        assertEquals(b, i);
+    }
+
     @Test
     void testInterpolation() {
         Rotation3d a = new Rotation3d(1, 0, 0);
