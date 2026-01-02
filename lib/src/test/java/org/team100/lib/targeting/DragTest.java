@@ -1,5 +1,7 @@
 package org.team100.lib.targeting;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
 import edu.wpi.first.math.Matrix;
@@ -9,6 +11,7 @@ import edu.wpi.first.math.numbers.N6;
 import edu.wpi.first.math.system.NumericalIntegration;
 
 public class DragTest {
+    private static final double DELTA = 0.001;
     private static final boolean DEBUG = false;
 
     /**
@@ -29,5 +32,23 @@ public class DragTest {
             if (x.get(1, 0) < 0)
                 break;
         }
+    }
+
+    /** Without drag, this should yield gravity only. */
+    @Test
+    void testParabola() {
+        Drag d = new Drag(0, 0, 0, 1, 0);
+        Matrix<N6, N1> x = VecBuilder.fill(0, 0, 0, 0, 0, 0);
+        Matrix<N6, N1> xdot = d.apply(x);
+        // first three components of xdot are just v
+        assertEquals(0, xdot.get(0, 0), DELTA);
+        assertEquals(0, xdot.get(1, 0), DELTA);
+        assertEquals(0, xdot.get(2, 0), DELTA);
+        // no x accel
+        assertEquals(0, xdot.get(3, 0), DELTA);
+        // gravity only
+        assertEquals(-9.81, xdot.get(4, 0), DELTA);
+        // no rotational accel
+        assertEquals(0, xdot.get(5, 0), DELTA);
     }
 }

@@ -4,6 +4,7 @@ import java.util.function.UnaryOperator;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N6;
 
@@ -34,6 +35,7 @@ import edu.wpi.first.math.numbers.N6;
  * https://www.scirp.org/journal/paperinformation?paperid=55623
  */
 public class Drag implements UnaryOperator<Matrix<N6, N1>> {
+    private static final boolean DEBUG = false;
     /** Air density, kg/m^3 */
     private static final double RHO = 1.225;
     /** Gravity, m/s^2 */
@@ -69,6 +71,10 @@ public class Drag implements UnaryOperator<Matrix<N6, N1>> {
         double ax = -mu * vx * v - xi * omega * vy;
         double ay = -G - mu * vy * v + xi * omega * vx;
         double alpha = -nu * omega * Math.abs(omega);
-        return VecBuilder.fill(vx, vy, omega, ax, ay, alpha);
+        Vector<N6> xdot = VecBuilder.fill(vx, vy, omega, ax, ay, alpha);
+        if (DEBUG)
+            System.out.printf("x %12.9f y %12.9f vx %12.9f vy %12.9f\n",
+                    x.get(0, 0), x.get(1, 0), xdot.get(0, 0), xdot.get(1, 0));
+        return xdot;
     }
 }

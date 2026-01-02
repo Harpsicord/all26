@@ -24,7 +24,7 @@ import edu.wpi.first.math.jni.EigenJNI;
  * https://hades.mech.northwestern.edu/images/7/7f/MR.pdf
  */
 public class NewtonsMethod<X extends Num, Y extends Num> {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private final Nat<X> m_xdim;
     private final Nat<Y> m_ydim;
     private final Function<Vector<X>, Vector<Y>> m_f;
@@ -117,8 +117,8 @@ public class NewtonsMethod<X extends Num, Y extends Num> {
                     System.out.printf("iter: %d x: %s\n", iter, StrUtil.vecStr(x));
 
                 error = m_f.apply(x);
-                // if (DEBUG)
-                // System.out.printf("error: %s\n", StrUtil.vecStr(error));
+                if (DEBUG)
+                    System.out.printf("error: %s\n", StrUtil.vecStr(error));
 
                 if (within(error)) {
                     if (DEBUG)
@@ -152,8 +152,16 @@ public class NewtonsMethod<X extends Num, Y extends Num> {
                 // System.out.printf("rv %s\n", StrUtil.vecStr(rv));
                 // rv = rv.plus(x);
                 // limit(rv);
+                // this picks a point *near* the failed point
+                // which is probably not what we want, since we'll
+                // just fall into the same local minimum
                 for (int i = 0; i < m_xdim.getNum(); i++) {
                     x.set(i, 0, x.get(i) + 0.1 * (random.nextDouble() - 0.5));
+                }
+                // instead, pick a random point within the bounds.
+                for (int i = 0; i < m_xdim.getNum(); i++) {
+                    double range = m_xMax.get(i) - m_xMin.get(i);
+                    x.set(i, 0, m_xMin.get(i) + range * random.nextDouble());
                 }
                 limit(x);
                 return solve2(x, restarts - 1, throwOnFailure);
@@ -188,8 +196,8 @@ public class NewtonsMethod<X extends Num, Y extends Num> {
         // this solver also works but it's not better.
         // Vector<X> dx = getDxWithQRDecomp(error, j);
 
-        // if (DEBUG)
-        // System.out.printf("dx: %s\n", StrUtil.vecStr(dx));
+        if (DEBUG)
+            System.out.printf("dx: %s\n", StrUtil.vecStr(dx));
 
         // Too-high dx results in oscillation.
         clamp(dx);
@@ -228,6 +236,8 @@ public class NewtonsMethod<X extends Num, Y extends Num> {
      * The "x" space is Euclidean, so using a simple sum is ok.
      */
     private void update(Vector<X> x, Vector<X> dx) {
+        if (DEBUG)
+            System.out.printf("update x %s dx %s\n", x, dx);
         for (int i = 0; i < x.getNumRows(); ++i) {
             double newXi = x.get(i) - dx.get(i);
             x.set(i, 0, newXi);

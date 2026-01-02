@@ -19,7 +19,7 @@ import edu.wpi.first.math.numbers.N2;
  * velocity and spin.
  */
 public class ShootingMethod {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public record Solution(Rotation2d azimuth, Rotation2d elevation) {
     }
@@ -42,10 +42,12 @@ public class ShootingMethod {
         // target velocity relative to robot
         GlobalVelocityR2 vT = targetVelocity.minus(robotVelocity);
 
-        // domain is (az,el), range is error
-        Vector<N2> xMin = VecBuilder.fill(-Math.PI, 0.01);
-        Vector<N2> xMax = VecBuilder.fill(Math.PI, Math.PI / 2);
-        int iterations = 10;
+        // (azimuth, elevation)
+        // see RangeSolverTest for limit derivation
+        // TODO: externalize these
+        Vector<N2> xMin = VecBuilder.fill(-Math.PI, 0.1);
+        Vector<N2> xMax = VecBuilder.fill(Math.PI, 1.4);
+        int iterations = 100;
         double dxLimit = 0.1;
         NewtonsMethod<N2, N2> solver = new NewtonsMethod<>(
                 Nat.N2(),
@@ -59,7 +61,7 @@ public class ShootingMethod {
         try {
             // choosing this poorly breaks the solver
             // TODO: expose this externally, make it less important.
-            double initialElevation = 0.75;
+            double initialElevation = 0.1;
             Vector<N2> x = solver.solve2(VecBuilder.fill(0, initialElevation), 3, true);
             return Optional.of(
                     new Solution(
@@ -70,11 +72,20 @@ public class ShootingMethod {
         }
     }
 
-    /** Curry */
+    /**
+     * @return a function of (azimuth, elevation)
+     *         that returns translational error (x, y)
+     */
     Function<Vector<N2>, Vector<N2>> fn(Translation2d T0, GlobalVelocityR2 vT) {
         return x -> this.f(x, T0, vT);
     }
 
+    /**
+     * @param x  (azimuth, elevation)
+     * @param T0 target relative position
+     * @param vT target relative velocity
+     * @return translational error (x, y)
+     */
     Vector<N2> f(Vector<N2> x, Translation2d T0, GlobalVelocityR2 vT) {
         // Extract contents of the state variable
         Rotation2d azimuth = new Rotation2d(x.get(0));

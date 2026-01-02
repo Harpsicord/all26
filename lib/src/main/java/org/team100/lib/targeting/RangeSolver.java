@@ -9,17 +9,18 @@ import edu.wpi.first.math.system.NumericalIntegration;
 
 /** Integrates the drag model until position is less than zero. */
 public class RangeSolver {
-    /**
-     * RK4 integration with this resolution. It seems pretty coarse but yields an
-     * acceptable error of around 1 cm.
-     * 
-     * See
-     * RangeSolverTest.testDt()
-     * https://docs.google.com/spreadsheets/d/1DTxWqwi1vgajUmj-J2YUuK79FHySJTi9KHT-RQxUAb0
-     */
-    static final double INTEGRATION_DT = 0.1;
+    private static final boolean DEBUG = false;
 
     /**
+     * RK4 integration with this resolution.
+     * 
+     * See RangeSolverTest for choice of DT
+     */
+    static final double INTEGRATION_DT = 0.01;
+
+    /**
+     * Both range and time-of-flight are always slight underestimates.
+     * 
      * @param d         drag model
      * @param v         muzzle speed in m/s
      * @param omega     spin in rad/s, positive is backspin
@@ -40,23 +41,25 @@ public class RangeSolver {
         Matrix<N6, N1> x = VecBuilder.fill(0, 0, 0, vx, vy, omega);
         Matrix<N6, N1> prevX = x;
         double t = 0;
-        double prevT = 0;
         for (t = 0; t < 10; t += dt) {
-            x = NumericalIntegration.rk4(d, x, dt);
+            // this is the x for t+dt.
+            x = NumericalIntegration.rk4(d, prevX, dt);
+            if (DEBUG)
+                System.out.printf("t %f x %f y %f\n",
+                        t, x.get(0, 0), x.get(1, 0));
             double height = x.get(1, 0);
             if (height < 0) {
                 // interpolate using the floor position
+                // more-clever interpolation or integration makes no difference.
                 double prevHeight = prevX.get(1, 0);
                 double lerp = prevHeight / (prevHeight - height);
                 double range = MathUtil.interpolate(prevX.get(0, 0), x.get(0, 0), lerp);
-                double tof = MathUtil.interpolate(prevT, t, lerp);
+                double tof = t + dt * lerp;
                 return new FiringSolution(range, tof);
             }
             prevX = x;
-            prevT = t;
         }
         // if we got to the end, there's no (useful) solution.
         return null;
     }
-
 }

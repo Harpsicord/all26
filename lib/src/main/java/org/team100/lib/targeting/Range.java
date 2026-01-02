@@ -11,7 +11,7 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
  */
 public class Range {
     private static final boolean DEBUG = false;
-    private static final boolean CACHE = true;
+    private static final boolean CACHE = false;
 
     /** Try elevations this far apart. */
     private static final double ELEVATION_STEP = 0.01;

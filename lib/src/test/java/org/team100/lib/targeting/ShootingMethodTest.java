@@ -14,6 +14,46 @@ public class ShootingMethodTest {
     private static final boolean DEBUG = true;
 
     @Test
+    void testJacobian() {
+
+    }
+
+    /** For parabolic paths we can check against the analytical solution */
+    @Test
+    void testMotionlessParabolic() {
+        double g = 9.81;
+        Drag d = new Drag(0, 0, 0, 1, 0);
+        // this velocity is too high for either direct or indirect fire,
+        // given the limits on elevation
+        double v = 5;
+        Range range = new Range(d, v, 0);
+        // tight tolerance for testing
+        // note this tolerance is smaller than the range accuracy
+        ShootingMethod m = new ShootingMethod(range, 0.001);
+        Translation2d robotPosition = new Translation2d();
+        GlobalVelocityR2 robotVelocity = GlobalVelocityR2.ZERO;
+        // target is 2m away along +x
+        Translation2d targetPosition = new Translation2d(2, 0);
+        GlobalVelocityR2 targetVelocity = GlobalVelocityR2.ZERO;
+        Optional<ShootingMethod.Solution> o = m.solve(
+                robotPosition, robotVelocity, targetPosition, targetVelocity);
+        ShootingMethod.Solution x = o.orElseThrow();
+        assertEquals(0, x.azimuth().getRadians(), 0.001);
+        // indirect fire
+        assertEquals(1.120, x.elevation().getRadians(), 0.001);
+        double elevation = 1.120;
+        // check the range solution
+        FiringSolution s = range.get(x.elevation().getRadians());
+        assertEquals(2, s.range(), 0.001);
+        assertEquals(0.917, s.tof(), 0.001);
+        // verify the parabola
+        double R = v * v * Math.sin(2 * elevation) / g;
+        double t = 2 * v * Math.sin(elevation) / g;
+        assertEquals(1.999, R, 0.001);
+        assertEquals(0.917, t, 0.001);
+    }
+
+    @Test
     void testMotionless() {
         Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
         Range range = new Range(d, 10, 0);
@@ -38,7 +78,7 @@ public class ShootingMethodTest {
     }
 
     // TODO: why is this broken
-    // @Test
+    @Test
     void testTowardsTarget() {
         Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
         Range range = new Range(d, 10, 0);
