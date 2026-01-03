@@ -23,7 +23,6 @@ import org.jfree.data.xy.VectorSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.path.spline.SplineSE2;
 import org.team100.lib.trajectory.path.spline.SplineToVectorSeries;
 
@@ -33,38 +32,25 @@ public class TrajectoryPlotter {
 
     private final TrajectoryToVectorSeries converter;
     private final SplineToVectorSeries splineConverter;
-    private final PathToVectorSeries pathConverter;
+
 
     public TrajectoryPlotter(double arrowLength) {
         converter = new TrajectoryToVectorSeries(arrowLength);
         splineConverter = new SplineToVectorSeries(arrowLength);
-        pathConverter = new PathToVectorSeries(arrowLength);
     }
 
     public void plot(String name, Trajectory100 t) {
-        VectorSeries converted = convert(name, t);
+        VectorSeries converted = converter.convert(name, t);
         XYDataset dataSet = TrajectoryPlotter.collect(converted);
         if (SHOW)
             actuallyPlot(name, () -> new VectorRenderer(), dataSet);
-    }
-
-    public VectorSeries convert(String name, Trajectory100 t) {
-        return converter.convert(name, t);
-    }
-
-    public VectorSeries convert(String name, PathSE2 path) {
-        return pathConverter.convert(name, path);
     }
 
     public void plot(String name, List<SplineSE2> s) {
-        VectorSeries converted = convert(name, s);
+        VectorSeries converted = splineConverter.convert(name, s);
         XYDataset dataSet = TrajectoryPlotter.collect(converted);
         if (SHOW)
             actuallyPlot(name, () -> new VectorRenderer(), dataSet);
-    }
-
-    public VectorSeries convert(String name, List<SplineSE2> s) {
-        return splineConverter.convert(name, s);
     }
 
     public static XYDataset collect(VectorSeries... converted) {
