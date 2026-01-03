@@ -20,8 +20,8 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.trajectory.Trajectory100;
-import org.team100.lib.trajectory.path.Path100;
 import org.team100.lib.trajectory.path.PathFactorySE2;
+import org.team100.lib.trajectory.path.PathSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -50,7 +50,7 @@ public class TrajectoryFactoryTest {
             GeometryUtil.fromDegrees(0));
 
     public Trajectory100 buildAndCheckTrajectory(
-            final Path100 path,
+            final PathSE2 path,
             double step_size,
             List<TimingConstraint> constraints,
             double start_vel,
@@ -103,7 +103,7 @@ public class TrajectoryFactoryTest {
      */
     @Test
     void testJustTurningInPlace() {
-        Path100 path = new Path100(Arrays.asList(
+        PathSE2 path = new PathSE2(Arrays.asList(
                 new PathPointSE2(
                         new WaypointSE2(
                                 new Pose2d(0, 0, new Rotation2d(0)),
@@ -134,7 +134,7 @@ public class TrajectoryFactoryTest {
      */
     @Test
     void testNoConstraints() {
-        Path100 path = new Path100(WAYPOINTS);
+        PathSE2 path = new PathSE2(WAYPOINTS);
 
         // Triangle profile.
         Trajectory100 timed_traj = buildAndCheckTrajectory(path,
@@ -163,7 +163,7 @@ public class TrajectoryFactoryTest {
      */
     @Test
     void testCentripetalConstraint() {
-        Path100 path = new Path100(WAYPOINTS);
+        PathSE2 path = new PathSE2(WAYPOINTS);
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest(logger);
 
         // Triangle profile.
@@ -186,7 +186,7 @@ public class TrajectoryFactoryTest {
 
     @Test
     void testConditionalVelocityConstraint() {
-        Path100 path = new Path100(WAYPOINTS);
+        PathSE2 path = new PathSE2(WAYPOINTS);
 
         class ConditionalTimingConstraint implements TimingConstraint {
             @Override
@@ -217,7 +217,7 @@ public class TrajectoryFactoryTest {
 
     @Test
     void testConditionalAccelerationConstraint() {
-        Path100 path = new Path100(WAYPOINTS);
+        PathSE2 path = new PathSE2(WAYPOINTS);
 
         class ConditionalTimingConstraint implements TimingConstraint {
             @Override
@@ -264,7 +264,7 @@ public class TrajectoryFactoryTest {
         long startTimeNs = System.nanoTime();
         final int iterations = 100;
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.2);
-        Path100 path = pathFactory.fromWaypoints(waypoints);
+        PathSE2 path = pathFactory.fromWaypoints(waypoints);
         Trajectory100 t = new Trajectory100();
         TrajectoryFactory m_trajectoryFactory = new TrajectoryFactory(new ArrayList<>());
         for (int i = 0; i < iterations; ++i) {

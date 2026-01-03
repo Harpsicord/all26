@@ -14,7 +14,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N3;
 
-public class HolonomicSplineSE3Test implements Timeless {
+public class SplineSE3Test implements Timeless {
     private static final boolean DEBUG = false;
     private static final double DELTA = 0.001;
 
@@ -30,7 +30,7 @@ public class HolonomicSplineSE3Test implements Timeless {
                         new Translation3d(1, 0, 0),
                         new Rotation3d()),
                 new DirectionSE3(1, 0, 0, 0, 0, 0), 1);
-        HolonomicSplineSE3 spline = new HolonomicSplineSE3(w0, w1);
+        SplineSE3 spline = new SplineSE3(w0, w1);
         Translation3d t = spline.sample(0).waypoint().pose().getTranslation();
         assertEquals(0, t.getX(), DELTA);
         t = spline.sample(1).waypoint().pose().getTranslation();
@@ -51,7 +51,7 @@ public class HolonomicSplineSE3Test implements Timeless {
                         new Translation3d(1, 1, 1),
                         new Rotation3d(0, Math.PI / 2, Math.PI / 2)),
                 new DirectionSE3(0, 1, -1, 0, 1, 0), 1);
-        HolonomicSplineSE3 spline = new HolonomicSplineSE3(w0, w1);
+        SplineSE3 spline = new SplineSE3(w0, w1);
         if (DEBUG)
             spline.dump();
     }
@@ -69,7 +69,7 @@ public class HolonomicSplineSE3Test implements Timeless {
                         new Translation3d(1, 1, 1),
                         new Rotation3d(0, 0, 0)),
                 new DirectionSE3(1, 1, 1, 0, 0, 0), 1);
-        HolonomicSplineSE3 spline = new HolonomicSplineSE3(w0, w1);
+        SplineSE3 spline = new SplineSE3(w0, w1);
         PathPointSE3 p = spline.sample(0.5);
         Vector<N3> K = p.curvature();
         assertEquals(0, K.get(0), DELTA);
@@ -90,7 +90,7 @@ public class HolonomicSplineSE3Test implements Timeless {
                         new Translation3d(1, 1, 1),
                         new Rotation3d(0, 0, 0)),
                 new DirectionSE3(1, 1, 1, 0, 0, 0), 1);
-        HolonomicSplineSE3 spline = new HolonomicSplineSE3(w0, w1);
+        SplineSE3 spline = new SplineSE3(w0, w1);
         PathPointSE3 p = spline.sample(0.5);
         Vector<N3> H = p.headingRate();
         assertEquals(0, H.get(0), DELTA);
@@ -114,7 +114,7 @@ public class HolonomicSplineSE3Test implements Timeless {
                         new Translation3d(1, 1, 1),
                         new Rotation3d(0, -Math.PI / 4, Math.PI / 2)),
                 new DirectionSE3(0, 1, 1, 0, 0, 2), 1);
-        HolonomicSplineSE3 spline = new HolonomicSplineSE3(w0, w1);
+        SplineSE3 spline = new SplineSE3(w0, w1);
         for (double s = 0; s <= 1; s += 0.1) {
             PathPointSE3 p = spline.sample(s);
             Vector<N3> K = p.curvature();
@@ -145,7 +145,7 @@ public class HolonomicSplineSE3Test implements Timeless {
                         new Translation3d(1, 1, 1),
                         new Rotation3d(0, -Math.PI / 4, Math.PI / 2)),
                 new DirectionSE3(0, 1, 1, 0, 0, 2), 1);
-        HolonomicSplineSE3 spline = new HolonomicSplineSE3(w0, w1);
+        SplineSE3 spline = new SplineSE3(w0, w1);
         for (double s = 0; s <= 1; s += 0.1) {
             PathPointSE3 p = spline.sample(s);
             Vector<N3> H = p.headingRate();

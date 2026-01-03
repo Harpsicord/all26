@@ -15,18 +15,20 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.VectorRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYShapeRenderer;
+import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.Range;
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.VectorSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.team100.lib.trajectory.path.Path100;
-import org.team100.lib.trajectory.path.spline.HolonomicSplineSE2;
+import org.team100.lib.trajectory.path.PathSE2;
+import org.team100.lib.trajectory.path.spline.SplineSE2;
 import org.team100.lib.trajectory.path.spline.SplineToVectorSeries;
 
 public class TrajectoryPlotter {
-    public static final boolean SHOW = false;
+    public static final boolean SHOW = true;
     private static final int SIZE = 500;
 
     private final TrajectoryToVectorSeries converter;
@@ -50,18 +52,18 @@ public class TrajectoryPlotter {
         return converter.convert(name, t);
     }
 
-    public VectorSeries convert(String name, Path100 path) {
+    public VectorSeries convert(String name, PathSE2 path) {
         return pathConverter.convert(name, path);
     }
 
-    public void plot(String name, List<HolonomicSplineSE2> s) {
+    public void plot(String name, List<SplineSE2> s) {
         VectorSeries converted = convert(name, s);
         XYDataset dataSet = TrajectoryPlotter.collect(converted);
         if (SHOW)
             actuallyPlot(name, () -> new VectorRenderer(), dataSet);
     }
 
-    public VectorSeries convert(String name, List<HolonomicSplineSE2> s) {
+    public VectorSeries convert(String name, List<SplineSE2> s) {
         return splineConverter.convert(name, s);
     }
 
@@ -107,13 +109,8 @@ public class TrajectoryPlotter {
         return new Range(min, max);
     }
 
-    /**
-     * renderer is a supplier because new XYPlot writes the dataset name into the
-     * renderer.
-     * 
-     * mutability is bad.
-     */
-    public static void actuallyPlot(
+    /** plot each dataset as its own chart in a vertical list */
+    public static void actuallyPlotSeparate(
             String name,
             Supplier<XYItemRenderer> renderer,
             XYDataset... dataSets) {
@@ -130,6 +127,21 @@ public class TrajectoryPlotter {
                     new NumberAxis("X"),
                     new NumberAxis("Y"),
                     renderer.get());
+            //
+            //
+            //
+            // also render the endpoints differently
+            XYSeries endpoints = new XYSeries("endpoints");
+            endpoints.add(dataSet.getX(0, 0), dataSet.getY(0, 0));
+            XYDataset endpointSet = new XYSeriesCollection(endpoints);
+            plot.setDataset(1, endpointSet);
+            XYShapeRenderer renderer2 = new XYShapeRenderer();
+            renderer2.setSeriesShape(0, ShapeUtils.createDiagonalCross(5, 2));
+            plot.setRenderer(1, renderer2);
+            //
+            //
+            //
+
             NumberAxis domain = (NumberAxis) plot.getDomainAxis();
             NumberAxis range = (NumberAxis) plot.getRangeAxis();
             domain.setRangeWithMargins(xRange(dataSet));
@@ -145,31 +157,58 @@ public class TrajectoryPlotter {
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
-    public static void plot(
-            Trajectory100 t,
-            double arrows) {
-        TrajectoryPlotter plotter = new TrajectoryPlotter(arrows);
-        VectorSeries series = plotter.convert("trajectory", t);
-        XYDataset dataSet = TrajectoryPlotter.collect(series);
-        if (SHOW)
-            actuallyPlot("compare", () -> new VectorRenderer(), dataSet);
+    /**
+     * renderer is a supplier because new XYPlot writes the dataset name into the
+     * renderer.
+     * 
+     * mutability is bad.
+     */
+    public static void actuallyPlot(
+            String name,
+            Supplier<XYItemRenderer> renderer,
+            XYDataset dataSet) {
+        if (!SHOW)
+            return;
+
+        // "true" means "modal" so wait for close.
+        JDialog frame = new JDialog((Frame) null, name, true);
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+
+        XYPlot plot = new XYPlot(
+                dataSet,
+                new NumberAxis("X"),
+                new NumberAxis("Y"),
+                renderer.get());
+        //
+        //
+        //
+        // also render the endpoints differently
+        XYSeries endpoints = new XYSeries("endpoints");
+        endpoints.add(dataSet.getX(0, 0), dataSet.getY(0, 0));
+        XYDataset endpointSet = new XYSeriesCollection(endpoints);
+        plot.setDataset(1, endpointSet);
+        XYShapeRenderer renderer2 = new XYShapeRenderer();
+        renderer2.setSeriesShape(0, ShapeUtils.createDiagonalCross(5, 2));
+        plot.setRenderer(1, renderer2);
+        //
+        //
+        //
+
+        NumberAxis domain = (NumberAxis) plot.getDomainAxis();
+        NumberAxis range = (NumberAxis) plot.getRangeAxis();
+        domain.setRangeWithMargins(xRange(dataSet));
+        range.setRangeWithMargins(yRange(dataSet));
+
+        ChartPanel panel = new ChartPanel(new JFreeChart(plot));
+        panel.setPreferredSize(new Dimension(SIZE, SIZE));
+        frame.add(panel);
+
+        frame.pack();
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
-    public static void plot(
-            List<HolonomicSplineSE2> splines,
-            double arrows) {
-        TrajectoryPlotter plotter = new TrajectoryPlotter(arrows);
-        VectorSeries series = plotter.convert("before", splines);
-        XYDataset dataSet = TrajectoryPlotter.collect(series);
-        if (SHOW)
-            actuallyPlot("compare", () -> new VectorRenderer(), dataSet);
-    }
-
-    public static void plot(
-            Path100 path,
-            double arrows) {
-        TrajectoryPlotter plotter = new TrajectoryPlotter(arrows);
-        VectorSeries series = plotter.convert("path", path);
+    public static void plot(VectorSeries series) {
         XYDataset dataSet = TrajectoryPlotter.collect(series);
         if (SHOW)
             actuallyPlot("compare", () -> new VectorRenderer(), dataSet);

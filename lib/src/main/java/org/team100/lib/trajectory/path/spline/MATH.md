@@ -1,6 +1,24 @@
 # math
 
+In the SE(2) and SE(3) spline classes, we calculate the curvature vector.
+
 https://en.wikipedia.org/wiki/Curvature#Curvature_vector
+
+See `HolonomicSplineSE2.K()` and `HolonomicSplineSE3.K()`
+
+The curvature vector is the path-length-derivative of the unit tangent
+vector. It's an R3 vector that lies in the plane
+perpendicular to the tangent vector, T, i.e. the course.
+ 
+It points in the direction of the center of curvature.
+
+https://en.wikipedia.org/wiki/Center_of_curvature
+ 
+Its magnitude is "κ", 1/radius of osculating circle, rad/m
+
+https://en.wikipedia.org/wiki/Osculating_circle
+
+## calculating the curvature vector
 
 We'll use an arbitrary parameterization over parameter $s$  for each point, $\boldsymbol{P}$ on the curve:
 
@@ -44,3 +62,6 @@ so subtract the parallel component:
 \right)
 ```
 
+There are other ways to compute this vector, for example using the cross product,
+but the cross product is kind of an $\mathbb{R}^3$ specialty; this method works for both
+$\mathbb{R}^2$ and $\mathbb{R}^3$.

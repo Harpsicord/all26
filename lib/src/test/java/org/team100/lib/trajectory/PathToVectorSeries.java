@@ -5,7 +5,7 @@ import java.util.List;
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
 import org.team100.lib.geometry.PathPointSE2;
-import org.team100.lib.trajectory.path.Path100;
+import org.team100.lib.trajectory.path.PathSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,7 +20,7 @@ public class PathToVectorSeries {
     }
 
     /** Maps x to x, y to y */
-    public VectorSeries convert(String name, Path100 path) {
+    public VectorSeries convert(String name, PathSE2 path) {
         VectorSeries s = new VectorSeries(name);
         double l = path.getMaxDistance();
         double dl = l / 20;

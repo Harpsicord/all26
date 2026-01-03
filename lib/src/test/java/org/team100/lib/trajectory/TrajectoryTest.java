@@ -90,7 +90,7 @@ public class TrajectoryTest {
         TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         Trajectory100 trajectory = planner.generateTrajectory(waypoints, 0, 0);
 
-        TrajectoryPlotter.plot(trajectory, 0.25);
+        TrajectoryPlotter.plot(new TrajectoryToVectorSeries(0.25).convert("trajectory", trajectory));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class TrajectoryTest {
             p0 = p1;
         }
 
-        TrajectoryPlotter.plot(trajectory, 0.25);
+        TrajectoryPlotter.plot(new TrajectoryToVectorSeries(0.25).convert("trajectory", trajectory));
     }
 
     /**

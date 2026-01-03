@@ -7,13 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.tools.StandardJavaFileManager.PathFactory;
-
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.geometry.WaypointSE2;
-import org.team100.lib.trajectory.path.spline.HolonomicSplineSE2;
+import org.team100.lib.trajectory.path.spline.SplineSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,22 +44,22 @@ class Path100Test {
 
     @Test
     void testEmpty() {
-        List<HolonomicSplineSE2> splines = new ArrayList<>();
+        List<SplineSE2> splines = new ArrayList<>();
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.1, 0.1, 0.1);
-        Path100 path = pathFactory.fromSplines(splines);
+        PathSE2 path = pathFactory.fromSplines(splines);
         assertEquals(0, path.length(), 0.001);
     }
 
     @Test
     void testConstruction() {
-        Path100 traj = new Path100(WAYPOINTS);
+        PathSE2 traj = new PathSE2(WAYPOINTS);
         assertFalse(traj.isEmpty());
         assertEquals(4, traj.length());
     }
 
     @Test
     void testStateAccessors() {
-        Path100 traj = new Path100(WAYPOINTS);
+        PathSE2 traj = new PathSE2(WAYPOINTS);
 
         assertEquals(WAYPOINTS.get(0), traj.getPoint(0));
         assertEquals(WAYPOINTS.get(1), traj.getPoint(1));

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.trajectory.Trajectory100;
-import org.team100.lib.trajectory.path.Path100;
+import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.util.Math100;
 
 /**
@@ -29,7 +29,7 @@ public class TrajectoryFactory {
     /**
      * Samples the path, then assigns a time to each sample.
      */
-    public Trajectory100 fromPath(Path100 path, double start_vel, double end_vel) {
+    public Trajectory100 fromPath(PathSE2 path, double start_vel, double end_vel) {
         PathPointSE2[] samples = getSamples(path);
         return fromSamples(samples, start_vel, end_vel);
     }
@@ -41,7 +41,7 @@ public class TrajectoryFactory {
     /**
      * Return an array of poses from the path.
      */
-    private PathPointSE2[] getSamples(Path100 path) {
+    private PathPointSE2[] getSamples(PathSE2 path) {
         return path.resample();
     }
 

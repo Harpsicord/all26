@@ -20,8 +20,9 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.Trajectory100;
 import org.team100.lib.trajectory.TrajectoryPlotter;
-import org.team100.lib.trajectory.path.Path100;
+import org.team100.lib.trajectory.TrajectoryToVectorSeries;
 import org.team100.lib.trajectory.path.PathFactorySE2;
+import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.timing.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraint;
@@ -31,7 +32,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-class HolonomicSplineSE2Test implements Timeless {
+class SplineSE2Test implements Timeless {
     private static final boolean DEBUG = false;
     private static final double DELTA = 0.001;
     private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
@@ -39,7 +40,7 @@ class HolonomicSplineSE2Test implements Timeless {
     @Test
     void testCurvature() {
         // straight line, zero curvature.
-        HolonomicSplineSE2 s = new HolonomicSplineSE2(
+        SplineSE2 s = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
@@ -53,7 +54,7 @@ class HolonomicSplineSE2Test implements Timeless {
         assertEquals(0, s.sample(0.5).getCurvatureRad_M(), DELTA);
 
         // left turn
-        s = new HolonomicSplineSE2(
+        s = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
@@ -78,7 +79,7 @@ class HolonomicSplineSE2Test implements Timeless {
 
     @Test
     void testLinear() {
-        HolonomicSplineSE2 s = new HolonomicSplineSE2(
+        SplineSE2 s = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
@@ -109,7 +110,7 @@ class HolonomicSplineSE2Test implements Timeless {
 
     @Test
     void testLinear2() {
-        HolonomicSplineSE2 s = new HolonomicSplineSE2(
+        SplineSE2 s = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
@@ -143,7 +144,7 @@ class HolonomicSplineSE2Test implements Timeless {
         // move ahead 1m while rotation 1 rad to the left
         // this has no rotation at the ends.
         // the rotation rate is zero at the ends and much higher in the middle.
-        HolonomicSplineSE2 s = new HolonomicSplineSE2(
+        SplineSE2 s = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
@@ -191,7 +192,7 @@ class HolonomicSplineSE2Test implements Timeless {
         // this has lots of rotation at the ends
         // the "spatial" rotation rate is constant, i.e.
         // rotation and translation speed are proportional.
-        HolonomicSplineSE2 s = new HolonomicSplineSE2(
+        SplineSE2 s = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
@@ -232,7 +233,7 @@ class HolonomicSplineSE2Test implements Timeless {
     @Test
     void testRotation2() {
         // Make sure the rotation goes over +/- pi
-        HolonomicSplineSE2 s = new HolonomicSplineSE2(
+        SplineSE2 s = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
@@ -251,7 +252,7 @@ class HolonomicSplineSE2Test implements Timeless {
     @Test
     void spin() {
         double scale = 0.9;
-        assertThrows(IllegalArgumentException.class, () -> new HolonomicSplineSE2(
+        assertThrows(IllegalArgumentException.class, () -> new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
@@ -288,14 +289,13 @@ class HolonomicSplineSE2Test implements Timeless {
         WaypointSE2 p3 = new WaypointSE2(
                 new Pose2d(new Translation2d(0, -1), Rotation2d.kCCW_90deg),
                 new DirectionSE2(1, 0, 1), scale);
-        HolonomicSplineSE2 s0 = new HolonomicSplineSE2(p0, p1);
-        HolonomicSplineSE2 s1 = new HolonomicSplineSE2(p1, p2);
-        HolonomicSplineSE2 s2 = new HolonomicSplineSE2(p2, p3);
-        HolonomicSplineSE2 s3 = new HolonomicSplineSE2(p3, p0);
-        List<HolonomicSplineSE2> splines = List.of(s0, s1, s2, s3);
+        SplineSE2 s0 = new SplineSE2(p0, p1);
+        SplineSE2 s1 = new SplineSE2(p1, p2);
+        SplineSE2 s2 = new SplineSE2(p2, p3);
+        SplineSE2 s3 = new SplineSE2(p3, p0);
+        List<SplineSE2> splines = List.of(s0, s1, s2, s3);
         checkCircle(splines, 0.008, 0.006);
-        TrajectoryPlotter.plot(splines, 0.1);
-
+        TrajectoryPlotter.plot(new SplineToVectorSeries(0.1).convert("before", splines));
     }
 
     @Test
@@ -308,7 +308,7 @@ class HolonomicSplineSE2Test implements Timeless {
         WaypointSE2 w1 = new WaypointSE2(
                 new Pose2d(new Translation2d(0, 1), Rotation2d.kCW_90deg),
                 new DirectionSE2(-1, 0, 1), scale);
-        HolonomicSplineSE2 spline = new HolonomicSplineSE2(w0, w1);
+        SplineSE2 spline = new SplineSE2(w0, w1);
         PathPointSE2 p0 = spline.sample(0.0);
         if (DEBUG)
             System.out.println(
@@ -337,12 +337,12 @@ class HolonomicSplineSE2Test implements Timeless {
 
     }
 
-    private void checkCircle(List<HolonomicSplineSE2> splines, double rangeError, double azimuthError) {
+    private void checkCircle(List<SplineSE2> splines, double rangeError, double azimuthError) {
         double actualRangeError = 0;
         double actualAzimuthError = 0;
         if (DEBUG)
             System.out.println("s, x, y, k, dh");
-        for (HolonomicSplineSE2 spline : splines) {
+        for (SplineSE2 spline : splines) {
             for (double s = 0; s < 0.99; s += 0.01) {
                 Pose2d p = spline.sample(s).waypoint().pose();
                 // the position should be on the circle
@@ -372,7 +372,7 @@ class HolonomicSplineSE2Test implements Timeless {
     @Test
     void testLine() {
         // turn a bit to the left
-        HolonomicSplineSE2 s0 = new HolonomicSplineSE2(
+        SplineSE2 s0 = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
@@ -384,7 +384,7 @@ class HolonomicSplineSE2Test implements Timeless {
                                 new Rotation2d(1)),
                         new DirectionSE2(1, 0, 0), 1));
         // turn much more to the left
-        HolonomicSplineSE2 s1 = new HolonomicSplineSE2(
+        SplineSE2 s1 = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(1, 0),
@@ -395,10 +395,10 @@ class HolonomicSplineSE2Test implements Timeless {
                                 new Translation2d(2, 0),
                                 Rotation2d.k180deg),
                         new DirectionSE2(1, 0, 0), 1));
-        List<HolonomicSplineSE2> splines = new ArrayList<>();
+        List<SplineSE2> splines = new ArrayList<>();
         splines.add(s0);
         splines.add(s1);
-        TrajectoryPlotter.plot(splines, 0.1);
+        TrajectoryPlotter.plot(new SplineToVectorSeries(0.1).convert("before", splines));
     }
 
     /**
@@ -431,14 +431,14 @@ class HolonomicSplineSE2Test implements Timeless {
 
         if (DEBUG)
             System.out.println("s01");
-        HolonomicSplineSE2 s01 = new HolonomicSplineSE2(p0, p1);
+        SplineSE2 s01 = new SplineSE2(p0, p1);
         if (DEBUG)
             System.out.println("s12");
-        HolonomicSplineSE2 s12 = new HolonomicSplineSE2(p1, p2);
-        List<HolonomicSplineSE2> splines = new ArrayList<>();
+        SplineSE2 s12 = new SplineSE2(p1, p2);
+        List<SplineSE2> splines = new ArrayList<>();
         splines.add(s01);
         splines.add(s12);
-        TrajectoryPlotter.plot(splines, 0.1);
+        TrajectoryPlotter.plot(new SplineToVectorSeries(0.1).convert("before", splines));
     }
 
     @Test
@@ -448,7 +448,7 @@ class HolonomicSplineSE2Test implements Timeless {
 
         // this goes straight ahead to (1,0)
         // derivatives point straight ahead
-        HolonomicSplineSE2 s0 = new HolonomicSplineSE2(
+        SplineSE2 s0 = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
@@ -461,7 +461,7 @@ class HolonomicSplineSE2Test implements Timeless {
                         new DirectionSE2(1, 0, 0), 1));
         // this is a sharp turn to the left
         // derivatives point to the left
-        HolonomicSplineSE2 s1 = new HolonomicSplineSE2(
+        SplineSE2 s1 = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(1, 0),
@@ -472,19 +472,19 @@ class HolonomicSplineSE2Test implements Timeless {
                                 new Translation2d(1, 1),
                                 Rotation2d.kZero),
                         new DirectionSE2(0, 1, 0), 1));
-        List<HolonomicSplineSE2> splines = new ArrayList<>();
+        List<SplineSE2> splines = new ArrayList<>();
         splines.add(s0);
         splines.add(s1);
 
-        TrajectoryPlotter.plot(splines, 0.1);
+        TrajectoryPlotter.plot(new SplineToVectorSeries(0.1).convert("before", splines));
 
-        for (HolonomicSplineSE2 s : splines) {
+        for (SplineSE2 s : splines) {
             if (DEBUG)
                 System.out.printf("spline %s\n", s);
         }
 
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.05);
-        Path100 path = pathFactory.fromSplines(splines);
+        PathSE2 path = pathFactory.fromSplines(splines);
         if (DEBUG)
             System.out.printf("path %s\n", path);
         List<TimingConstraint> constraints = List.of(new ConstantConstraint(logger, 1, 1));
@@ -492,14 +492,14 @@ class HolonomicSplineSE2Test implements Timeless {
         Trajectory100 traj = trajectoryFactory.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
-        TrajectoryPlotter.plot(traj, 0.1);
+        TrajectoryPlotter.plot(new TrajectoryToVectorSeries(0.1).convert("trajectory", traj));
     }
 
     @Test
     void testEntryVelocity() {
 
         // radius is 1 m.
-        HolonomicSplineSE2 s0 = new HolonomicSplineSE2(
+        SplineSE2 s0 = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, -1),
@@ -517,7 +517,7 @@ class HolonomicSplineSE2Test implements Timeless {
             }
         }
 
-        List<HolonomicSplineSE2> splines = List.of(s0);
+        List<SplineSE2> splines = List.of(s0);
 
         TrajectoryPlotter plotter = new TrajectoryPlotter(0.1);
         plotter.plot("splines", splines);
@@ -530,7 +530,7 @@ class HolonomicSplineSE2Test implements Timeless {
                         p.waypoint().pose().getTranslation().getY());
             }
         }
-        Path100 path = new Path100(motion);
+        PathSE2 path = new PathSE2(motion);
         if (DEBUG) {
             for (int i = 0; i < path.length(); ++i) {
                 System.out.printf("%5.3f %5.3f\n",
@@ -560,7 +560,7 @@ class HolonomicSplineSE2Test implements Timeless {
     @Test
     void testHeadingRate() {
         // note spline rotation rate is not constant, to make it more interesting
-        HolonomicSplineSE2 spline = new HolonomicSplineSE2(
+        SplineSE2 spline = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
@@ -582,7 +582,7 @@ class HolonomicSplineSE2Test implements Timeless {
 
     @Test
     void testCurvature1() {
-        HolonomicSplineSE2 spline = new HolonomicSplineSE2(
+        SplineSE2 spline = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
@@ -624,7 +624,7 @@ class HolonomicSplineSE2Test implements Timeless {
     @Test
     void testCurvature2() {
         // no curve
-        HolonomicSplineSE2 spline = new HolonomicSplineSE2(
+        SplineSE2 spline = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(),
@@ -654,7 +654,7 @@ class HolonomicSplineSE2Test implements Timeless {
         WaypointSE2 w1 = new WaypointSE2(
                 new Pose2d(new Translation2d(), new Rotation2d(1)),
                 new DirectionSE2(0, 0, 1), 1);
-        assertThrows(IllegalArgumentException.class, () -> new HolonomicSplineSE2(w0, w1));
+        assertThrows(IllegalArgumentException.class, () -> new SplineSE2(w0, w1));
     }
 
 }

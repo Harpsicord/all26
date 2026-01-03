@@ -1,6 +1,6 @@
 package org.team100.lib.geometry;
 
-import org.team100.lib.trajectory.path.spline.HolonomicSplineSE2;
+import org.team100.lib.trajectory.path.spline.SplineSE2;
 import org.team100.lib.util.Math100;
 
 import edu.wpi.first.math.MathUtil;
@@ -15,7 +15,7 @@ public class PathPointSE2 {
     /** Pose and course. */
     private final WaypointSE2 m_waypoint;
     /** The source of this point (for resampling) */
-    private final HolonomicSplineSE2 m_spline;
+    private final SplineSE2 m_spline;
     /** The parameter value of this point (for resampling) */
     private final double m_s;
     /** Change in heading per meter of motion, rad/m. */
@@ -34,7 +34,7 @@ public class PathPointSE2 {
      */
     public PathPointSE2(
             WaypointSE2 waypoint,
-            HolonomicSplineSE2 spline,
+            SplineSE2 spline,
             double s,
             double headingRateRad_M,
             double curvatureRad_M) {
@@ -89,7 +89,7 @@ public class PathPointSE2 {
         if (DEBUG)
             System.out.printf("this s %f other s %f\n",
                     m_s, other.m_s);
-        HolonomicSplineSE2 spline = null;
+        SplineSE2 spline = null;
         double s = 0;
         if (m_spline == other.m_spline) {
             // ok to interpolate using this spline

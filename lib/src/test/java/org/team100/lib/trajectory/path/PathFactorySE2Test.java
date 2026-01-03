@@ -12,8 +12,9 @@ import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.testing.Timeless;
+import org.team100.lib.trajectory.PathToVectorSeries;
 import org.team100.lib.trajectory.TrajectoryPlotter;
-import org.team100.lib.trajectory.path.spline.HolonomicSplineSE2;
+import org.team100.lib.trajectory.path.spline.SplineSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -44,7 +45,7 @@ public class PathFactorySE2Test implements Timeless {
                                 new Rotation2d()),
                         new DirectionSE2(0, 1, 0), 1));
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.01, 0.01, 0.1);
-        Path100 path = pathFactory.fromWaypoints(waypoints);
+        PathSE2 path = pathFactory.fromWaypoints(waypoints);
 
         assertEquals(54, path.length());
         PathPointSE2 p = path.getPoint(0);
@@ -71,7 +72,7 @@ public class PathFactorySE2Test implements Timeless {
                                 new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1));
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.01, 0.01, 0.1);
-        Path100 path = pathFactory.fromWaypoints(waypoints);
+        PathSE2 path = pathFactory.fromWaypoints(waypoints);
         assertEquals(17, path.length());
         PathPointSE2 p = path.getPoint(0);
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
@@ -151,9 +152,9 @@ public class PathFactorySE2Test implements Timeless {
                                 new Rotation2d(1)),
                         new DirectionSE2(1, 0, 0), 1));
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.01, 0.01, 0.1);
-        Path100 trajectory = pathFactory.fromWaypoints(waypoints);
-        TrajectoryPlotter.plot(trajectory, 0.1);
-        assertEquals(59, trajectory.length(), 0.001);
+        PathSE2 path = pathFactory.fromWaypoints(waypoints);
+        TrajectoryPlotter.plot(new PathToVectorSeries(0.1).convert("path", path));
+        assertEquals(59, path.length(), 0.001);
     }
 
     @Test
@@ -168,7 +169,7 @@ public class PathFactorySE2Test implements Timeless {
                         new Translation2d(15, 10),
                         Rotation2d.kZero),
                 new DirectionSE2(1, 5, 0), 1.2);
-        HolonomicSplineSE2 s = new HolonomicSplineSE2(p1, p2);
+        SplineSE2 s = new SplineSE2(p1, p2);
 
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.1);
         List<PathPointSE2> samples = pathFactory.samplesFromSpline(s);
@@ -194,7 +195,7 @@ public class PathFactorySE2Test implements Timeless {
 
     @Test
     void testDx() {
-        HolonomicSplineSE2 s0 = new HolonomicSplineSE2(
+        SplineSE2 s0 = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, -1),
@@ -205,7 +206,7 @@ public class PathFactorySE2Test implements Timeless {
                                 new Translation2d(1, 0),
                                 Rotation2d.kZero),
                         new DirectionSE2(0, 1, 0), 1));
-        List<HolonomicSplineSE2> splines = List.of(s0);
+        List<SplineSE2> splines = List.of(s0);
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.001, 0.001, 0.001);
         List<PathPointSE2> motion = pathFactory.samplesFromSplines(splines);
         for (PathPointSE2 p : motion) {
@@ -234,7 +235,7 @@ public class PathFactorySE2Test implements Timeless {
                                 new Rotation2d()),
                         new DirectionSE2(0, 1, 0), 1.2));
         long startTimeNs = System.nanoTime();
-        Path100 t = new Path100(new ArrayList<>());
+        PathSE2 t = new PathSE2(new ArrayList<>());
         final int iterations = 100;
         final double SPLINE_SAMPLE_TOLERANCE_M = 0.05;
         final double SPLINE_SAMPLE_TOLERANCE_RAD = 0.2;

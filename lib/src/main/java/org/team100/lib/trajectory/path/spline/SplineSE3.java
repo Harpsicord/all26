@@ -19,7 +19,7 @@ import edu.wpi.first.math.numbers.N3;
  * The six dimensions (x, y, z, roll, pitch, yaw) of the Pose3d, p, are
  * independent one-dimensional splines, with respect to a parameter s∈[0,1].
  */
-public class HolonomicSplineSE3 {
+public class SplineSE3 {
     private static final boolean DEBUG = false;
 
     // these are for position
@@ -35,11 +35,11 @@ public class HolonomicSplineSE3 {
     private final Rotation2d m_pitch0;
     private final Rotation2d m_yaw0;
 
-    public HolonomicSplineSE3(WaypointSE3 p0, WaypointSE3 p1) {
+    public SplineSE3(WaypointSE3 p0, WaypointSE3 p1) {
         this(p0, p1, 1.2, 1.2);
     }
 
-    public HolonomicSplineSE3(WaypointSE3 p0, WaypointSE3 p1, double mN0, double mN1) {
+    public SplineSE3(WaypointSE3 p0, WaypointSE3 p1, double mN0, double mN1) {
         double distance = p0.pose().getTranslation().getDistance(p1.pose().getTranslation());
         double scale0 = mN0 * distance;
         double scale1 = mN1 * distance;

@@ -1,4 +1,4 @@
-package org.team100.lib.trajectory.path.spline;
+package org.team100.lib.trajectory.path;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.PathPointSE3;
 import org.team100.lib.geometry.WaypointSE3;
-import org.team100.lib.trajectory.path.PathSE3;
+import org.team100.lib.trajectory.path.spline.SplineSE3;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -30,36 +30,36 @@ public class PathFactorySE3 {
     }
 
     public PathSE3 fromWaypoints(List<WaypointSE3> waypoints) {
-        List<HolonomicSplineSE3> splines = splinesFromWaypoints(waypoints);
+        List<SplineSE3> splines = splinesFromWaypoints(waypoints);
         return fromSplines(splines);
     }
 
-    private List<HolonomicSplineSE3> splinesFromWaypoints(List<WaypointSE3> waypoints) {
-        List<HolonomicSplineSE3> splines = new ArrayList<>(waypoints.size() - 1);
+    private List<SplineSE3> splinesFromWaypoints(List<WaypointSE3> waypoints) {
+        List<SplineSE3> splines = new ArrayList<>(waypoints.size() - 1);
         for (int i = 1; i < waypoints.size(); ++i) {
-            splines.add(new HolonomicSplineSE3(waypoints.get(i - 1), waypoints.get(i)));
+            splines.add(new SplineSE3(waypoints.get(i - 1), waypoints.get(i)));
         }
         return splines;
     }
 
-    List<PathPointSE3> samplesFromSpline(HolonomicSplineSE3 spline) {
+    List<PathPointSE3> samplesFromSpline(SplineSE3 spline) {
         List<PathPointSE3> result = new ArrayList<>();
         result.add(spline.sample(0.0));
         getSegmentArc(spline, result, 0, 1);
         return result;
     }
 
-    public PathSE3 fromSplines(List<? extends HolonomicSplineSE3> splines) {
+    public PathSE3 fromSplines(List<? extends SplineSE3> splines) {
         return new PathSE3(samplesFromSplines(splines));
     }
 
-    public List<PathPointSE3> samplesFromSplines(List<? extends HolonomicSplineSE3> splines) {
+    public List<PathPointSE3> samplesFromSplines(List<? extends SplineSE3> splines) {
         List<PathPointSE3> result = new ArrayList<>();
         if (splines.isEmpty())
             return result;
         result.add(splines.get(0).sample(0.0));
         for (int i = 0; i < splines.size(); i++) {
-            HolonomicSplineSE3 s = splines.get(i);
+            SplineSE3 s = splines.get(i);
             if (DEBUG)
                 System.out.printf("SPLINE:\n%d\n%s\n", i, s);
             List<PathPointSE3> samples = samplesFromSpline(s);
@@ -72,7 +72,7 @@ public class PathFactorySE3 {
     }
 
     private void getSegmentArc(
-            HolonomicSplineSE3 spline,
+            SplineSE3 spline,
             List<PathPointSE3> rv,
             double s0,
             double s1) {

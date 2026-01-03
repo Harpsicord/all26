@@ -14,8 +14,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.Trajectory100;
-import org.team100.lib.trajectory.path.Path100;
 import org.team100.lib.trajectory.path.PathFactorySE2;
+import org.team100.lib.trajectory.path.PathSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,7 +40,7 @@ public class TrajectoryVelocityProfileTest implements Timeless {
 
     private static List<WaypointSE2> waypointList = Arrays.asList(WAYPOINTS).stream().map(p -> p.waypoint()).toList();
     private static PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.1, 0.1, 0.1);
-    private static Path100 path = pathFactory.fromWaypoints(waypointList);
+    private static PathSE2 path = pathFactory.fromWaypoints(waypointList);
 
     /**
      * Default max accel and velocity makes a very fast triangle profile.

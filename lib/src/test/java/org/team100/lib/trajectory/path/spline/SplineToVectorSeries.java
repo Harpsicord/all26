@@ -24,9 +24,9 @@ public class SplineToVectorSeries {
      * 
      * @return (x, y, dx, dy)
      */
-    public VectorSeries convert(String name, List<HolonomicSplineSE2> splines) {
+    public VectorSeries convert(String name, List<SplineSE2> splines) {
         VectorSeries series = new VectorSeries(name);
-        for (HolonomicSplineSE2 spline : splines) {
+        for (SplineSE2 spline : splines) {
             for (double s = 0; s <= 1.001; s += DS) {
                 Pose2d p = spline.sample(s).waypoint().pose();
                 if (DEBUG)
@@ -48,9 +48,9 @@ public class SplineToVectorSeries {
      * 
      * @return (s, x)
      */
-    public static XYSeries x(String name, List<HolonomicSplineSE2> splines) {
+    public static XYSeries x(String name, List<SplineSE2> splines) {
         XYSeries series = new XYSeries(name);
-        for (HolonomicSplineSE2 spline : splines) {
+        for (SplineSE2 spline : splines) {
             for (double s = 0; s <= 1.001; s += DS) {
                 double x = spline.sample(s).waypoint().pose().getX();
                 series.add(s, x);
@@ -64,9 +64,9 @@ public class SplineToVectorSeries {
      * 
      * @return (s, x')
      */
-    public static XYSeries xPrime(String name, List<HolonomicSplineSE2> splines) {
+    public static XYSeries xPrime(String name, List<SplineSE2> splines) {
         XYSeries series = new XYSeries(name);
-        for (HolonomicSplineSE2 spline : splines) {
+        for (SplineSE2 spline : splines) {
             for (double s = 0; s <= 1.001; s += DS) {
                 double x = spline.dx(s);
                 series.add(s, x);
@@ -80,9 +80,9 @@ public class SplineToVectorSeries {
      * 
      * @return (s, x'')
      */
-    public static XYSeries xPrimePrime(String name, List<HolonomicSplineSE2> splines) {
+    public static XYSeries xPrimePrime(String name, List<SplineSE2> splines) {
         XYSeries series = new XYSeries(name);
-        for (HolonomicSplineSE2 spline : splines) {
+        for (SplineSE2 spline : splines) {
             for (double s = 0; s <= 1.001; s += DS) {
                 double x = spline.ddx(s);
                 series.add(s, x);

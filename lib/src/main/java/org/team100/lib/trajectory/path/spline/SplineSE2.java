@@ -13,12 +13,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N2;
 
 /**
- * Holonomic spline in the SE(2) manifold.
+ * Spline in the SE(2) manifold, the space Pose2d lives in.
  * 
  * The three dimensions (x, y, heading) of the Pose2d, p, are independent
  * one-dimensional splines, with respect to a parameter s∈[0,1].
  */
-public class HolonomicSplineSE2 {
+public class SplineSE2 {
     private static final boolean DEBUG = false;
 
     private final SplineR1 m_x;
@@ -53,7 +53,7 @@ public class HolonomicSplineSE2 {
      * @param p0 starting pose
      * @param p1 ending pose
      */
-    public HolonomicSplineSE2(WaypointSE2 p0, WaypointSE2 p1) {
+    public SplineSE2(WaypointSE2 p0, WaypointSE2 p1) {
         // Translation distance in the xy plane.
         double distance = Metrics.translationalDistance(p0.pose(), p1.pose());
         if (distance < 1e-6)

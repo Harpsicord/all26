@@ -13,7 +13,7 @@ import edu.wpi.first.math.geometry.Twist2d;
  * 
  * There's no timing information here. For that, see Trajectory100.
  */
-public class Path100 {
+public class PathSE2 {
     private static final boolean DEBUG = false;
     // if an interpolated point is more than this far from an endpoint,
     // it indicates the endpoints are too far apart, including too far apart
@@ -28,7 +28,7 @@ public class Path100 {
      */
     private final double[] m_distances;
 
-    public Path100(final List<PathPointSE2> states) {
+    public PathSE2(final List<PathPointSE2> states) {
         int n = states.size();
         m_points = new ArrayList<>(n);
         m_distances = new double[n];

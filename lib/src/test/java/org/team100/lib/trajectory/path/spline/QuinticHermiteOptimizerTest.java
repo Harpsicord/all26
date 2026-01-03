@@ -15,43 +15,33 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class QuinticHermiteOptimizerTest {
 
     @Test
-    void test0() {
+    void testMulti0() {
         WaypointSE2 a = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(0, 100),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(0, 100), new Rotation2d()),
                 new DirectionSE2(0, -1, 0), 1);
         WaypointSE2 b = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(50, 0),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(50, 0), new Rotation2d()),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 c = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(100, 100),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(100, 100), new Rotation2d()),
                 new DirectionSE2(0, 1, 0), 1);
 
-        List<HolonomicSplineSE2> splines = new ArrayList<>();
-        splines.add(new HolonomicSplineSE2(a, b));
-        splines.add(new HolonomicSplineSE2(b, c));
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(a, b));
+        splines.add(new SplineSE2(b, c));
 
-        TrajectoryPlotter.plot(splines, 5);
+        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines));
 
     }
 
     @Test
-    void test1() {
+    void testMulti1() {
 
         WaypointSE2 d = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(0, 0),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
                 new DirectionSE2(0, 1, 0), 1);
         WaypointSE2 e = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(0, 50),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(0, 50), new Rotation2d()),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 f = new WaypointSE2(
                 new Pose2d(
@@ -59,152 +49,116 @@ public class QuinticHermiteOptimizerTest {
                         new Rotation2d()),
                 new DirectionSE2(0, -1, 0), 1);
         WaypointSE2 g = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(100, 0),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(100, 0), new Rotation2d()),
                 new DirectionSE2(-1, 0, 0), 1);
 
-        List<HolonomicSplineSE2> splines = new ArrayList<>();
-        splines.add(new HolonomicSplineSE2(d, e));
-        splines.add(new HolonomicSplineSE2(e, f));
-        splines.add(new HolonomicSplineSE2(f, g));
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(d, e));
+        splines.add(new SplineSE2(e, f));
+        splines.add(new SplineSE2(f, g));
 
-        TrajectoryPlotter.plot(splines, 5);
+        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines));
 
     }
 
     @Test
-    void test2() {
+    void testMulti2() {
         WaypointSE2 h = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(0, 0),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 i = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(50, 0),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(50, 0), new Rotation2d()),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 j = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(100, 50),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(100, 50), new Rotation2d()),
                 new DirectionSE2(1, 1, 0), 1);
         WaypointSE2 k = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(150, 0),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(150, 0), new Rotation2d()),
                 new DirectionSE2(0, -1, 0), 1);
         WaypointSE2 l = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(150, -50),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(150, -50), new Rotation2d()),
                 new DirectionSE2(0, -1, 0), 1);
 
-        List<HolonomicSplineSE2> splines2 = new ArrayList<>();
-        splines2.add(new HolonomicSplineSE2(h, i));
-        splines2.add(new HolonomicSplineSE2(i, j));
-        splines2.add(new HolonomicSplineSE2(j, k));
-        splines2.add(new HolonomicSplineSE2(k, l));
+        List<SplineSE2> splines2 = new ArrayList<>();
+        splines2.add(new SplineSE2(h, i));
+        splines2.add(new SplineSE2(i, j));
+        splines2.add(new SplineSE2(j, k));
+        splines2.add(new SplineSE2(k, l));
 
-        TrajectoryPlotter.plot(splines2, 5);
+        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines2));
 
     }
 
     @Test
-    void test3() {
+    void testMulti3() {
         WaypointSE2 a = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(0, 100),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(0, 100), new Rotation2d()),
                 new DirectionSE2(0, -1, 0), 1);
         WaypointSE2 b = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(50, 0),
-                        new Rotation2d(Math.PI / 2)),
+                new Pose2d(new Translation2d(50, 0), new Rotation2d(Math.PI / 2)),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 c = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(100, 100),
-                        new Rotation2d(Math.PI)),
+                new Pose2d(new Translation2d(100, 100), new Rotation2d(Math.PI)),
                 new DirectionSE2(0, 1, 0), 1);
 
-        List<HolonomicSplineSE2> splines = new ArrayList<>();
-        splines.add(new HolonomicSplineSE2(a, b));
-        splines.add(new HolonomicSplineSE2(b, c));
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(a, b));
+        splines.add(new SplineSE2(b, c));
 
-        TrajectoryPlotter.plot(splines, 5);
+        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines));
 
     }
 
     @Test
-    void test4() {
+    void testMulti4() {
 
         WaypointSE2 d = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(0, 0),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
                 new DirectionSE2(0, 1, 0), 1);
         WaypointSE2 e = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(0, 50),
-                        new Rotation2d(Math.PI / 2)),
+                new Pose2d(new Translation2d(0, 50), new Rotation2d(Math.PI / 2)),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 f = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(100, 50),
-                        new Rotation2d(Math.PI)),
+                new Pose2d(new Translation2d(100, 50), new Rotation2d(Math.PI)),
                 new DirectionSE2(0, -1, 0), 1);
         WaypointSE2 g = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(100, 0),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(100, 0), new Rotation2d()),
                 new DirectionSE2(-1, 0, 0), 1);
 
-        List<HolonomicSplineSE2> splines = new ArrayList<>();
-        splines.add(new HolonomicSplineSE2(d, e));
-        splines.add(new HolonomicSplineSE2(e, f));
-        splines.add(new HolonomicSplineSE2(f, g));
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(d, e));
+        splines.add(new SplineSE2(e, f));
+        splines.add(new SplineSE2(f, g));
 
-        TrajectoryPlotter.plot(splines, 5);
+        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines));
     }
 
     @Test
-    void test5() {
+    void testMulti5() {
 
         WaypointSE2 h = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(0, 0),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 i = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(50, 0),
-                        new Rotation2d(Math.PI / 2)),
+                new Pose2d(new Translation2d(50, 0), new Rotation2d(Math.PI / 2)),
                 new DirectionSE2(1, 0, 0), 1);
         WaypointSE2 j = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(100, 50),
-                        new Rotation2d(Math.PI)),
+                new Pose2d(new Translation2d(100, 50), new Rotation2d(Math.PI)),
                 new DirectionSE2(1, 1, 0), 1);
         WaypointSE2 k = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(150, 0),
-                        new Rotation2d()),
+                new Pose2d(new Translation2d(150, 0), new Rotation2d()),
                 new DirectionSE2(0, -1, 0), 1);
         WaypointSE2 l = new WaypointSE2(
-                new Pose2d(
-                        new Translation2d(150, -50),
-                        new Rotation2d(Math.PI / 2)),
+                new Pose2d(new Translation2d(150, -50), new Rotation2d(Math.PI / 2)),
                 new DirectionSE2(0, -1, 0), 1);
 
-        List<HolonomicSplineSE2> splines = new ArrayList<>();
-        splines.add(new HolonomicSplineSE2(h, i));
-        splines.add(new HolonomicSplineSE2(i, j));
-        splines.add(new HolonomicSplineSE2(j, k));
-        splines.add(new HolonomicSplineSE2(k, l));
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(h, i));
+        splines.add(new SplineSE2(i, j));
+        splines.add(new SplineSE2(j, k));
+        splines.add(new SplineSE2(k, l));
 
-        TrajectoryPlotter.plot(splines, 5);
+        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines));
 
     }
 }

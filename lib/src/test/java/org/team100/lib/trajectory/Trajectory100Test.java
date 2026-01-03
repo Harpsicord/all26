@@ -13,9 +13,9 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
-import org.team100.lib.trajectory.path.Path100;
 import org.team100.lib.trajectory.path.PathFactorySE2;
-import org.team100.lib.trajectory.path.spline.HolonomicSplineSE2;
+import org.team100.lib.trajectory.path.PathSE2;
+import org.team100.lib.trajectory.path.spline.SplineSE2;
 import org.team100.lib.trajectory.timing.TimedState;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
@@ -175,7 +175,7 @@ class Trajectory100Test implements Timeless {
 
         // SAMPLE SPLINE DIRECTLY (200 ns)
 
-        HolonomicSplineSE2 spline = new HolonomicSplineSE2(p0, p1);
+        SplineSE2 spline = new SplineSE2(p0, p1);
 
         long start = System.nanoTime();
         for (int rep = 0; rep < reps; ++rep) {
@@ -192,7 +192,7 @@ class Trajectory100Test implements Timeless {
         // INTERPOLATE SPLINE POINTS (170 ns)
 
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.02, 0.2, 0.1);
-        Path100 path = pathFactory.fromWaypoints(waypoints);
+        PathSE2 path = pathFactory.fromWaypoints(waypoints);
         assertEquals(22.734, path.getMaxDistance(), 0.001);
 
         start = System.nanoTime();
@@ -215,7 +215,7 @@ class Trajectory100Test implements Timeless {
         TrajectoryFactory generator = new TrajectoryFactory(constraints);
 
         Trajectory100 trajectory = generator.fromPath(path, 0, 0);
-        TrajectoryPlotter.plot(trajectory, 1);
+        TrajectoryPlotter.plot(new TrajectoryToVectorSeries(1).convert("trajectory", trajectory));
 
         assertEquals(313, trajectory.length());
 

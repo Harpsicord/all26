@@ -15,7 +15,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.trajectory.path.PathFactorySE2;
-import org.team100.lib.trajectory.path.spline.HolonomicSplineSE2;
+import org.team100.lib.trajectory.path.spline.SplineSE2;
 import org.team100.lib.trajectory.path.spline.SplineToVectorSeries;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraint;
@@ -40,7 +40,7 @@ public class ParameterizationTest {
     @Test
     void testSplineStraight() {
         // a straight line in x, since the direction is also +x
-        HolonomicSplineSE2 spline = new HolonomicSplineSE2(
+        SplineSE2 spline = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
@@ -51,6 +51,9 @@ public class ParameterizationTest {
                                 new Translation2d(1, 0),
                                 new Rotation2d(0)),
                         new DirectionSE2(1, 0, 0), 0.001));
+        TrajectoryPlotter plotter = new TrajectoryPlotter(0.1);
+        plotter.plot("spline", List.of(spline));
+
         XYSeries sx = SplineToVectorSeries.x("x", List.of(spline));
         XYSeries sxPrime = SplineToVectorSeries.xPrime("xprime", List.of(spline));
         XYSeries sxPrimePrime = SplineToVectorSeries.xPrimePrime("xprimeprime", List.of(spline));
@@ -59,7 +62,7 @@ public class ParameterizationTest {
         XYDataset d2 = TrajectoryPlotter.collect(sxPrime);
         XYDataset d3 = TrajectoryPlotter.collect(sxPrimePrime);
 
-        TrajectoryPlotter.actuallyPlot("spline", renderer, d1, d2, d3);
+        TrajectoryPlotter.actuallyPlotSeparate("spline", renderer, d1, d2, d3);
     }
 
     /**
@@ -69,7 +72,7 @@ public class ParameterizationTest {
     void testSplineCurved() {
         // a straight line in x, since the direction is also +x
         // note the zero scale here to force zero velocity at the ends
-        HolonomicSplineSE2 spline = new HolonomicSplineSE2(
+        SplineSE2 spline = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
@@ -84,16 +87,16 @@ public class ParameterizationTest {
         TrajectoryPlotter plotter = new TrajectoryPlotter(0.1);
         plotter.plot("spline", List.of(spline));
 
-        // XYSeries sx = SplineToVectorSeries.x("x", List.of(spline));
-        // XYSeries sxPrime = SplineToVectorSeries.xPrime("xprime", List.of(spline));
-        // XYSeries sxPrimePrime = SplineToVectorSeries.xPrimePrime("xprimeprime",
-        // List.of(spline));
+        XYSeries sx = SplineToVectorSeries.x("x", List.of(spline));
+        XYSeries sxPrime = SplineToVectorSeries.xPrime("xprime", List.of(spline));
+        XYSeries sxPrimePrime = SplineToVectorSeries.xPrimePrime("xprimeprime",
+                List.of(spline));
 
-        // XYDataset d1 = TrajectoryPlotter.collect(sx);
-        // XYDataset d2 = TrajectoryPlotter.collect(sxPrime);
-        // XYDataset d3 = TrajectoryPlotter.collect(sxPrimePrime);
+        XYDataset d1 = TrajectoryPlotter.collect(sx);
+        XYDataset d2 = TrajectoryPlotter.collect(sxPrime);
+        XYDataset d3 = TrajectoryPlotter.collect(sxPrimePrime);
 
-        // TrajectoryPlotter.actuallyPlot("spline", renderer, d1, d2, d3);
+        TrajectoryPlotter.actuallyPlotSeparate("spline", renderer, d1, d2, d3);
     }
 
     /**
@@ -102,7 +105,7 @@ public class ParameterizationTest {
      */
     @Test
     void testPoses() {
-        HolonomicSplineSE2 spline = new HolonomicSplineSE2(
+        SplineSE2 spline = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(
                                 new Translation2d(0, 0),
@@ -119,7 +122,7 @@ public class ParameterizationTest {
 
         XYSeries sx = PathToVectorSeries.x("spline", poses);
         XYDataset dataSet = TrajectoryPlotter.collect(sx);
-        TrajectoryPlotter.actuallyPlot("poses", renderer, dataSet);
+        TrajectoryPlotter.actuallyPlotSeparate("poses", renderer, dataSet);
     }
 
     @Test
