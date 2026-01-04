@@ -39,4 +39,8 @@ public class PathSE3 {
         return m_points.get(index);
     }
 
+    public PathPointSE3[] resample() {
+        return m_points.toArray(PathPointSE3[]::new);
+    }
+
 }

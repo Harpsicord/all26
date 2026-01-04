@@ -15,10 +15,18 @@ import edu.wpi.first.math.geometry.Twist3d;
 
 public class PathFactorySE3 {
     private static final boolean DEBUG = false;
-
+    private static final double SPLINE_SAMPLE_TOLERANCE_M = 0.02;
+    private static final double SPLINE_SAMPLE_TOLERANCE_RAD = 0.2;
+    private static final double TRAJECTORY_STEP_M = 0.1;
     private final double maxNorm;
     private final double maxDx;
     private final double maxDTheta;
+
+    public PathFactorySE3() {
+        this(TRAJECTORY_STEP_M,
+                SPLINE_SAMPLE_TOLERANCE_M,
+                SPLINE_SAMPLE_TOLERANCE_RAD);
+    }
 
     public PathFactorySE3(
             double maxNorm,

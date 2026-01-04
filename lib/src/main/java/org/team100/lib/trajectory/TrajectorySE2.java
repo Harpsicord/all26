@@ -19,7 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 public class TrajectorySE2 {
     private final List<TimedStateSE2> m_points;
     /** Constraints used for this trajectory, for resampling */
-    public final List<TimingConstraint> m_constraints;
+    private final List<TimingConstraint> m_constraints;
     private final double m_duration;
 
     public TrajectorySE2() {
@@ -29,8 +29,9 @@ public class TrajectorySE2 {
     }
 
     /** First timestamp must be zero. */
-    public TrajectorySE2(List<TimedStateSE2> states, List<TimingConstraint> constraints) {
-        m_points = states;
+    public TrajectorySE2(
+            List<TimedStateSE2> points, List<TimingConstraint> constraints) {
+        m_points = points;
         m_constraints = constraints;
         m_duration = m_points.get(m_points.size() - 1).getTimeS();
     }
@@ -85,16 +86,16 @@ public class TrajectorySE2 {
         return m_points.get(length() - 1);
     }
 
-    public double duration() {
-        return m_duration;
-    }
-
     public List<TimedStateSE2> getPoints() {
         return m_points;
     }
 
     public TimedStateSE2 getPoint(int index) {
         return m_points.get(index);
+    }
+
+    public double duration() {
+        return m_duration;
     }
 
     @Override

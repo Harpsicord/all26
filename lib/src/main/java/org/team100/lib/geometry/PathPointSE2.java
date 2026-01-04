@@ -60,6 +60,10 @@ public class PathPointSE2 {
         return m_waypoint;
     }
 
+    public double getS() {
+        return m_s;
+    }
+
     /**
      * Heading rate is radians per meter.
      * 
@@ -72,10 +76,6 @@ public class PathPointSE2 {
     /** Radians per meter, which is the reciprocal of the radius. */
     public double getCurvatureRad_M() {
         return m_curvatureRad_M;
-    }
-
-    public double getS() {
-        return m_s;
     }
 
     /**

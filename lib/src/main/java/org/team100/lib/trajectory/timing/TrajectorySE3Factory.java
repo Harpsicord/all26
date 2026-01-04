@@ -3,69 +3,49 @@ package org.team100.lib.trajectory.timing;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.team100.lib.geometry.PathPointSE2;
-import org.team100.lib.trajectory.TrajectorySE2;
-import org.team100.lib.trajectory.path.PathSE2;
+import org.team100.lib.geometry.PathPointSE3;
+import org.team100.lib.trajectory.TrajectorySE3;
+import org.team100.lib.trajectory.path.PathSE3;
 import org.team100.lib.util.Math100;
 
 /**
- * Given a path, produces a trajectory, which includes the path and adds a
- * schedule.
+ * For now this is a copy of the SE2 version.
+ * TODO: combine some aspects
  */
-public class TrajectorySE2Factory {
+public class TrajectorySE3Factory {
     public static final boolean DEBUG = false;
     private static final double EPSILON = 1e-6;
-
-    /** Defaults to make the constraints set the actual. */
     private static final double HIGH_V = 100;
     private static final double HIGH_ACCEL = 1000;
 
-    private final List<TimingConstraint> m_constraints;
+    private final List<TimingConstraintSE3> m_constraints;
 
-    public TrajectorySE2Factory(List<TimingConstraint> constraints) {
+    public TrajectorySE3Factory(List<TimingConstraintSE3> constraints) {
         m_constraints = constraints;
     }
 
-    /**
-     * Samples the path, then assigns a time to each sample.
-     */
-    public TrajectorySE2 fromPath(PathSE2 path, double start_vel, double end_vel) {
-        PathPointSE2[] samples = getSamples(path);
+    public TrajectorySE3 fromPath(PathSE3 path, double start_vel, double end_vel) {
+        PathPointSE3[] samples = getSamples(path);
         return fromSamples(samples, start_vel, end_vel);
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////
-    ///
-    ///
-
-    /**
-     * Return an array of poses from the path.
-     */
-    private PathPointSE2[] getSamples(PathSE2 path) {
+    private PathPointSE3[] getSamples(PathSE3 path) {
         return path.resample();
     }
 
-    /**
-     * Input is a list of samples (could be evenly sampled or not).
-     * 
-     * Output is these same samples with time.
-     */
-    public TrajectorySE2 fromSamples(
-            PathPointSE2[] samples,
+    public TrajectorySE3 fromSamples(
+            PathPointSE3[] samples,
             double start_vel,
             double end_vel) {
         double[] distances = distances(samples);
         double[] velocities = velocities(samples, start_vel, end_vel, distances);
         double[] accels = accels(distances, velocities);
         double[] runningTime = runningTime(distances, velocities, accels);
-        List<TimedStateSE2> timedStates = timedStates(samples, velocities, accels, runningTime);
-        return new TrajectorySE2(timedStates, m_constraints);
+        List<TimedStateSE3> timedStates = timedStates(samples, velocities, accels, runningTime);
+        return new TrajectorySE3(timedStates, m_constraints);
     }
 
-    /**
-     * Computes the length of each arc and accumulates.
-     */
-    private double[] distances(PathPointSE2[] samples) {
+    private double[] distances(PathPointSE3[] samples) {
         int n = samples.length;
         double distances[] = new double[n];
         for (int i = 1; i < n; ++i) {
@@ -75,12 +55,8 @@ public class TrajectorySE2Factory {
         return distances;
     }
 
-    /**
-     * Assigns a velocity to each sample, using velocity, accel, and decel
-     * constraints.
-     */
     private double[] velocities(
-            PathPointSE2[] samples, double start_vel, double end_vel, double[] distances) {
+            PathPointSE3[] samples, double start_vel, double end_vel, double[] distances) {
         double velocities[] = new double[samples.length];
         forward(samples, start_vel, distances, velocities);
         backward(samples, end_vel, distances, velocities);
@@ -91,15 +67,6 @@ public class TrajectorySE2Factory {
         return velocities;
     }
 
-    /**
-     * Computes average accel based on distance of each arc and velocity at each
-     * point.
-     * 
-     * Accel is attached to the *start* of each arc ([i] not [i+1])
-     * 
-     * The very last accel is always zero, but it's never used since it describes
-     * samples off the end of the trajectory.
-     */
     private double[] accels(double[] distances, double[] velocities) {
         int n = distances.length;
         double[] accels = new double[n];
@@ -110,9 +77,6 @@ public class TrajectorySE2Factory {
         return accels;
     }
 
-    /**
-     * Computes duration of each arc and accumulate. Assigns a time to each point.
-     */
     private double[] runningTime(double[] distances, double[] velocities, double[] accels) {
         int n = distances.length;
         double[] runningTime = new double[n];
@@ -124,25 +88,18 @@ public class TrajectorySE2Factory {
         return runningTime;
     }
 
-    /**
-     * Creates a list of timed states.
-     */
-    private List<TimedStateSE2> timedStates(
-            PathPointSE2[] samples, double[] velocities, double[] accels, double[] runningTime) {
+    private List<TimedStateSE3> timedStates(
+            PathPointSE3[] samples, double[] velocities, double[] accels, double[] runningTime) {
         int n = samples.length;
-        List<TimedStateSE2> timedStates = new ArrayList<>(n);
+        List<TimedStateSE3> timedStates = new ArrayList<>(n);
         for (int i = 0; i < n; ++i) {
-            timedStates.add(new TimedStateSE2(samples[i], runningTime[i], velocities[i], accels[i]));
+            timedStates.add(new TimedStateSE3(samples[i], runningTime[i], velocities[i], accels[i]));
         }
         return timedStates;
     }
 
-    /**
-     * Computes velocities[i+1] using velocity and acceleration constraints
-     * referencing the state at i.
-     */
     private void forward(
-            PathPointSE2[] samples, double start_vel, double[] distances, double[] velocities) {
+            PathPointSE3[] samples, double start_vel, double[] distances, double[] velocities) {
         int n = samples.length;
         velocities[0] = start_vel;
         for (int i = 0; i < n - 1; ++i) {
@@ -176,16 +133,8 @@ public class TrajectorySE2Factory {
         }
     }
 
-    /**
-     * Adjusts velocities[i] for decel constraint referencing the state at i+1.
-     * 
-     * This isn't strictly correct since the decel constraint should operate at i,
-     * but walking backwards through the path, only i+1 is available, and the
-     * samples should be enough close together, and the velocity should change
-     * smoothly smooth enough so it shouldn't matter much in practice.
-     */
     private void backward(
-            PathPointSE2[] samples, double end_vel, double[] distances, double[] velocities) {
+            PathPointSE3[] samples, double end_vel, double[] distances, double[] velocities) {
         int n = samples.length;
         velocities[n - 1] = end_vel;
         for (int i = n - 2; i >= 0; --i) {
@@ -221,37 +170,25 @@ public class TrajectorySE2Factory {
         }
     }
 
-    /**
-     * Returns the lowest (i.e. closest to zero) velocity constraint from the list
-     * of constraints. Always positive or zero.
-     */
-    private double maxVelocity(PathPointSE2 sample) {
+    private double maxVelocity(PathPointSE3 sample) {
         double minVelocity = HIGH_V;
-        for (TimingConstraint constraint : m_constraints) {
+        for (TimingConstraintSE3 constraint : m_constraints) {
             minVelocity = Math.min(minVelocity, constraint.maxV(sample));
         }
         return minVelocity;
     }
 
-    /**
-     * Returns the lowest (i.e. closest to zero) acceleration constraint from the
-     * list of constraints. Always positive or zero.
-     */
-    private double maxAccel(PathPointSE2 sample, double velocity) {
+    private double maxAccel(PathPointSE3 sample, double velocity) {
         double minAccel = HIGH_ACCEL;
-        for (TimingConstraint constraint : m_constraints) {
+        for (TimingConstraintSE3 constraint : m_constraints) {
             minAccel = Math.min(minAccel, constraint.maxAccel(sample, velocity));
         }
         return minAccel;
     }
 
-    /**
-     * Returns the highest (i.e. closest to zero) deceleration constraint from the
-     * list of constraints. Always negative or zero.
-     */
-    private double maxDecel(PathPointSE2 sample, double velocity) {
+    private double maxDecel(PathPointSE3 sample, double velocity) {
         double maxDecel = -HIGH_ACCEL;
-        for (TimingConstraint constraint : m_constraints) {
+        for (TimingConstraintSE3 constraint : m_constraints) {
             maxDecel = Math.max(maxDecel, constraint.maxDecel(sample, velocity));
         }
         return maxDecel;
@@ -273,4 +210,5 @@ public class TrajectorySE2Factory {
         }
         return 0;
     }
+
 }

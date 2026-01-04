@@ -145,7 +145,7 @@ public class SplineSE3 {
         WaypointSE3 waypoint = new WaypointSE3(pose, course, 1);
         Vector<N3> K = K(s);
         Vector<N3> H = headingRate(s);
-        return new PathPointSE3(waypoint, K, H);
+        return new PathPointSE3(waypoint, this, s, K, H);
     }
 
     ////////////////////////////////////////////////////////////

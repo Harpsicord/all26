@@ -4,9 +4,7 @@ import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.util.Math100;
 
 /**
- * Represents a state within a trajectory.
- * 
- * The timing fields are set by the TrajectoryFactory.
+ * Represents a state within a trajectory in SE(2).
  */
 public class TimedStateSE2 {
     private static final boolean DEBUG = false;
@@ -22,11 +20,11 @@ public class TimedStateSE2 {
     private final double m_accelM_S_S;
 
     public TimedStateSE2(
-            PathPointSE2 state,
+            PathPointSE2 point,
             double t,
             double velocity,
             double acceleration) {
-        m_point = state;
+        m_point = point;
         m_timeS = t;
         m_velocityM_S = velocity;
         m_accelM_S_S = acceleration;
