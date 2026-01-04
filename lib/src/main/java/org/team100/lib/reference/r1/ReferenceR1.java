@@ -3,8 +3,8 @@ package org.team100.lib.reference.r1;
 import java.util.function.Supplier;
 
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 /**
  * Produces "next" and "current" references from a supplier, using the clock to
@@ -12,11 +12,11 @@ import org.team100.lib.state.Model100;
  */
 public class ReferenceR1 {
 
-    private final Supplier<Control100> m_setpoints;
+    private final Supplier<ControlR1> m_setpoints;
     boolean done;
     double currentInstant;
-    Control100 currentSetpoint;
-    Control100 nextSetpoint;
+    ControlR1 currentSetpoint;
+    ControlR1 nextSetpoint;
 
     /** When we notice the clock has advanced */
     void update() {
@@ -30,18 +30,18 @@ public class ReferenceR1 {
         nextSetpoint = m_setpoints.get();
     }
 
-    public ReferenceR1(Supplier<Control100> setpoints) {
+    public ReferenceR1(Supplier<ControlR1> setpoints) {
         m_setpoints = setpoints;
     }
 
-    public void initialize(Model100 measurement) {
+    public void initialize(ModelR1 measurement) {
         // do we really care about the measurement?
         done = false;
         currentInstant = Takt.get();
     }
 
     /** Desired state at the current instant, used for feedback. */
-    public Control100 current() {
+    public ControlR1 current() {
         double t = Takt.get();
         if (t == currentInstant)
             return currentSetpoint;
@@ -50,7 +50,7 @@ public class ReferenceR1 {
     }
 
     /** Desired state at the next instant, used for feedforward. */
-    public Control100 next() {
+    public ControlR1 next() {
         double t = Takt.get();
         if (t == currentInstant)
             return currentSetpoint;

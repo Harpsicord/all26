@@ -2,13 +2,13 @@ package org.team100.lib.servo;
 
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.Control100Logger;
+import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 /**
  * Profiled or direct position control using the feedback controller in the
@@ -22,13 +22,13 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
 
     private final DoubleLogger m_log_goal;
     private final DoubleLogger m_log_ff_torque;
-    private final Control100Logger m_log_control;
+    private final ControlR1Logger m_log_control;
     private final DoubleLogger m_log_position;
     private final DoubleLogger m_log_velocity;
 
     /** Null if there's no current profile. */
-    private Model100 m_goal;
-    private Control100 m_nextSetpoint;
+    private ModelR1 m_goal;
+    private ControlR1 m_nextSetpoint;
 
     public OutboardLinearPositionServo(
             LoggerFactory parent,
@@ -43,7 +43,7 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
         m_velocityTolerance = velocityTolerance;
         m_log_goal = log.doubleLogger(Level.COMP, "goal (m)");
         m_log_ff_torque = log.doubleLogger(Level.TRACE, "Feedforward Torque (Nm)");
-        m_log_control = log.control100Logger(Level.COMP, "control (m)");
+        m_log_control = log.ControlR1Logger(Level.COMP, "control (m)");
         m_log_position = log.doubleLogger(Level.COMP, "position (m)");
         m_log_velocity = log.doubleLogger(Level.COMP, "velocity (m_s)");
     }
@@ -52,7 +52,7 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
     public void reset() {
         // using the current velocity sometimes includes a whole lot of noise, and then
         // the profile tries to follow that noise. so instead, use zero.
-        Control100 measurement = new Control100(getPosition(), 0);
+        ControlR1 measurement = new ControlR1(getPosition(), 0);
         m_nextSetpoint = measurement;
         // reference is initalized with measurement only here.
         m_ref.setGoal(measurement.model());
@@ -63,14 +63,14 @@ public class OutboardLinearPositionServo implements LinearPositionServo {
     @Override
     public void setPositionProfiled(double goalM, double feedForwardTorqueNm) {
         m_log_goal.log(() -> goalM);
-        Model100 goal = new Model100(goalM, 0);
+        ModelR1 goal = new ModelR1(goalM, 0);
 
         if (!goal.near(m_goal, m_positionTolerance, m_velocityTolerance)) {
             m_goal = goal;
             m_ref.setGoal(goal);
             if (m_nextSetpoint == null) {
                 // erased by dutycycle control
-                m_nextSetpoint = new Control100(getPosition(), 0);
+                m_nextSetpoint = new ControlR1(getPosition(), 0);
             }
             // initialize with the setpoint, not the measurement, to avoid noise.
             m_ref.init(m_nextSetpoint.model());

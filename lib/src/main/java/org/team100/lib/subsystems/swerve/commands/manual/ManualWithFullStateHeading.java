@@ -10,10 +10,10 @@ import org.team100.lib.hid.Velocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
-import org.team100.lib.logging.LoggerFactory.Control100Logger;
+import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.util.Math100;
@@ -44,7 +44,7 @@ public class ManualWithFullStateHeading implements FieldRelativeDriver {
 
     private final BooleanLogger m_log_snap_mode;
     private final DoubleLogger m_log_goal_theta;
-    private final Control100Logger m_log_setpoint_theta;
+    private final ControlR1Logger m_log_setpoint_theta;
     private final DoubleLogger m_log_measurement_theta;
     private final DoubleLogger m_log_measurement_omega;
     private final DoubleLogger m_log_error_theta;
@@ -55,7 +55,7 @@ public class ManualWithFullStateHeading implements FieldRelativeDriver {
 
     // package private for testing
     Rotation2d m_goal = null;
-    Control100 m_thetaSetpoint = null;
+    ControlR1 m_thetaSetpoint = null;
 
     /**
      * 
@@ -78,7 +78,7 @@ public class ManualWithFullStateHeading implements FieldRelativeDriver {
         m_outputFilter = LinearFilter.singlePoleIIR(0.01, TimedRobot100.LOOP_PERIOD_S);
         m_log_snap_mode = log.booleanLogger(Level.TRACE, "snap mode");
         m_log_goal_theta = log.doubleLogger(Level.DEBUG, "goal/theta");
-        m_log_setpoint_theta = log.control100Logger(Level.DEBUG, "setpoint/theta");
+        m_log_setpoint_theta = log.ControlR1Logger(Level.DEBUG, "setpoint/theta");
         m_log_measurement_theta = log.doubleLogger(Level.DEBUG, "measurement/theta");
         m_log_measurement_omega = log.doubleLogger(Level.DEBUG, "measurement/omega");
         m_log_error_theta = log.doubleLogger(Level.TRACE, "error/theta");
@@ -113,7 +113,7 @@ public class ManualWithFullStateHeading implements FieldRelativeDriver {
     public VelocitySE2 apply(
             final ModelSE2 state,
             final Velocity twist1_1) {
-        final Model100 thetaState = state.theta();
+        final ModelR1 thetaState = state.theta();
         final double yawMeasurement = thetaState.x();
         final double yawRate = thetaState.v();
 
@@ -145,7 +145,7 @@ public class ManualWithFullStateHeading implements FieldRelativeDriver {
 
         // in snap mode we take dx and dy from the user, and control dtheta.
         // the omega goal in snap mode is always zero.
-        m_thetaSetpoint = new Control100(m_goal.getRadians(), 0);
+        m_thetaSetpoint = new ControlR1(m_goal.getRadians(), 0);
 
         final double thetaError = MathUtil.angleModulus(m_thetaSetpoint.x() - yawMeasurement);
         final double omegaError = -1.0 * yawRate;

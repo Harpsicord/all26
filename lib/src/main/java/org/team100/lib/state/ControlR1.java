@@ -16,43 +16,43 @@ import edu.wpi.first.math.interpolation.Interpolatable;
  * @param v velocity
  * @param a acceleration
  */
-public record Control100(double x, double v, double a) implements Interpolatable<Control100> {
+public record ControlR1(double x, double v, double a) implements Interpolatable<ControlR1> {
 
-    public Control100(double x, double v) {
+    public ControlR1(double x, double v) {
         this(x, v, 0);
     }
 
-    public Control100() {
+    public ControlR1() {
         this(0, 0, 0);
     }
 
     /**
      * Return the model corresponding to this control, i.e. without acceleration.
      */
-    public Model100 model() {
-        return new Model100(x, v);
+    public ModelR1 model() {
+        return new ModelR1(x, v);
     }
 
-    public Control100 minus(Control100 other) {
-        return new Control100(x() - other.x(), v() - other.v(), a() - other.a());
+    public ControlR1 minus(ControlR1 other) {
+        return new ControlR1(x() - other.x(), v() - other.v(), a() - other.a());
     }
 
-    public Control100 plus(Control100 other) {
-        return new Control100(x() + other.x(), v() + other.v(), a() + other.a());
+    public ControlR1 plus(ControlR1 other) {
+        return new ControlR1(x() + other.x(), v() + other.v(), a() + other.a());
     }
 
-    public Control100 mult(double scalar) {
-        return new Control100(x * scalar, v * scalar, a * scalar);
+    public ControlR1 mult(double scalar) {
+        return new ControlR1(x * scalar, v * scalar, a * scalar);
     }
 
-    public boolean near(Control100 other, double tolerance) {
+    public boolean near(ControlR1 other, double tolerance) {
         return MathUtil.isNear(x, other.x, tolerance) &&
                 MathUtil.isNear(v, other.v, tolerance);
     }
 
     @Override
-    public Control100 interpolate(Control100 endValue, double t) {
-        return new Control100(
+    public ControlR1 interpolate(ControlR1 endValue, double t) {
+        return new ControlR1(
                 MathUtil.interpolate(x, endValue.x, t),
                 MathUtil.interpolate(v, endValue.v, t),
                 MathUtil.interpolate(a, endValue.a, t));
@@ -60,13 +60,13 @@ public record Control100(double x, double v, double a) implements Interpolatable
 
     @Override
     public String toString() {
-        return String.format("Control100(X %5.3f V %5.3f A %5.3f)", x, v, a);
+        return String.format("ControlR1(X %5.3f V %5.3f A %5.3f)", x, v, a);
     }
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof Control100) {
-            Control100 rhs = (Control100) other;
+        if (other instanceof ControlR1) {
+            ControlR1 rhs = (ControlR1) other;
             return this.x == rhs.x && this.v == rhs.v;
         } else {
             return false;

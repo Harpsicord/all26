@@ -2,18 +2,18 @@ package org.team100.lib.subsystems.swerve.commands.manual;
 
 import java.util.function.Supplier;
 
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.hid.Velocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
-import org.team100.lib.logging.LoggerFactory.Control100Logger;
+import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.util.Math100;
@@ -45,14 +45,14 @@ public class ManualWithProfiledHeading implements FieldRelativeDriver {
     /** Absolute input supplier, null if free */
     private final Supplier<Rotation2d> m_desiredRotation;
     private final HeadingLatch m_latch;
-    private final Feedback100 m_thetaFeedback;
+    private final FeedbackR1 m_thetaFeedback;
 
     // LOGGERS
     private final BooleanLogger m_log_snap_mode;
     private final DoubleLogger m_log_max_speed;
     private final DoubleLogger m_log_max_accel;
     private final DoubleLogger m_log_goal_theta;
-    private final Control100Logger m_log_setpoint_theta;
+    private final ControlR1Logger m_log_setpoint_theta;
     private final DoubleLogger m_log_theta_FF;
     private final DoubleLogger m_log_theta_FB;
     private final DoubleLogger m_log_output_omega;
@@ -60,7 +60,7 @@ public class ManualWithProfiledHeading implements FieldRelativeDriver {
 
     // package private for testing
     Rotation2d m_goal = null;
-    Control100 m_thetaSetpoint = null;
+    ControlR1 m_thetaSetpoint = null;
 
     /**
      * 
@@ -75,7 +75,7 @@ public class ManualWithProfiledHeading implements FieldRelativeDriver {
             LoggerFactory parent,
             SwerveKinodynamics swerveKinodynamics,
             Supplier<Rotation2d> desiredRotation,
-            Feedback100 thetaController) {
+            FeedbackR1 thetaController) {
         m_log = parent.type(this);
         m_swerveKinodynamics = swerveKinodynamics;
         m_desiredRotation = desiredRotation;
@@ -85,7 +85,7 @@ public class ManualWithProfiledHeading implements FieldRelativeDriver {
         m_log_max_speed = m_log.doubleLogger(Level.TRACE, "maxSpeedRad_S");
         m_log_max_accel = m_log.doubleLogger(Level.TRACE, "maxAccelRad_S2");
         m_log_goal_theta = m_log.doubleLogger(Level.TRACE, "goal/theta");
-        m_log_setpoint_theta = m_log.control100Logger(Level.TRACE, "setpoint/theta");
+        m_log_setpoint_theta = m_log.ControlR1Logger(Level.TRACE, "setpoint/theta");
         m_log_theta_FF = m_log.doubleLogger(Level.TRACE, "thetaFF");
         m_log_theta_FB = m_log.doubleLogger(Level.TRACE, "thetaFB");
         m_log_output_omega = m_log.doubleLogger(Level.TRACE, "output/omega");
@@ -157,10 +157,10 @@ public class ManualWithProfiledHeading implements FieldRelativeDriver {
                 Math100.getMinDistance(yawMeasurement, m_goal.getRadians()));
         // in snap mode we take dx and dy from the user, and use the profile for dtheta.
         // the omega goal in snap mode is always zero.
-        final Model100 goalState = new Model100(m_goal.getRadians(), 0);
+        final ModelR1 goalState = new ModelR1(m_goal.getRadians(), 0);
 
         // use the modulus closest to the measurement
-        m_thetaSetpoint = new Control100(
+        m_thetaSetpoint = new ControlR1(
                 Math100.getMinDistance(yawMeasurement, m_thetaSetpoint.x()),
                 m_thetaSetpoint.v());
         m_thetaSetpoint = m_profile.calculate(TimedRobot100.LOOP_PERIOD_S, m_thetaSetpoint, goalState);

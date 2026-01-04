@@ -1,7 +1,7 @@
 package org.team100.lib.servo;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
@@ -31,7 +31,7 @@ public class OnboardLinearDutyCyclePositionServoTest implements Timeless {
 
         final double k1 = 1.0;
         final double k2 = 0.01;
-        Feedback100 feedback = new FullStateFeedback(logger, k1, k2, false, 1, 1);
+        FeedbackR1 feedback = new FullStateFeedback(logger, k1, k2, false, 1, 1);
 
         OnboardLinearDutyCyclePositionServo s = new OnboardLinearDutyCyclePositionServo(
                 logger, mech, ref, feedback, 0.1);

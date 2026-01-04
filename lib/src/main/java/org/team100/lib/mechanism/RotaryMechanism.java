@@ -8,7 +8,7 @@ import org.team100.lib.music.Player;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 
 /**
  * Uses a motor and gears to produce rotational output, e.g. an arm joint.
@@ -152,8 +152,8 @@ public class RotaryMechanism implements Player {
                 torqueNm / m_gearRatio);
     }
 
-    public Model100 getUnwrappedMeasurement() {
-        return new Model100(getUnwrappedPositionRad(), getVelocityRad_S());
+    public ModelR1 getUnwrappedMeasurement() {
+        return new ModelR1(getUnwrappedPositionRad(), getVelocityRad_S());
     }
 
     /**

@@ -18,13 +18,13 @@ import org.team100.lib.trajectory.timing.TrajectoryFactory;
  * This used to support moving start and end states but we never used it, so
  * it's gone.
  */
-public class TrajectoryPlanner {
+public class TrajectorySE2Planner {
     private static final boolean DEBUG = false;
 
     private final PathFactorySE2 m_pathFactory;
     private final TrajectoryFactory m_trajectoryFactory;
 
-    public TrajectoryPlanner(PathFactorySE2 pathFactory, TrajectoryFactory trajectoryFactory) {
+    public TrajectorySE2Planner(PathFactorySE2 pathFactory, TrajectoryFactory trajectoryFactory) {
         m_pathFactory = pathFactory;
         m_trajectoryFactory = trajectoryFactory;
     }
@@ -33,7 +33,7 @@ public class TrajectoryPlanner {
      * Makes a trajectory through the supplied waypoints, starting and ending
      * motionless.
      */
-    public Trajectory100 restToRest(List<WaypointSE2> waypoints) {
+    public TrajectorySE2 restToRest(List<WaypointSE2> waypoints) {
         return generateTrajectory(waypoints, 0.0, 0.0);
     }
 
@@ -47,7 +47,7 @@ public class TrajectoryPlanner {
      * Makes a trajectory through the supplied waypoints, with start and end
      * velocities.
      */
-    public Trajectory100 generateTrajectory(
+    public TrajectorySE2 generateTrajectory(
             List<WaypointSE2> waypoints, double start_vel, double end_vel) {
         try {
             // Create a path from splines.
@@ -55,7 +55,7 @@ public class TrajectoryPlanner {
             if (DEBUG)
                 System.out.printf("PATH\n%s\n", path);
             // Generate the timed trajectory.
-            Trajectory100 result = m_trajectoryFactory.fromPath(path, start_vel, end_vel);
+            TrajectorySE2 result = m_trajectoryFactory.fromPath(path, start_vel, end_vel);
             if (DEBUG)
                 System.out.printf("TRAJECTORY\n%s\n", result);
             return result;
@@ -65,7 +65,7 @@ public class TrajectoryPlanner {
             System.out.println("WARNING: Bad trajectory input!!");
             // print the stack trace if you want to know who is calling
             // e.printStackTrace();
-            return new Trajectory100();
+            return new TrajectorySE2();
         }
     }
 }

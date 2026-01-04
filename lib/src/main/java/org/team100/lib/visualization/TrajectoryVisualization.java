@@ -6,8 +6,8 @@ import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
-import org.team100.lib.trajectory.Trajectory100;
-import org.team100.lib.trajectory.timing.TimedState;
+import org.team100.lib.trajectory.TrajectorySE2;
+import org.team100.lib.trajectory.timing.TimedStateSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -22,16 +22,16 @@ public class TrajectoryVisualization {
         m_log_trajectory = fieldLogger.doubleArrayLogger(Level.TRACE, TRAJECTORY);
     }
 
-    public void setViz(Trajectory100 trajectory) {
+    public void setViz(TrajectorySE2 trajectory) {
         if (trajectory == null)
             return;
-        m_log_trajectory.log(() -> fromTrajectory100(trajectory));
+        m_log_trajectory.log(() -> fromTrajectorySE2(trajectory));
     }
 
-    private static double[] fromTrajectory100(Trajectory100 m_trajectory) {
+    private static double[] fromTrajectorySE2(TrajectorySE2 m_trajectory) {
         double[] arr = new double[m_trajectory.length() * 3];
         int ndx = 0;
-        for (TimedState p : m_trajectory.getPoints()) {
+        for (TimedStateSE2 p : m_trajectory.getPoints()) {
             WaypointSE2 pose = p.point().waypoint();
             arr[ndx + 0] = pose.pose().getTranslation().getX();
             arr[ndx + 1] = pose.pose().getTranslation().getY();

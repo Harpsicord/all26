@@ -15,8 +15,8 @@ import org.team100.lib.subsystems.prr.EAWConfig;
 import org.team100.lib.subsystems.prr.ElevatorArmWristKinematics;
 import org.team100.lib.subsystems.prr.JointAccelerations;
 import org.team100.lib.subsystems.prr.JointVelocities;
-import org.team100.lib.trajectory.Trajectory100;
-import org.team100.lib.trajectory.TrajectoryPlanner;
+import org.team100.lib.trajectory.TrajectorySE2;
+import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TrajectoryFactory;
@@ -51,9 +51,9 @@ public class TrajectoryJointTest {
                 new YawRateConstraint(log, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2();
-        TrajectoryPlanner m_planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
+        TrajectorySE2Planner m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
-        Trajectory100 t = m_planner.restToRest(List.of(
+        TrajectorySE2 t = m_planner.restToRest(List.of(
                 WaypointSE2.irrotational(
                         new Pose2d(1, 0, new Rotation2d(0)), 0, 1.2),
                 WaypointSE2.irrotational(

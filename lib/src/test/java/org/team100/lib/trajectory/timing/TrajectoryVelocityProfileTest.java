@@ -13,7 +13,7 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
-import org.team100.lib.trajectory.Trajectory100;
+import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.path.PathSE2;
 
@@ -49,7 +49,7 @@ public class TrajectoryVelocityProfileTest implements Timeless {
     void testNoConstraint() {
         List<TimingConstraint> constraints = new ArrayList<TimingConstraint>();
         TrajectoryFactory u = new TrajectoryFactory(constraints);
-        Trajectory100 traj = u.fromPath(path, 0, 0);
+        TrajectorySE2 traj = u.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
     }
@@ -64,7 +64,7 @@ public class TrajectoryVelocityProfileTest implements Timeless {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTrajectoryTimingTest(logger);
         List<TimingConstraint> constraints = List.of(new ConstantConstraint(logger, 1, 1, limits));
         TrajectoryFactory u = new TrajectoryFactory(constraints);
-        Trajectory100 traj = u.fromPath(path, 0, 0);
+        TrajectorySE2 traj = u.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
     }
@@ -80,7 +80,7 @@ public class TrajectoryVelocityProfileTest implements Timeless {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTrajectoryTimingTest(logger);
         List<TimingConstraint> constraints = List.of(new SwerveDriveDynamicsConstraint(logger, limits, 1, 1));
         TrajectoryFactory u = new TrajectoryFactory(constraints);
-        Trajectory100 traj = u.fromPath(path, 0, 0);
+        TrajectorySE2 traj = u.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
     }
@@ -96,7 +96,7 @@ public class TrajectoryVelocityProfileTest implements Timeless {
         TimingConstraintFactory timing = new TimingConstraintFactory(limits);
         List<TimingConstraint> constraints = timing.testAuto(logger);
         TrajectoryFactory u = new TrajectoryFactory(constraints);
-        Trajectory100 traj = u.fromPath(path, 0, 0);
+        TrajectorySE2 traj = u.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
     }

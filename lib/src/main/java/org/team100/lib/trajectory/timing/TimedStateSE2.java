@@ -4,12 +4,11 @@ import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.util.Math100;
 
 /**
- * Represents a state within a 2d holonomic trajectory, i.e. with heading
- * independent from course.
+ * Represents a state within a trajectory.
  * 
  * The timing fields are set by the TrajectoryFactory.
  */
-public class TimedState {
+public class TimedStateSE2 {
     private static final boolean DEBUG = false;
     private final PathPointSE2 m_point;
     /** Time we achieve this state. */
@@ -22,7 +21,7 @@ public class TimedState {
      */
     private final double m_accelM_S_S;
 
-    public TimedState(
+    public TimedStateSE2(
             PathPointSE2 state,
             double t,
             double velocity,
@@ -67,7 +66,7 @@ public class TimedState {
      * Velocity of this state is the initial velocity.
      * Acceleration of this state is constant through the whole arc.
      */
-    public TimedState interpolate(TimedState other, double delta_t) {
+    public TimedStateSE2 interpolate(TimedStateSE2 other, double delta_t) {
         if (delta_t < 0)
             throw new IllegalArgumentException("delta_t must be non-negative");
         if (DEBUG)
@@ -90,7 +89,7 @@ public class TimedState {
 
         if (DEBUG)
             System.out.printf("tlerp %f\n", tLerp);
-        return new TimedState(
+        return new TimedStateSE2(
                 // m_point.interpolate(other.m_point, interpolant),
                 m_point.interpolate(other.m_point, s),
                 tLerp,
@@ -99,18 +98,18 @@ public class TimedState {
     }
 
     /** Translation only, ignores rotation */
-    public double distanceCartesian(TimedState other) {
+    public double distanceCartesian(TimedStateSE2 other) {
         return m_point.distanceCartesian(other.m_point);
     }
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof TimedState)) {
+        if (!(other instanceof TimedStateSE2)) {
             if (DEBUG)
                 System.out.println("wrong type");
             return false;
         }
-        TimedState ts = (TimedState) other;
+        TimedStateSE2 ts = (TimedStateSE2) other;
         if (!m_point.equals(ts.m_point)) {
             if (DEBUG)
                 System.out.println("wrong state");

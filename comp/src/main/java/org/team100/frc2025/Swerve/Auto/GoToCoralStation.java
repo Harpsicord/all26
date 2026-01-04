@@ -10,8 +10,8 @@ import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-import org.team100.lib.trajectory.Trajectory100;
-import org.team100.lib.trajectory.TrajectoryPlanner;
+import org.team100.lib.trajectory.TrajectorySE2;
+import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TrajectoryFactory;
 import org.team100.lib.trajectory.timing.TimingConstraint;
@@ -25,10 +25,10 @@ import edu.wpi.first.math.geometry.Translation2d;
  * Function to supply a rest-to-rest trajectory from the given starting point to
  * the coral station.
  */
-public class GoToCoralStation implements Function<Pose2d, Trajectory100> {
+public class GoToCoralStation implements Function<Pose2d, TrajectorySE2> {
     private final double m_scale;
     private final CoralStation m_station;
-    private final TrajectoryPlanner m_planner;
+    private final TrajectorySE2Planner m_planner;
 
     public GoToCoralStation(
             LoggerFactory log,
@@ -40,11 +40,11 @@ public class GoToCoralStation implements Function<Pose2d, Trajectory100> {
         List<TimingConstraint> constraints = new TimingConstraintFactory(kinodynamics).auto(log.type(this));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
-        m_planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
+        m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
     }
 
     @Override
-    public Trajectory100 apply(Pose2d currentPose) {
+    public TrajectorySE2 apply(Pose2d currentPose) {
         Pose2d goal = m_station.pose();
         double scaleAdjust = switch (m_station) {
             case LEFT -> m_scale;

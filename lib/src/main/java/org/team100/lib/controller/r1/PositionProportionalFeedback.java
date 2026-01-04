@@ -1,13 +1,13 @@
 package org.team100.lib.controller.r1;
 
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 
 /**
  * A very simple feedback method, proportional to position error.
  * 
  * This is really intended just for tests.
  */
-public class PositionProportionalFeedback implements Feedback100 {
+public class PositionProportionalFeedback implements FeedbackR1 {
     private final double m_p;
     private final double m_tol;
     private boolean m_atSetpoint;
@@ -18,7 +18,7 @@ public class PositionProportionalFeedback implements Feedback100 {
     }
 
     @Override
-    public double calculate(Model100 measurement, Model100 setpoint) {
+    public double calculate(ModelR1 measurement, ModelR1 setpoint) {
         double xError = setpoint.x() - measurement.x();
         m_atSetpoint = Math.abs(xError) < m_tol;
         return m_p * xError;

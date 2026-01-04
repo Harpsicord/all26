@@ -1,7 +1,7 @@
 package org.team100.lib.profile.r1;
 
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 import edu.wpi.first.math.trajectory.ExponentialProfile;
 import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
@@ -28,9 +28,9 @@ public class ExponentialProfileWPI implements IncrementalProfile {
     }
 
     @Override
-    public Control100 calculate(double dt, Control100 initial, Model100 goal) {
+    public ControlR1 calculate(double dt, ControlR1 initial, ModelR1 goal) {
         State result = m_profile.calculate(dt, new State(initial.x(), initial.v()), new State(goal.x(), goal.v()));
-        return new Control100(result.position, result.velocity, 0);
+        return new ControlR1(result.position, result.velocity, 0);
     }
 
     @Override

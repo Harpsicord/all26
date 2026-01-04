@@ -7,7 +7,7 @@ import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.trajectory.timing.TimedState;
+import org.team100.lib.trajectory.timing.TimedStateSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,7 +28,7 @@ class SwerveControlTest {
     @Test
     void testTimedState() {
         ControlSE2 s = ControlSE2.fromTimedState(
-                new TimedState(
+                new TimedStateSE2(
                         new PathPointSE2(
                                 WaypointSE2.irrotational(
                                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
@@ -45,7 +45,7 @@ class SwerveControlTest {
     @Test
     void testTimedState2() {
         ControlSE2 s = ControlSE2.fromTimedState(
-                new TimedState(
+                new TimedStateSE2(
                         new PathPointSE2(
                                 WaypointSE2.irrotational(
                                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
@@ -62,7 +62,7 @@ class SwerveControlTest {
     @Test
     void testTimedState3() {
         ControlSE2 s = ControlSE2.fromTimedState(
-                new TimedState(
+                new TimedStateSE2(
                         new PathPointSE2(
                                 WaypointSE2.irrotational(
                                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
@@ -80,7 +80,7 @@ class SwerveControlTest {
     @Test
     void testTimedState4() {
         ControlSE2 s = ControlSE2.fromTimedState(
-                new TimedState(
+                new TimedStateSE2(
                         new PathPointSE2(
                                 WaypointSE2.irrotational(
                                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),

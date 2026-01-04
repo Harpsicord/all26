@@ -6,8 +6,8 @@ import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 import edu.wpi.first.math.MathUtil;
 
@@ -29,14 +29,14 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     /**
      * Goal is "unwrapped" i.e. it's it's [-inf, inf], not [-pi,pi]
      */
-    private Model100 m_unwrappedGoal = new Model100(0, 0);
+    private ModelR1 m_unwrappedGoal = new ModelR1(0, 0);
     /**
      * Setpoint is "unwrapped" i.e. it's [-inf, inf], not [-pi,pi]
      * This is written when it is the setpoint for the "next" time step, i.e. the
      * one we use for feedforward, and the next cycle it is read as the "current"
      * setpoint.
      */
-    Control100 m_nextUnwrappedSetpoint = null;
+    ControlR1 m_nextUnwrappedSetpoint = null;
 
     /**
      * When the goal or setpoint is in an inaccessible zone, we hold position, so
@@ -60,7 +60,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     @Override
     public void reset() {
         m_nextUnwrappedSetpoint = null;
-        Control100 measurement = new Control100(getWrappedPositionRad(), 0);
+        ControlR1 measurement = new ControlR1(getWrappedPositionRad(), 0);
         m_ref.setGoal(measurement.model());
         m_ref.init(measurement.model());
     }
@@ -125,9 +125,9 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
             }
         }
         // this was the setpoint from the previous iteration
-        Control100 currentUnwrappedSetpoint = m_nextUnwrappedSetpoint;
+        ControlR1 currentUnwrappedSetpoint = m_nextUnwrappedSetpoint;
         // use the feedforward velocity
-        m_nextUnwrappedSetpoint = new Control100(unwrappedGoalX, velocityRad_S);
+        m_nextUnwrappedSetpoint = new ControlR1(unwrappedGoalX, velocityRad_S);
         if (currentUnwrappedSetpoint == null)
             currentUnwrappedSetpoint = m_nextUnwrappedSetpoint;
         actuate(new SetpointsR1(currentUnwrappedSetpoint, m_nextUnwrappedSetpoint), torqueNm);
@@ -179,14 +179,14 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
     }
 
     private void actuateWithProfile(double unwrappedGoalX, double torqueNm) {
-        initReference(new Model100(unwrappedGoalX, 0));
+        initReference(new ModelR1(unwrappedGoalX, 0));
         SetpointsR1 unwrappedSetpoint = m_ref.get();
         m_nextUnwrappedSetpoint = unwrappedSetpoint.next();
         actuate(unwrappedSetpoint, torqueNm);
     }
 
     /** The reference only understands unwrapped angles. */
-    private void initReference(Model100 unwrappedGoal) {
+    private void initReference(ModelR1 unwrappedGoal) {
         if (DEBUG) {
             System.out.printf("initReference old %s new %s\n", m_unwrappedGoal, unwrappedGoal);
         }
@@ -204,7 +204,7 @@ public abstract class AngularPositionServoImpl implements AngularPositionServo {
         // make sure the setpoint is near the measurement
         if (m_nextUnwrappedSetpoint == null) {
             // erased by dutycycle control, use measurement
-            m_nextUnwrappedSetpoint = new Control100(m_mechanism.getUnwrappedPositionRad(), 0);
+            m_nextUnwrappedSetpoint = new ControlR1(m_mechanism.getUnwrappedPositionRad(), 0);
         }
 
         // initialize with the setpoint, not the measurement, to avoid noise.

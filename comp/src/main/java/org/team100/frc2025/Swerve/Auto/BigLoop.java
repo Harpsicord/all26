@@ -7,8 +7,8 @@ import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-import org.team100.lib.trajectory.Trajectory100;
-import org.team100.lib.trajectory.TrajectoryPlanner;
+import org.team100.lib.trajectory.TrajectorySE2;
+import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
@@ -18,18 +18,18 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 /** big looping trajectory for testing */
-public class BigLoop implements Function<Pose2d, Trajectory100> {
-    private final TrajectoryPlanner m_planner;
+public class BigLoop implements Function<Pose2d, TrajectorySE2> {
+    private final TrajectorySE2Planner m_planner;
 
     public BigLoop(LoggerFactory log, SwerveKinodynamics kinodynamics) {
         List<TimingConstraint> constraints = new TimingConstraintFactory(kinodynamics).auto(log.type(this));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
-        m_planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
+        m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
     }
 
     @Override
-    public Trajectory100 apply(Pose2d p0) {
+    public TrajectorySE2 apply(Pose2d p0) {
         // field-relative
         Pose2d p1 = new Pose2d(
                 p0.getX() + 2,

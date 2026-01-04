@@ -11,8 +11,8 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.profile.r1.IncrementalProfile;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
@@ -330,13 +330,13 @@ public class SwerveLimiterTest implements Timeless {
     void testProfile() {
         // profile v and a constraints match the limits
         IncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 3, 5, 0.01);
-        final Model100 goal = new Model100(5, 0);
-        final Model100 initial = new Model100(0, 0);
+        final ModelR1 goal = new ModelR1(5, 0);
+        final ModelR1 initial = new ModelR1(0, 0);
 
         final SwerveKinodynamics limits = SwerveKinodynamicsFactory.likeComp25(logger);
         final SwerveLimiter limiter = new SwerveLimiter(logger, limits, () -> 12);
 
-        Control100 profileTarget = initial.control();
+        ControlR1 profileTarget = initial.control();
         VelocitySE2 target = new VelocitySE2(profileTarget.v(), 0, 0);
         // start is motionless
         VelocitySE2 setpoint = new VelocitySE2(0, 0, 0);

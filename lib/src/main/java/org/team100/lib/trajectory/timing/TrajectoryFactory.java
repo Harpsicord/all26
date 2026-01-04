@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.team100.lib.geometry.PathPointSE2;
-import org.team100.lib.trajectory.Trajectory100;
+import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.util.Math100;
 
@@ -29,7 +29,7 @@ public class TrajectoryFactory {
     /**
      * Samples the path, then assigns a time to each sample.
      */
-    public Trajectory100 fromPath(PathSE2 path, double start_vel, double end_vel) {
+    public TrajectorySE2 fromPath(PathSE2 path, double start_vel, double end_vel) {
         PathPointSE2[] samples = getSamples(path);
         return fromSamples(samples, start_vel, end_vel);
     }
@@ -50,7 +50,7 @@ public class TrajectoryFactory {
      * 
      * Output is these same samples with time.
      */
-    public Trajectory100 fromSamples(
+    public TrajectorySE2 fromSamples(
             PathPointSE2[] samples,
             double start_vel,
             double end_vel) {
@@ -58,19 +58,19 @@ public class TrajectoryFactory {
         double[] velocities = velocities(samples, start_vel, end_vel, distances);
         double[] accels = accels(distances, velocities);
         double[] runningTime = runningTime(distances, velocities, accels);
-        List<TimedState> timedStates = timedStates(samples, velocities, accels, runningTime);
-        return new Trajectory100(timedStates, m_constraints);
+        List<TimedStateSE2> timedStates = timedStates(samples, velocities, accels, runningTime);
+        return new TrajectorySE2(timedStates, m_constraints);
     }
 
     /**
      * Creates a list of timed states.
      */
-    private List<TimedState> timedStates(
+    private List<TimedStateSE2> timedStates(
             PathPointSE2[] samples, double[] velocities, double[] accels, double[] runningTime) {
         int n = samples.length;
-        List<TimedState> timedStates = new ArrayList<>(n);
+        List<TimedStateSE2> timedStates = new ArrayList<>(n);
         for (int i = 0; i < n; ++i) {
-            timedStates.add(new TimedState(samples[i], runningTime[i], velocities[i], accels[i]));
+            timedStates.add(new TimedStateSE2(samples[i], runningTime[i], velocities[i], accels[i]));
         }
         return timedStates;
     }

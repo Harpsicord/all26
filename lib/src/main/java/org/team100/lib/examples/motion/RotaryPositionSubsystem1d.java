@@ -3,7 +3,7 @@ package org.team100.lib.examples.motion;
 import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.FullStateFeedback;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -67,7 +67,7 @@ public class RotaryPositionSubsystem1d extends SubsystemBase {
         double velocityGain = 0.11;
         double positionTolerance = 0.05;
         double velocityTolerance = 0.05;
-        Feedback100 feedback = new FullStateFeedback(
+        FeedbackR1 feedback = new FullStateFeedback(
                 log, positionGain, velocityGain, true, positionTolerance, velocityTolerance);
 
         double maxVel = 40;

@@ -10,7 +10,7 @@ import org.team100.frc2025.CommandGroups.MoveToAlgaePosition;
 import org.team100.frc2025.Swerve.ManualWithBargeAssist;
 import org.team100.frc2025.Swerve.ManualWithProfiledReefLock;
 import org.team100.frc2025.Swerve.Auto.BigLoop;
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
 import org.team100.lib.controller.se2.ControllerSE2;
@@ -62,7 +62,7 @@ public class Binder {
         //
         // DEFAULT COMMANDS
         //
-        final Feedback100 thetaFeedback = new PIDFeedback(
+        final FeedbackR1 thetaFeedback = new PIDFeedback(
                 log, 3.2, 0, 0, true, 0.05, 1);
 
         SwerveLimiter limiter = new SwerveLimiter(

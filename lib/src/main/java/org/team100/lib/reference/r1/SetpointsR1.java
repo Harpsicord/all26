@@ -1,6 +1,6 @@
 package org.team100.lib.reference.r1;
 
-import org.team100.lib.state.Control100;
+import org.team100.lib.state.ControlR1;
 
 /**
  * Current and next setpoint.
@@ -13,6 +13,6 @@ import org.team100.lib.state.Control100;
  * @param current
  * @param next
  */
-public record SetpointsR1(Control100 current, Control100 next) {
+public record SetpointsR1(ControlR1 current, ControlR1 next) {
 
 }

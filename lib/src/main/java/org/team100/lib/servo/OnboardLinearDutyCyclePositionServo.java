@@ -1,15 +1,15 @@
 package org.team100.lib.servo;
 
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.Control100Logger;
+import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 import edu.wpi.first.math.MathUtil;
 
@@ -21,12 +21,12 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
     private static final double VELOCITY_TOLERANCE = 0.01;
     private final LinearMechanism m_mechanism;
     private final ProfileReferenceR1 m_ref;
-    private final Feedback100 m_feedback;
+    private final FeedbackR1 m_feedback;
     private final double m_kV;
     private final DoubleLogger m_log_goal;
     private final DoubleLogger m_log_position;
     private final DoubleLogger m_log_velocity;
-    private final Control100Logger m_log_setpoint;
+    private final ControlR1Logger m_log_setpoint;
     private final DoubleLogger m_log_u_FB;
     private final DoubleLogger m_log_u_FF;
     private final DoubleLogger m_log_u_TOTAL;
@@ -34,14 +34,14 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
     private final DoubleLogger m_log_velocity_error;
 
     /** Null if there's no current profile. */
-    private Model100 m_goal;
-    private Control100 m_setpoint;
+    private ModelR1 m_goal;
+    private ControlR1 m_setpoint;
 
     public OnboardLinearDutyCyclePositionServo(
             LoggerFactory parent,
             LinearMechanism mechanism,
             ProfileReferenceR1 ref,
-            Feedback100 feedback,
+            FeedbackR1 feedback,
             double kV) {
         LoggerFactory log = parent.type(this);
         m_mechanism = mechanism;
@@ -52,7 +52,7 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
         m_log_goal = log.doubleLogger(Level.TRACE, "goal (m)");
         m_log_position = log.doubleLogger(Level.TRACE, "position (m)");
         m_log_velocity = log.doubleLogger(Level.TRACE, "velocity (m_s)");
-        m_log_setpoint = log.control100Logger(Level.TRACE, "setpoint (m)");
+        m_log_setpoint = log.ControlR1Logger(Level.TRACE, "setpoint (m)");
         m_log_u_FB = log.doubleLogger(Level.TRACE, "u_FB (duty cycle)");
         m_log_u_FF = log.doubleLogger(Level.TRACE, "u_FF (duty cycle)");
         m_log_u_TOTAL = log.doubleLogger(Level.TRACE, "u_TOTAL (duty cycle)");
@@ -67,7 +67,7 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
         // OptionalDouble velocity = getVelocity();
         // if (velocity.isEmpty())
         // return;
-        Control100 measurement = new Control100(getPosition(), 0);
+        ControlR1 measurement = new ControlR1(getPosition(), 0);
         m_setpoint = measurement;
         m_ref.setGoal(measurement.model());
         // reference is initalized with measurement only here.
@@ -85,7 +85,7 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
     @Override
     public void setPositionProfiled(double goalM, double feedForwardTorqueNm) {
         m_log_goal.log(() -> goalM);
-        final Model100 goal = new Model100(goalM, 0);
+        final ModelR1 goal = new ModelR1(goalM, 0);
 
         if (!goal.near(m_goal, POSITION_TOLERANCE, VELOCITY_TOLERANCE)) {
             m_goal = goal;
@@ -119,7 +119,7 @@ public class OnboardLinearDutyCyclePositionServo implements LinearPositionServo 
 
         final double position = getPosition();
         final double velocity = getVelocity();
-        final Model100 measurement = new Model100(position, velocity);
+        final ModelR1 measurement = new ModelR1(position, velocity);
 
         final double u_FF = m_kV * m_setpoint.v();
         final double u_FB = m_feedback.calculate(measurement, setpoints.current().model());

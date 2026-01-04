@@ -3,7 +3,7 @@ package org.team100.lib.subsystems.swerve.commands.manual;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.hid.Velocity;
@@ -13,8 +13,8 @@ import org.team100.lib.logging.LoggerFactory.DoubleArrayLogger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.profile.r1.IncrementalProfile;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.targeting.TargetUtil;
@@ -47,20 +47,20 @@ public class ManualWithOptionalTargetLock implements FieldRelativeDriver {
 
     private final SwerveKinodynamics m_swerveKinodynamics;
     private final Supplier<Optional<Translation2d>> m_target;
-    private final Feedback100 m_controller;
+    private final FeedbackR1 m_controller;
     private final IncrementalProfile m_profile;
 
     private final DoubleLogger m_log_apparent_motion;
     public final DoubleArrayLogger m_log_target;
 
-    private Control100 m_thetaSetpoint;
+    private ControlR1 m_thetaSetpoint;
 
     public ManualWithOptionalTargetLock(
             LoggerFactory fieldLogger,
             LoggerFactory parent,
             SwerveKinodynamics swerveKinodynamics,
             Supplier<Optional<Translation2d>> target,
-            Feedback100 controller) {
+            FeedbackR1 controller) {
         m_log_target = fieldLogger.doubleArrayLogger(Level.TRACE, "target");
         LoggerFactory log = parent.type(this);
         m_log_apparent_motion = log.doubleLogger(Level.TRACE, "apparent motion");
@@ -126,7 +126,7 @@ public class ManualWithOptionalTargetLock implements FieldRelativeDriver {
                 Math100.getMinDistance(yaw, bearing.getRadians()));
 
         // make sure the setpoint uses the modulus close to the measurement.
-        m_thetaSetpoint = new Control100(
+        m_thetaSetpoint = new ControlR1(
                 Math100.getMinDistance(yaw, m_thetaSetpoint.x()),
                 m_thetaSetpoint.v());
 
@@ -134,7 +134,7 @@ public class ManualWithOptionalTargetLock implements FieldRelativeDriver {
         final double targetMotion = TargetUtil.targetMotion(state, target.get());
         m_log_apparent_motion.log(() -> targetMotion);
 
-        Model100 goal = new Model100(bearing.getRadians(), targetMotion);
+        ModelR1 goal = new ModelR1(bearing.getRadians(), targetMotion);
 
         m_thetaSetpoint = m_profile.calculate(TimedRobot100.LOOP_PERIOD_S, m_thetaSetpoint, goal);
 

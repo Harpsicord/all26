@@ -5,8 +5,8 @@ import java.util.function.DoubleUnaryOperator;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.logging.LoggerFactory.Model100Logger;
-import org.team100.lib.state.Model100;
+import org.team100.lib.logging.LoggerFactory.ModelR1Logger;
+import org.team100.lib.state.ModelR1;
 
 import edu.wpi.first.math.MathUtil;
 
@@ -15,11 +15,11 @@ import edu.wpi.first.math.MathUtil;
  * 
  * Does not include feedforward, this just does feedback.
  */
-public class FullStateFeedback implements Feedback100 {
+public class FullStateFeedback implements FeedbackR1 {
 
-    private final Model100Logger m_log_measurement;
-    private final Model100Logger m_log_reference;
-    private final Model100Logger m_log_error;
+    private final ModelR1Logger m_log_measurement;
+    private final ModelR1Logger m_log_reference;
+    private final ModelR1Logger m_log_error;
     private final DoubleLogger m_log_u_FB;
     private final double m_K1; // position
     private final double m_K2; // velocity
@@ -46,9 +46,9 @@ public class FullStateFeedback implements Feedback100 {
             double xtol,
             double vtol) {
         LoggerFactory log = parent.type(this);
-        m_log_reference = log.model100Logger(Level.DEBUG, "reference");
-        m_log_measurement = log.model100Logger(Level.DEBUG, "measurement");
-        m_log_error = log.model100Logger(Level.DEBUG, "error");
+        m_log_reference = log.ModelR1Logger(Level.DEBUG, "reference");
+        m_log_measurement = log.ModelR1Logger(Level.DEBUG, "measurement");
+        m_log_error = log.ModelR1Logger(Level.DEBUG, "error");
         m_log_u_FB = log.doubleLogger(Level.DEBUG, "u_FB");
         m_K1 = k1;
         m_K2 = k2;
@@ -59,7 +59,7 @@ public class FullStateFeedback implements Feedback100 {
     }
 
     @Override
-    public double calculate(Model100 measurement, Model100 reference) {
+    public double calculate(ModelR1 measurement, ModelR1 reference) {
         m_log_measurement.log(() -> measurement);
         m_log_reference.log(() -> reference);
         m_log_error.log(() -> reference.minus(measurement));
@@ -68,7 +68,7 @@ public class FullStateFeedback implements Feedback100 {
         return u_FB;
     }
 
-    private double calculateFB(Model100 measurement, Model100 setpoint) {
+    private double calculateFB(ModelR1 measurement, ModelR1 setpoint) {
         double xError = m_modulus.applyAsDouble(setpoint.x() - measurement.x());
         double xDotError = setpoint.v() - measurement.v();
         m_atSetpoint = Math.abs(xError) < m_tol1 && Math.abs(xDotError) < m_tol2;

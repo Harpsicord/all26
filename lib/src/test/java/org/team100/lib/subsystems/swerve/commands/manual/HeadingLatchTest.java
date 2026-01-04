@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.hid.Velocity;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -18,7 +18,7 @@ class HeadingLatchTest {
     void testInit() {
         Experiments.instance.testOverride(Experiment.StickyHeading, false);
         HeadingLatch l = new HeadingLatch();
-        Model100 s = new Model100();
+        ModelR1 s = new ModelR1();
         Rotation2d pov = null;
         Velocity input = new Velocity(0, 0, 0);
         Rotation2d desiredRotation = l.latchedRotation(10, s, pov, input.theta());
@@ -29,7 +29,7 @@ class HeadingLatchTest {
     void testLatch() {
         Experiments.instance.testOverride(Experiment.StickyHeading, false);
         HeadingLatch l = new HeadingLatch();
-        Model100 s = new Model100();
+        ModelR1 s = new ModelR1();
         Rotation2d pov = Rotation2d.kCCW_Pi_2;
         Velocity input = new Velocity(0, 0, 0);
         Rotation2d desiredRotation = l.latchedRotation(10, s, pov, input.theta());
@@ -43,7 +43,7 @@ class HeadingLatchTest {
     void testUnLatch() {
         Experiments.instance.testOverride(Experiment.StickyHeading, false);
         HeadingLatch l = new HeadingLatch();
-        Model100 s = new Model100();
+        ModelR1 s = new ModelR1();
         Rotation2d pov = Rotation2d.kCCW_Pi_2;
         Velocity input = new Velocity(0, 0, 0);
         Rotation2d desiredRotation = l.latchedRotation(10, s, pov, input.theta());
@@ -60,7 +60,7 @@ class HeadingLatchTest {
     void testExplicitUnLatch() {
         Experiments.instance.testOverride(Experiment.StickyHeading, false);
         HeadingLatch l = new HeadingLatch();
-        Model100 s = new Model100();
+        ModelR1 s = new ModelR1();
         Rotation2d pov = Rotation2d.kCCW_Pi_2;
         Velocity input = new Velocity(0, 0, 0);
         Rotation2d desiredRotation = l.latchedRotation(10, s, pov, input.theta());
@@ -77,7 +77,7 @@ class HeadingLatchTest {
     void testSticky() {
         Experiments.instance.testOverride(Experiment.StickyHeading, true);
         HeadingLatch l = new HeadingLatch();
-        Model100 s = new Model100(1, 1);
+        ModelR1 s = new ModelR1(1, 1);
         Rotation2d pov = null;
         // driver steering, latch does nothing.
         Velocity input = new Velocity(0, 0, 1);
@@ -85,7 +85,7 @@ class HeadingLatchTest {
         assertNull(desiredRotation);
 
         // let go of the steering stick, latch uses current
-        s = new Model100(1, 1);
+        s = new ModelR1(1, 1);
         input = new Velocity(0, 0, 0);
         desiredRotation = l.latchedRotation(10, s, pov, input.theta());
         // max A = 10 rad/s^2

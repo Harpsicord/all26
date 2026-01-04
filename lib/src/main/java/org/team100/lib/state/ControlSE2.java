@@ -3,7 +3,7 @@ package org.team100.lib.state;
 import org.team100.lib.geometry.AccelerationSE2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-import org.team100.lib.trajectory.timing.TimedState;
+import org.team100.lib.trajectory.timing.TimedStateSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,11 +27,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
  * and rotation dimensions independently.
  */
 public class ControlSE2 {
-    private final Control100 m_x;
-    private final Control100 m_y;
-    private final Control100 m_theta;
+    private final ControlR1 m_x;
+    private final ControlR1 m_y;
+    private final ControlR1 m_theta;
 
-    public ControlSE2(Control100 x, Control100 y, Control100 theta) {
+    public ControlSE2(ControlR1 x, ControlR1 y, ControlR1 theta) {
         m_x = x;
         m_y = y;
         m_theta = theta;
@@ -39,16 +39,16 @@ public class ControlSE2 {
 
     public ControlSE2(Pose2d x, VelocitySE2 v) {
         this(
-                new Control100(x.getX(), v.x(), 0),
-                new Control100(x.getY(), v.y(), 0),
-                new Control100(x.getRotation().getRadians(), v.theta(), 0));
+                new ControlR1(x.getX(), v.x(), 0),
+                new ControlR1(x.getY(), v.y(), 0),
+                new ControlR1(x.getRotation().getRadians(), v.theta(), 0));
     }
 
     public ControlSE2(Pose2d x, VelocitySE2 v, AccelerationSE2 a) {
         this(
-                new Control100(x.getX(), v.x(), a.x()),
-                new Control100(x.getY(), v.y(), a.y()),
-                new Control100(x.getRotation().getRadians(), v.theta(), a.theta()));
+                new ControlR1(x.getX(), v.x(), a.x()),
+                new ControlR1(x.getY(), v.y(), a.y()),
+                new ControlR1(x.getRotation().getRadians(), v.theta(), a.theta()));
     }
 
     public ControlSE2(Pose2d x) {
@@ -60,7 +60,7 @@ public class ControlSE2 {
     }
 
     public static ControlSE2 zero() {
-        return new ControlSE2(new Control100(), new Control100(), new Control100());
+        return new ControlSE2(new ControlR1(), new ControlR1(), new ControlR1());
     }
 
     public ModelSE2 model() {
@@ -109,15 +109,15 @@ public class ControlSE2 {
         return new AccelerationSE2(m_x.a(), m_y.a(), m_theta.a());
     }
 
-    public Control100 x() {
+    public ControlR1 x() {
         return m_x;
     }
 
-    public Control100 y() {
+    public ControlR1 y() {
         return m_y;
     }
 
-    public Control100 theta() {
+    public ControlR1 theta() {
         return m_theta;
     }
 
@@ -126,7 +126,7 @@ public class ControlSE2 {
      * 
      * Correctly accounts for centripetal acceleration.
      */
-    public static ControlSE2 fromTimedState(TimedState timedPose) {
+    public static ControlSE2 fromTimedState(TimedStateSE2 timedPose) {
         double xx = timedPose.point().waypoint().pose().getTranslation().getX();
         double yx = timedPose.point().waypoint().pose().getTranslation().getY();
         double thetax = timedPose.point().waypoint().pose().getRotation().getRadians();
@@ -152,9 +152,9 @@ public class ControlSE2 {
         double yCa = course.getCos() * centripetalAccelM_s_s;
 
         return new ControlSE2(
-                new Control100(xx, xv, xa + xCa),
-                new Control100(yx, yv, ya + yCa),
-                new Control100(thetax, thetav, thetaa));
+                new ControlR1(xx, xv, xa + xCa),
+                new ControlR1(yx, yv, ya + yCa),
+                new ControlR1(thetax, thetav, thetaa));
     }
 
     public String toString() {

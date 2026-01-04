@@ -10,7 +10,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.reference.se2.TrajectoryReferenceSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
-import org.team100.lib.trajectory.Trajectory100;
+import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,17 +24,17 @@ public class PermissiveTrajectoryListCommand extends MoveAndHold {
     private final LoggerFactory m_log;
     private final VelocitySubsystemSE2 m_drive;
     private final ControllerSE2 m_controller;
-    private final List<Function<Pose2d, Trajectory100>> m_trajectories;
+    private final List<Function<Pose2d, TrajectorySE2>> m_trajectories;
     private final TrajectoryVisualization m_viz;
 
-    private Iterator<Function<Pose2d, Trajectory100>> m_trajectoryIter;
+    private Iterator<Function<Pose2d, TrajectorySE2>> m_trajectoryIter;
     private VelocityReferenceControllerSE2 m_referenceController;
 
     public PermissiveTrajectoryListCommand(
             LoggerFactory parent,
             VelocitySubsystemSE2 swerve,
             ControllerSE2 controller,
-            List<Function<Pose2d, Trajectory100>> trajectories,
+            List<Function<Pose2d, TrajectorySE2>> trajectories,
             TrajectoryVisualization viz) {
         m_log = parent.type(this);
         m_drive = swerve;
@@ -55,7 +55,7 @@ public class PermissiveTrajectoryListCommand extends MoveAndHold {
         if (m_referenceController == null || m_referenceController.isDone()) {
             // get the next trajectory
             if (m_trajectoryIter.hasNext()) {
-                Trajectory100 trajectory = m_trajectoryIter.next().apply(m_drive.getState().pose());
+                TrajectorySE2 trajectory = m_trajectoryIter.next().apply(m_drive.getState().pose());
                 TrajectoryReferenceSE2 reference = new TrajectoryReferenceSE2(m_log, trajectory);
                 m_referenceController = new VelocityReferenceControllerSE2(
                         m_log, m_drive, m_controller, reference);

@@ -5,7 +5,7 @@ import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-import org.team100.lib.trajectory.timing.TimedState;
+import org.team100.lib.trajectory.timing.TimedStateSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,11 +27,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
  * and rotation dimensions independently.
  */
 public class ModelSE2 {
-    private final Model100 m_x;
-    private final Model100 m_y;
-    private final Model100 m_theta;
+    private final ModelR1 m_x;
+    private final ModelR1 m_y;
+    private final ModelR1 m_theta;
 
-    public ModelSE2(Model100 x, Model100 y, Model100 theta) {
+    public ModelSE2(ModelR1 x, ModelR1 y, ModelR1 theta) {
         m_x = x;
         m_y = y;
         m_theta = theta;
@@ -39,9 +39,9 @@ public class ModelSE2 {
 
     public ModelSE2(Pose2d x, VelocitySE2 v) {
         this(
-                new Model100(x.getX(), v.x()),
-                new Model100(x.getY(), v.y()),
-                new Model100(x.getRotation().getRadians(), v.theta()));
+                new ModelR1(x.getX(), v.x()),
+                new ModelR1(x.getY(), v.y()),
+                new ModelR1(x.getRotation().getRadians(), v.theta()));
     }
 
     /** Motionless with the specified pose */
@@ -56,7 +56,7 @@ public class ModelSE2 {
 
     /** Motionless at the origin */
     public ModelSE2() {
-        this(new Model100(), new Model100(), new Model100());
+        this(new ModelR1(), new ModelR1(), new ModelR1());
     }
 
     public ControlSE2 control() {
@@ -64,7 +64,7 @@ public class ModelSE2 {
     }
 
     public ModelSE2 withTheta(double theta) {
-        return new ModelSE2(m_x, m_y, new Model100(theta, m_theta.v()));
+        return new ModelSE2(m_x, m_y, new ModelR1(theta, m_theta.v()));
     }
 
     /** Component-wise difference (not geodesic) */
@@ -120,22 +120,22 @@ public class ModelSE2 {
         return SwerveKinodynamics.toInstantaneousChassisSpeeds(velocity(), rotation());
     }
 
-    public Model100 x() {
+    public ModelR1 x() {
         return m_x;
     }
 
-    public Model100 y() {
+    public ModelR1 y() {
         return m_y;
     }
 
-    public Model100 theta() {
+    public ModelR1 theta() {
         return m_theta;
     }
 
     /**
      * Transform timed pose into swerve state.
      */
-    public static ModelSE2 fromTimedState(TimedState timedPose) {
+    public static ModelSE2 fromTimedState(TimedStateSE2 timedPose) {
         PathPointSE2 state = timedPose.point();
         WaypointSE2 pose = state.waypoint();
         Translation2d translation = pose.pose().getTranslation();
@@ -148,9 +148,9 @@ public class ModelSE2 {
         double yv = course.getSin() * velocityM_s;
         double thetav = state.getHeadingRateRad_M() * velocityM_s;
         return new ModelSE2(
-                new Model100(xx, xv),
-                new Model100(yx, yv),
-                new Model100(thetax, thetav));
+                new ModelR1(xx, xv),
+                new ModelR1(yx, yv),
+                new ModelR1(thetax, thetav));
     }
 
     public String toString() {

@@ -1,7 +1,7 @@
 package org.team100.lib.profile.r1;
 
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -26,11 +26,11 @@ public class TrapezoidProfileWPI implements IncrementalProfile {
     }
 
     @Override
-    public Control100 calculate(double dt, Control100 initial, Model100 goal) {
+    public ControlR1 calculate(double dt, ControlR1 initial, ModelR1 goal) {
         State result = m_profile.calculate(dt, new State(initial.x(), initial.v()), new State(goal.x(), goal.v()));
         // WPI State doesn't have accel, so we calculate it.
         double accel = (result.velocity - initial.v()) / dt;
-        return new Control100(result.position, result.velocity, accel);
+        return new ControlR1(result.position, result.velocity, accel);
     }
 
     @Override

@@ -9,8 +9,8 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.SetpointsR1Logger;
 import org.team100.lib.profile.r1.IncrementalProfile;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 /**
  * Extracts current and next references from an incremental profile.
@@ -23,7 +23,7 @@ public class IncrementalProfileReferenceR1 implements ProfileReferenceR1 {
     private final Supplier<IncrementalProfile> m_profile;
     private final double m_positionTolerance;
     private final double m_velocityTolerance;
-    private Model100 m_goal;
+    private ModelR1 m_goal;
     private double m_currentInstant;
     private SetpointsR1 m_currentSetpoint;
 
@@ -41,12 +41,12 @@ public class IncrementalProfileReferenceR1 implements ProfileReferenceR1 {
     }
 
     @Override
-    public void setGoal(Model100 goal) {
+    public void setGoal(ModelR1 goal) {
         m_goal = goal;
     }
 
     @Override
-    public void init(Model100 measurement) {
+    public void init(ModelR1 measurement) {
         m_currentInstant = Takt.get();
         m_currentSetpoint = advance(measurement.control());
     }
@@ -77,10 +77,10 @@ public class IncrementalProfileReferenceR1 implements ProfileReferenceR1 {
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    private SetpointsR1 advance(Control100 newCurrent) {
+    private SetpointsR1 advance(ControlR1 newCurrent) {
         if (m_goal == null)
             throw new IllegalStateException("goal must be set");
-        Control100 next = m_profile.get().calculate(TimedRobot100.LOOP_PERIOD_S, newCurrent, m_goal);
+        ControlR1 next = m_profile.get().calculate(TimedRobot100.LOOP_PERIOD_S, newCurrent, m_goal);
         return new SetpointsR1(newCurrent, next);
     }
 }

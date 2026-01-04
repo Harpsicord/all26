@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 public class ExponentialProfileWPITest {
     private static final boolean DEBUG = false;
@@ -19,8 +19,8 @@ public class ExponentialProfileWPITest {
         double maxVel = 2;
         double maxAccel = 10;
         ExponentialProfileWPI profile = new ExponentialProfileWPI(maxVel, maxAccel);
-        Control100 sample = new Control100(0, 0);
-        final Model100 end = new Model100(3, 0);
+        ControlR1 sample = new ControlR1(0, 0);
+        final ModelR1 end = new ModelR1(3, 0);
         @SuppressWarnings("unused")
         double tt = 0;
         for (int i = 0; i < 150; ++i) {
@@ -36,8 +36,8 @@ public class ExponentialProfileWPITest {
         double maxVel = 2;
         double maxAccel = 10;
         ExponentialProfileWPI profile = new ExponentialProfileWPI(maxVel, maxAccel);
-        Control100 sample = new Control100(0, 0);
-        final Model100 end = new Model100(3, 0);
+        ControlR1 sample = new ControlR1(0, 0);
+        final ModelR1 end = new ModelR1(3, 0);
         final double ETA_TOLERANCE = 0.02;
         double s = profile.solve(0.1, sample, end, 2.0, ETA_TOLERANCE);
         assertEquals(0.625, s, DELTA);
@@ -49,8 +49,8 @@ public class ExponentialProfileWPITest {
         double maxVel = 2;
         double maxAccel = 10;
         ExponentialProfileWPI profile = new ExponentialProfileWPI(maxVel, maxAccel);
-        Control100 sample = new Control100(0, 0);
-        final Model100 end = new Model100(3, 0);
+        ControlR1 sample = new ControlR1(0, 0);
+        final ModelR1 end = new ModelR1(3, 0);
         final double ETA_TOLERANCE = 0.02;
 
         int N = 10000;

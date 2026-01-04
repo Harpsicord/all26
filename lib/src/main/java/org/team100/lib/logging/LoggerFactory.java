@@ -10,15 +10,15 @@ import java.util.function.Supplier;
 import org.team100.lib.geometry.AccelerationSE2;
 import org.team100.lib.geometry.DeltaSE2;
 import org.team100.lib.geometry.GlobalVelocityR2;
-import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.geometry.VelocitySE2;
+import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.localization.Blip24;
 import org.team100.lib.logging.primitive.PrimitiveLogger;
 import org.team100.lib.reference.r1.SetpointsR1;
-import org.team100.lib.state.Control100;
+import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.prr.EAWConfig;
 import org.team100.lib.subsystems.prr.JointAccelerations;
@@ -26,7 +26,7 @@ import org.team100.lib.subsystems.prr.JointForce;
 import org.team100.lib.subsystems.prr.JointVelocities;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
-import org.team100.lib.trajectory.timing.TimedState;
+import org.team100.lib.trajectory.timing.TimedStateSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,7 +36,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.spline.PoseWithCurvature;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 
 /**
@@ -449,14 +448,14 @@ public class LoggerFactory {
         return new Rotation2dLogger(level, leaf);
     }
 
-    public class TimedStateLogger {
+    public class TimedStateSE2Logger {
         private final Level m_level;
         private final PathPointSE2Logger m_pose2dWithMotionLogger;
         private final DoubleLogger m_timeLogger;
         private final DoubleLogger m_velocityLogger;
         private final DoubleLogger m_accelLogger;
 
-        TimedStateLogger(Level level, String leaf) {
+        TimedStateSE2Logger(Level level, String leaf) {
             m_level = level;
             m_pose2dWithMotionLogger = pose2dWithMotionLogger(level, join(leaf, "posestate"));
             m_timeLogger = doubleLogger(level, join(leaf, "time"));
@@ -464,10 +463,10 @@ public class LoggerFactory {
             m_accelLogger = doubleLogger(level, join(leaf, "accel"));
         }
 
-        public void log(Supplier<TimedState> vals) {
+        public void log(Supplier<TimedStateSE2> vals) {
             if (!allow(m_level))
                 return;
-            TimedState val = vals.get();
+            TimedStateSE2 val = vals.get();
             m_pose2dWithMotionLogger.log(val::point);
             m_timeLogger.log(val::getTimeS);
             m_velocityLogger.log(val::velocityM_S);
@@ -476,29 +475,8 @@ public class LoggerFactory {
         }
     }
 
-    public TimedStateLogger timedPoseLogger(Level level, String leaf) {
-        return new TimedStateLogger(level, leaf);
-    }
-
-    public class PoseWithCurvatureLogger {
-        private final Level m_level;
-        private final Pose2dLogger m_pose2dLogger;
-
-        PoseWithCurvatureLogger(Level level, String leaf) {
-            m_level = level;
-            m_pose2dLogger = pose2dLogger(level, join(leaf, "pose"));
-        }
-
-        public void log(Supplier<PoseWithCurvature> vals) {
-            if (!allow(m_level))
-                return;
-            PoseWithCurvature val = vals.get();
-            m_pose2dLogger.log(() -> val.poseMeters);
-        }
-    }
-
-    public PoseWithCurvatureLogger poseWithCurvatureLogger(Level level, String leaf) {
-        return new PoseWithCurvatureLogger(level, leaf);
+    public TimedStateSE2Logger timedPoseLogger(Level level, String leaf) {
+        return new TimedStateSE2Logger(level, leaf);
     }
 
     public class PathPointSE2Logger {
@@ -684,62 +662,62 @@ public class LoggerFactory {
         return new AccelerationSE2Logger(level, leaf);
     }
 
-    public class Model100Logger {
+    public class ModelR1Logger {
         private final Level m_level;
         private final DoubleLogger m_xLogger;
         private final DoubleLogger m_vLogger;
 
-        Model100Logger(Level level, String leaf) {
+        ModelR1Logger(Level level, String leaf) {
             m_level = level;
             m_xLogger = doubleLogger(level, join(leaf, "x"));
             m_vLogger = doubleLogger(level, join(leaf, "v"));
         }
 
-        public void log(Supplier<Model100> vals) {
+        public void log(Supplier<ModelR1> vals) {
             if (!allow(m_level))
                 return;
-            Model100 val = vals.get();
+            ModelR1 val = vals.get();
             m_xLogger.log(() -> val.x());
             m_vLogger.log(val::v);
         }
     }
 
-    public class Control100Logger {
+    public class ControlR1Logger {
         private final Level m_level;
         private final DoubleLogger m_xLogger;
         private final DoubleLogger m_vLogger;
         private final DoubleLogger m_aLogger;
 
-        Control100Logger(Level level, String leaf) {
+        ControlR1Logger(Level level, String leaf) {
             m_level = level;
             m_xLogger = doubleLogger(level, join(leaf, "x"));
             m_vLogger = doubleLogger(level, join(leaf, "v"));
             m_aLogger = doubleLogger(level, join(leaf, "a"));
         }
 
-        public void log(Supplier<Control100> vals) {
+        public void log(Supplier<ControlR1> vals) {
             if (!allow(m_level))
                 return;
-            Control100 val = vals.get();
+            ControlR1 val = vals.get();
             m_xLogger.log(val::x);
             m_vLogger.log(val::v);
             m_aLogger.log(val::a);
         }
     }
 
-    public Control100Logger control100Logger(Level level, String leaf) {
-        return new Control100Logger(level, leaf);
+    public ControlR1Logger ControlR1Logger(Level level, String leaf) {
+        return new ControlR1Logger(level, leaf);
     }
 
     public class SetpointsR1Logger {
         private final Level m_level;
-        private final Control100Logger m_current;
-        private final Control100Logger m_next;
+        private final ControlR1Logger m_current;
+        private final ControlR1Logger m_next;
 
         SetpointsR1Logger(Level level, String leaf) {
             m_level = level;
-            m_current = control100Logger(level, join(leaf, "current"));
-            m_next = control100Logger(level, join(leaf, "next"));
+            m_current = ControlR1Logger(level, join(leaf, "current"));
+            m_next = ControlR1Logger(level, join(leaf, "next"));
         }
 
         public void log(Supplier<SetpointsR1> vals) {
@@ -757,15 +735,15 @@ public class LoggerFactory {
 
     public class ControlSE2Logger {
         private final Level m_level;
-        private final Control100Logger m_xLogger;
-        private final Control100Logger m_yLogger;
-        private final Control100Logger m_thetaLogger;
+        private final ControlR1Logger m_xLogger;
+        private final ControlR1Logger m_yLogger;
+        private final ControlR1Logger m_thetaLogger;
 
         ControlSE2Logger(Level level, String leaf) {
             m_level = level;
-            m_xLogger = control100Logger(level, join(leaf, "x"));
-            m_yLogger = control100Logger(level, join(leaf, "y"));
-            m_thetaLogger = control100Logger(level, join(leaf, "theta"));
+            m_xLogger = ControlR1Logger(level, join(leaf, "x"));
+            m_yLogger = ControlR1Logger(level, join(leaf, "y"));
+            m_thetaLogger = ControlR1Logger(level, join(leaf, "theta"));
         }
 
         public void log(Supplier<ControlSE2> vals) {
@@ -782,21 +760,21 @@ public class LoggerFactory {
         return new ControlSE2Logger(level, leaf);
     }
 
-    public Model100Logger model100Logger(Level level, String leaf) {
-        return new Model100Logger(level, leaf);
+    public ModelR1Logger ModelR1Logger(Level level, String leaf) {
+        return new ModelR1Logger(level, leaf);
     }
 
     public class ModelSE2Logger {
         private final Level m_level;
-        private final Model100Logger m_xLogger;
-        private final Model100Logger m_yLogger;
-        private final Model100Logger m_thetaLogger;
+        private final ModelR1Logger m_xLogger;
+        private final ModelR1Logger m_yLogger;
+        private final ModelR1Logger m_thetaLogger;
 
         ModelSE2Logger(Level level, String leaf) {
             m_level = level;
-            m_xLogger = model100Logger(level, join(leaf, "x"));
-            m_yLogger = model100Logger(level, join(leaf, "y"));
-            m_thetaLogger = model100Logger(level, join(leaf, "theta"));
+            m_xLogger = ModelR1Logger(level, join(leaf, "x"));
+            m_yLogger = ModelR1Logger(level, join(leaf, "y"));
+            m_thetaLogger = ModelR1Logger(level, join(leaf, "theta"));
         }
 
         public void log(Supplier<ModelSE2> vals) {
@@ -869,30 +847,6 @@ public class LoggerFactory {
     public SwerveModulePositionsLogger swerveModulePositionsLogger(Level level, String leaf) {
         return new SwerveModulePositionsLogger(level, leaf);
     }
-
-    // public class ArmAnglesLogger {
-    // private final Level m_level;
-    // private final DoubleLogger m_th1Logger;
-    // private final DoubleLogger m_th2Logger;
-
-    // ArmAnglesLogger(Level level, String leaf) {
-    // m_level = level;
-    // m_th1Logger = doubleLogger(level, join(leaf, "th1"));
-    // m_th2Logger = doubleLogger(level, join(leaf, "th2"));
-    // }
-
-    // public void log(Supplier<ArmAngles23> vals) {
-    // if (!allow(m_level))
-    // return;
-    // ArmAngles23 val = vals.get();
-    // m_th1Logger.log(val::th1);
-    // m_th2Logger.log(val::th2);
-    // }
-    // }
-
-    // public ArmAnglesLogger armAnglesLogger(Level level, String leaf) {
-    // return new ArmAnglesLogger(level, leaf);
-    // }
 
     public class StateLogger {
         private final Level m_level;

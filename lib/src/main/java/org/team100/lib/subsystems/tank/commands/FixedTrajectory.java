@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.subsystems.tank.TankDrive;
-import org.team100.lib.trajectory.Trajectory100;
-import org.team100.lib.trajectory.timing.TimedState;
+import org.team100.lib.trajectory.TrajectorySE2;
+import org.team100.lib.trajectory.timing.TimedStateSE2;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.controller.LTVUnicycleController;
@@ -26,15 +26,15 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class FixedTrajectory extends Command {
     // a supplier so that, for example, constraints can be mutable.
-    private final Supplier<Trajectory100> m_trajectorySupplier;
+    private final Supplier<TrajectorySE2> m_trajectorySupplier;
     private final TankDrive m_drive;
     private final TrajectoryVisualization m_viz;
     private final LTVUnicycleController m_controller;
     private double m_startTimeS;
-    private Trajectory100 m_trajectory;
+    private TrajectorySE2 m_trajectory;
 
     public FixedTrajectory(
-            Supplier<Trajectory100> trajectorySupplier,
+            Supplier<TrajectorySE2> trajectorySupplier,
             TankDrive drive,
             TrajectoryVisualization viz) {
         m_trajectorySupplier = trajectorySupplier;
@@ -59,9 +59,9 @@ public class FixedTrajectory extends Command {
             return;
         // current for position error
         double t = progress();
-        TimedState current = m_trajectory.sample(t);
+        TimedStateSE2 current = m_trajectory.sample(t);
         // next for feedforward (and selecting K)
-        TimedState next = m_trajectory.sample(t + TimedRobot100.LOOP_PERIOD_S);
+        TimedStateSE2 next = m_trajectory.sample(t + TimedRobot100.LOOP_PERIOD_S);
         Pose2d currentPose = m_drive.getPose();
         Pose2d poseReference = current.point().waypoint().pose();
         double velocityReference = next.velocityM_S();

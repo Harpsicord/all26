@@ -2,7 +2,7 @@ package org.team100.frc2025.setups;
 
 import org.team100.frc2025.Swerve.ManualWithBargeAssist;
 import org.team100.frc2025.Swerve.ManualWithProfiledReefLock;
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.hid.DriverXboxControl;
 import org.team100.lib.localization.AprilTagRobotLocalizer;
 import org.team100.lib.logging.LoggerFactory;
@@ -33,7 +33,7 @@ public class DriveManuallySetup {
             SwerveDriveSubsystem drive,
             SwerveLimiter limiter,
             SwerveKinodynamics swerveKinodynamics,
-            Feedback100 thetaFeedback) {
+            FeedbackR1 thetaFeedback) {
         final DriveManually driveManually = new DriveManually(
                 driverControl::velocity,
                 localizer::setHeedRadiusM,

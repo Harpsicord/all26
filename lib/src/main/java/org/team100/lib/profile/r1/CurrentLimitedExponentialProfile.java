@@ -1,7 +1,7 @@
 package org.team100.lib.profile.r1;
 
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 /**
  * Uses a trapezoid profile for low (current-limited) speed.
@@ -38,7 +38,7 @@ public class CurrentLimitedExponentialProfile implements IncrementalProfile {
         m_limit = (1 - m_limitedAccel / m_stallAccel) * maxVel;
     }
 
-    static boolean isAccel(Control100 initial, Control100 setpoint) {
+    static boolean isAccel(ControlR1 initial, ControlR1 setpoint) {
         double initialV = initial.v();
         double setpointV = setpoint.v();
         boolean isAccel = Math.abs(setpointV) > Math.abs(initialV)
@@ -50,9 +50,9 @@ public class CurrentLimitedExponentialProfile implements IncrementalProfile {
     }
 
     @Override
-    public Control100 calculate(double dt, Control100 initial, Model100 goal) {
-        Control100 trapezoid = m_trapezoid.calculate(dt, initial, goal);
-        Control100 exponential = m_exponential.calculate(dt, initial, goal);
+    public ControlR1 calculate(double dt, ControlR1 initial, ModelR1 goal) {
+        ControlR1 trapezoid = m_trapezoid.calculate(dt, initial, goal);
+        ControlR1 exponential = m_exponential.calculate(dt, initial, goal);
         if (!isAccel(initial, exponential)) {
             // exponential decel is more accurate ("plugging" torque is higher than stall)
             return exponential;

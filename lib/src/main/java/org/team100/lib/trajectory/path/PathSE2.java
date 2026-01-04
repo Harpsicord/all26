@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Twist2d;
 /**
  * Represents a 2d holonomic path, i.e. with heading independent from course.
  * 
- * There's no timing information here. For that, see Trajectory100.
+ * There's no timing information here. For that, see TrajectorySE2
  */
 public class PathSE2 {
     private static final boolean DEBUG = false;

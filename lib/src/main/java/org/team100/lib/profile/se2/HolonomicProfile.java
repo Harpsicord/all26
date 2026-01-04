@@ -2,9 +2,9 @@ package org.team100.lib.profile.se2;
 
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.profile.r1.IncrementalProfile;
-import org.team100.lib.state.Control100;
+import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ControlSE2;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 
 import edu.wpi.first.math.MathUtil;
@@ -95,13 +95,13 @@ public class HolonomicProfile implements ProfileSE2 {
         if (DEBUG) {
             System.out.printf("initial %s goal %s\n", i, g);
         }
-        Control100 stateX = ppx.calculate(DT, i.x().control(), g.x());
-        Control100 stateY = ppy.calculate(DT, i.y().control(), g.y());
+        ControlR1 stateX = ppx.calculate(DT, i.x().control(), g.x());
+        ControlR1 stateY = ppy.calculate(DT, i.y().control(), g.y());
         // theta is periodic; choose a setpoint angle near the goal.
-        Model100 theta = new Model100(
+        ModelR1 theta = new ModelR1(
                 MathUtil.angleModulus(i.theta().x() - g.theta().x()) + g.theta().x(),
                 i.theta().v());
-        Control100 stateTheta = pptheta.calculate(DT, theta.control(), g.theta());
+        ControlR1 stateTheta = pptheta.calculate(DT, theta.control(), g.theta());
         return new ControlSE2(stateX, stateY, stateTheta);
     }
 }

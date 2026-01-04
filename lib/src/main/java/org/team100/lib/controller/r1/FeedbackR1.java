@@ -1,6 +1,6 @@
 package org.team100.lib.controller.r1;
 
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 
 /**
  * Represents a single-output feedback controller, such as PID.
@@ -12,9 +12,9 @@ import org.team100.lib.state.Model100;
  * 
  * Some of the implementations know about angle wrapping, some don't.
  */
-public interface Feedback100 {
+public interface FeedbackR1 {
 
-    double calculate(Model100 measurement, Model100 setpoint);
+    double calculate(ModelR1 measurement, ModelR1 setpoint);
 
     /** True if the most-recent calculation inputs are within tolerance. */
     boolean atSetpoint();

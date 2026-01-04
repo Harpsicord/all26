@@ -9,7 +9,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.prr.AnalyticalJacobian;
 import org.team100.lib.subsystems.prr.ElevatorArmWristKinematics;
 import org.team100.lib.subsystems.se2.commands.GoToPosePosition;
-import org.team100.lib.trajectory.TrajectoryPlanner;
+import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraint;
@@ -24,7 +24,7 @@ public class MechTrajectories extends Command {
 
     private final LoggerFactory m_log;
     private final CalgamesMech m_subsystem;
-    private final TrajectoryPlanner m_planner;
+    private final TrajectorySE2Planner m_planner;
 
     public MechTrajectories(
             LoggerFactory parent,
@@ -48,7 +48,7 @@ public class MechTrajectories extends Command {
         // numbers bigger!
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2(0.05, 0.01, 0.01, 0.1);
-        m_planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
+        m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
     }
 
     /** A command that goes from the start to the end and then finishes. */

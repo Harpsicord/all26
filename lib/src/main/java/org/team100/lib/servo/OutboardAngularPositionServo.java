@@ -2,13 +2,13 @@ package org.team100.lib.servo;
 
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.Control100Logger;
+import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
-import org.team100.lib.state.Control100;
+import org.team100.lib.state.ControlR1;
 
 /**
  * Uses mechanism position control.
@@ -23,7 +23,7 @@ import org.team100.lib.state.Control100;
 public class OutboardAngularPositionServo extends AngularPositionServoImpl {
 
     private final DoubleLogger m_log_ff_torque;
-    private final Control100Logger m_log_control;
+    private final ControlR1Logger m_log_control;
 
     public OutboardAngularPositionServo(
             LoggerFactory parent,
@@ -32,7 +32,7 @@ public class OutboardAngularPositionServo extends AngularPositionServoImpl {
         super(parent, mech, ref);
         LoggerFactory log = parent.type(this);
         m_log_ff_torque = log.doubleLogger(Level.TRACE, "Feedforward Torque (Nm)");
-        m_log_control = log.control100Logger(Level.TRACE, "setpoint (rad)");
+        m_log_control = log.ControlR1Logger(Level.TRACE, "setpoint (rad)");
     }
 
     /**
@@ -63,7 +63,7 @@ public class OutboardAngularPositionServo extends AngularPositionServoImpl {
      */
     void actuate(SetpointsR1 unwrappedSetpoint, double torqueNm) {
 
-        Control100 nextUnwrappedSetpoint = unwrappedSetpoint.next();
+        ControlR1 nextUnwrappedSetpoint = unwrappedSetpoint.next();
 
         m_mechanism.setUnwrappedPosition(
                 nextUnwrappedSetpoint.x(),

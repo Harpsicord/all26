@@ -16,7 +16,7 @@ import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.path.spline.SplineSE2;
-import org.team100.lib.trajectory.timing.TimedState;
+import org.team100.lib.trajectory.timing.TimedStateSE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
 import org.team100.lib.trajectory.timing.TrajectoryFactory;
@@ -26,7 +26,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-class Trajectory100Test implements Timeless {
+class TrajectorySE2Test implements Timeless {
     private static final double DELTA = 0.001;
     private static final boolean DEBUG = false;
     private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
@@ -48,11 +48,11 @@ class Trajectory100Test implements Timeless {
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast(logger);
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
-        TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
+        TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
-        Trajectory100 trajectory = planner.restToRest(waypoints);
+        TrajectorySE2 trajectory = planner.restToRest(waypoints);
 
-        TimedState sample = trajectory.sample(0);
+        TimedStateSE2 sample = trajectory.sample(0);
         assertEquals(0, sample.point().waypoint().pose().getTranslation().getX(), DELTA);
 
         sample = trajectory.sample(1);
@@ -82,14 +82,14 @@ class Trajectory100Test implements Timeless {
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast(logger);
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
-        TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
+        TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
-        Trajectory100 trajectory = planner.restToRest(waypoints);
+        TrajectorySE2 trajectory = planner.restToRest(waypoints);
         if (DEBUG)
             trajectory.dump();
 
         assertEquals(1.415, trajectory.duration(), DELTA);
-        TimedState sample = trajectory.sample(0);
+        TimedStateSE2 sample = trajectory.sample(0);
         assertEquals(0, sample.point().waypoint().pose().getTranslation().getX(), DELTA);
         sample = trajectory.sample(1);
         assertEquals(0.827, sample.point().waypoint().pose().getTranslation().getX(), DELTA);
@@ -118,9 +118,9 @@ class Trajectory100Test implements Timeless {
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast(logger);
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
-        TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
+        TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
-        Trajectory100 trajectory = planner.restToRest(waypoints);
+        TrajectorySE2 trajectory = planner.restToRest(waypoints);
         if (DEBUG)
             System.out.println(trajectory);
 
@@ -149,7 +149,7 @@ class Trajectory100Test implements Timeless {
         check(trajectory, 1.5, 1.000);
     }
 
-    private void check(Trajectory100 trajectory, double t, double x) {
+    private void check(TrajectorySE2 trajectory, double t, double x) {
         assertEquals(x, trajectory.sample(t).point().waypoint().pose().getTranslation().getX(), DELTA);
     }
 
@@ -214,7 +214,7 @@ class Trajectory100Test implements Timeless {
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast(logger);
         TrajectoryFactory generator = new TrajectoryFactory(constraints);
 
-        Trajectory100 trajectory = generator.fromPath(path, 0, 0);
+        TrajectorySE2 trajectory = generator.fromPath(path, 0, 0);
         TrajectoryPlotter.plotOverlay(new TrajectoryToVectorSeries(1).convert(trajectory));
 
         assertEquals(313, trajectory.length());

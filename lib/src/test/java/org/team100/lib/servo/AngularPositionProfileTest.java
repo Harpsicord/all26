@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.LoggerFactory;
@@ -27,7 +27,7 @@ class AngularPositionProfileTest implements Timeless {
     private final MockBareMotor motor;
     private final RotaryMechanism mech;
     private final MockRotaryPositionSensor sensor;
-    private final Feedback100 feedback2;
+    private final FeedbackR1 feedback2;
     IncrementalProfileReferenceR1 ref;
     private OnboardAngularPositionServo servo;
 

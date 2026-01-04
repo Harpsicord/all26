@@ -1,8 +1,8 @@
 package org.team100.lib.profile.r1;
 
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.tuning.Mutable;
 import org.team100.lib.util.Math100;
 
@@ -54,7 +54,7 @@ public class CompleteProfile implements IncrementalProfile {
     private final Mutable m_landingJ;
     private final double m_scale;
     private final Mutable m_tolerance;
-    final InterpolatingTreeMap<Double, Control100> m_byDistance;
+    final InterpolatingTreeMap<Double, ControlR1> m_byDistance;
 
     /**
      * Too-low a tolerance will produce chatter. Too-high a tolerance will produce a
@@ -96,7 +96,7 @@ public class CompleteProfile implements IncrementalProfile {
         m_landingJ = new Mutable(log, "landingJ", landingJ, this::update);
         m_scale = 1.0;
         m_tolerance = new Mutable(log, "tolerance", tolerance, this::update);
-        m_byDistance = new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Control100::interpolate);
+        m_byDistance = new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), ControlR1::interpolate);
         init();
     }
 
@@ -112,7 +112,7 @@ public class CompleteProfile implements IncrementalProfile {
         m_landingJ = landingJ;
         m_scale = scale;
         m_tolerance = tolerance;
-        m_byDistance = new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), Control100::interpolate);
+        m_byDistance = new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), ControlR1::interpolate);
         init();
     }
 
@@ -127,18 +127,18 @@ public class CompleteProfile implements IncrementalProfile {
     void init() {
         m_byDistance.clear();
         // This is the goal state, zero control here.
-        Control100 control = new Control100();
+        ControlR1 control = new ControlR1();
         put(0.0, control);
         // Far-away points so that the interpolator always yields maxV.
-        put(0.0, new Control100(-FAR_AWAY, m_maxV.getAsDouble(), 0));
-        put(0.0, new Control100(FAR_AWAY, -m_maxV.getAsDouble(), 0));
+        put(0.0, new ControlR1(-FAR_AWAY, m_maxV.getAsDouble(), 0));
+        put(0.0, new ControlR1(FAR_AWAY, -m_maxV.getAsDouble(), 0));
         // control from the left, so deceleration, walking back in time
         // t is just for debugging
         double t = 0;
         for (int i = 1; i < 1000; ++i) {
             if (MathUtil.isNear(control.v(), m_maxV.getAsDouble(), m_tolerance.getAsDouble())) {
                 // we're already cruising. keep cruising.
-                control = new Control100(
+                control = new ControlR1(
                         control.x() - m_maxV.getAsDouble() * DT,
                         m_maxV.getAsDouble(),
                         0);
@@ -153,14 +153,14 @@ public class CompleteProfile implements IncrementalProfile {
                     double dt = -1.0 * (m_maxV.getAsDouble() - control.v()) / jerkLimitedA;
                     t += dt;
                     // this should be exactly at the corner.
-                    control = new Control100(
+                    control = new ControlR1(
                             control.x() - control.v() * dt + 0.5 * jerkLimitedA * dt * dt,
                             m_maxV.getAsDouble(),
                             jerkLimitedA);
                     put(t, control);
                     // this is zero accel, epsilon away, so that the interpolator doesn't try to
                     // match the full-accel at the corner.
-                    Control100 corner = new Control100(
+                    ControlR1 corner = new ControlR1(
                             control.x() - 1e-3,
                             m_maxV.getAsDouble(),
                             0);
@@ -169,7 +169,7 @@ public class CompleteProfile implements IncrementalProfile {
                     break;
                 } else {
                     // Haven't reached maxV yet, keep going on the decel path.
-                    control = new Control100(
+                    control = new ControlR1(
                             control.x() - control.v() * DT + 0.5 * jerkLimitedA * DT * DT,
                             nextV,
                             jerkLimitedA);
@@ -181,7 +181,7 @@ public class CompleteProfile implements IncrementalProfile {
     }
 
     @Override
-    public Control100 calculate(double dt, Control100 setpoint, Model100 goal) {
+    public ControlR1 calculate(double dt, ControlR1 setpoint, ModelR1 goal) {
         if (Math.abs(goal.v()) > 1e-6)
             throw new IllegalArgumentException("This profile works only with stationary goals.");
 
@@ -193,7 +193,7 @@ public class CompleteProfile implements IncrementalProfile {
         }
 
         final double maxA = accel(dt, setpoint);
-        final Control100 lerp = m_byDistance.get(togo);
+        final ControlR1 lerp = m_byDistance.get(togo);
 
         // When imagining how this works, it's good to have the phase space diagram in
         // front of you. The "move right" and "move left" cases are duplicated here,
@@ -267,36 +267,36 @@ public class CompleteProfile implements IncrementalProfile {
 
     ///////////////////////////////////////
 
-    private Control100 control(
+    private ControlR1 control(
             double dt,
-            Control100 setpoint,
-            Model100 goal,
+            ControlR1 setpoint,
+            ModelR1 goal,
             double togo,
             double direction,
             double a) {
         double nextX = togo + setpoint.v() * dt + direction * 0.5 * a * dt * dt;
         double nextV = setpoint.v() + direction * a * dt;
-        Control100 nextLerp = m_byDistance.get(nextX);
+        ControlR1 nextLerp = m_byDistance.get(nextX);
         if (direction * nextV > direction * nextLerp.v()) {
             // The next step spans the goal path, so use the goal path.
-            return new Control100(goal.x() + nextLerp.x(), nextLerp.v(), nextLerp.a());
+            return new ControlR1(goal.x() + nextLerp.x(), nextLerp.v(), nextLerp.a());
         }
         // Setpoint is still far from the goal path, so proceed.
-        return new Control100(goal.x() + nextX, nextV, direction * a);
+        return new ControlR1(goal.x() + nextX, nextV, direction * a);
     }
 
     /**
      * Get the next goal-path control near the setpoint.
      */
-    private Control100 goalPath(
+    private ControlR1 goalPath(
             double dt,
-            Control100 setpoint,
-            Model100 goal,
+            ControlR1 setpoint,
+            ModelR1 goal,
             double togo,
             double accel) {
         double nextX = togo + setpoint.v() * dt + 0.5 * accel * dt * dt;
-        Control100 nextLerp = m_byDistance.get(nextX);
-        return new Control100(goal.x() + nextLerp.x(), nextLerp.v(), nextLerp.a());
+        ControlR1 nextLerp = m_byDistance.get(nextX);
+        return new ControlR1(goal.x() + nextLerp.x(), nextLerp.v(), nextLerp.a());
     }
 
     /**
@@ -304,7 +304,7 @@ public class CompleteProfile implements IncrementalProfile {
      * limit.
      * Returns a positive number.
      */
-    double accel(double dt, Control100 setpoint) {
+    double accel(double dt, ControlR1 setpoint) {
         double speedFraction = Math100.limit(Math.abs(setpoint.v()) / m_maxV.getAsDouble(), 0, 1);
         double backEmfLimit = 1 - speedFraction;
         double backEmfLimitedAcceleration = backEmfLimit * getScaledStall();
@@ -323,7 +323,7 @@ public class CompleteProfile implements IncrementalProfile {
     /**
      * Put the control and its mirror on the other side of the goal
      */
-    private void put(double t, Control100 c) {
+    private void put(double t, ControlR1 c) {
         // t is just for debug
         if (DEBUG) {
             System.out.printf("%12.4f %12.4f %12.4f %12.4f\n", t, c.x(), c.v(), c.a());
@@ -339,7 +339,7 @@ public class CompleteProfile implements IncrementalProfile {
      * This is for the "goal path" which is always slowing down, so use the max
      * decel. The jerk limit affects the "landing".
      */
-    private double jerkLimitedAccel(Control100 control) {
+    private double jerkLimitedAccel(ControlR1 control) {
         if (m_landingJ.getAsDouble() < 1e-6) {
             // zero endJ means no jerk limit
             return -getScaledD();

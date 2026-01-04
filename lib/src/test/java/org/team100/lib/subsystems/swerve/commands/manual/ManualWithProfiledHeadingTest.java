@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
@@ -18,8 +18,8 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
 import org.team100.lib.sensor.gyro.MockGyro;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
@@ -41,7 +41,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Supplier<Rotation2d> rotationSupplier = () -> desiredRotation;
 
-        Feedback100 thetaFeedback = new PIDFeedback(logger, 3.5, 0, 0, true, 0.05, 1);
+        FeedbackR1 thetaFeedback = new PIDFeedback(logger, 3.5, 0, 0, true, 0.05, 1);
         ManualWithProfiledHeading m_manualWithHeading = new ManualWithProfiledHeading(
                 logger,
                 swerveKinodynamics,
@@ -71,7 +71,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Supplier<Rotation2d> rotationSupplier = () -> desiredRotation;
 
-        Feedback100 thetaFeedback = new PIDFeedback(logger, 3.5, 0, 0, true, 0.05, 1);
+        FeedbackR1 thetaFeedback = new PIDFeedback(logger, 3.5, 0, 0, true, 0.05, 1);
         ManualWithProfiledHeading m_manualWithHeading = new ManualWithProfiledHeading(
                 logger,
                 swerveKinodynamics,
@@ -106,7 +106,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Supplier<Rotation2d> rotationSupplier = () -> desiredRotation;
 
-        Feedback100 thetaFeedback = new PIDFeedback(logger, 3.5, 0, 0, true, 0.05, 1);
+        FeedbackR1 thetaFeedback = new PIDFeedback(logger, 3.5, 0, 0, true, 0.05, 1);
         ManualWithProfiledHeading m_manualWithHeading = new ManualWithProfiledHeading(
                 logger,
                 swerveKinodynamics,
@@ -143,7 +143,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         desiredRotation = null;
 
         // say we've rotated a little.
-        m_manualWithHeading.m_thetaSetpoint = new Control100(0.5, 1);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(0.5, 1);
         twistM_S = m_manualWithHeading.apply(
                 new ModelSE2(
                         new Pose2d(0, 0, new Rotation2d(0.5)),
@@ -154,7 +154,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         verify(0, 0, 1.017, twistM_S);
 
         // mostly rotated
-        m_manualWithHeading.m_thetaSetpoint = new Control100(1.55, 0.2);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(1.55, 0.2);
         twistM_S = m_manualWithHeading.apply(
                 new ModelSE2(
                         new Pose2d(0, 0, new Rotation2d(1.55)),
@@ -166,7 +166,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         verify(0, 0, 0.183, twistM_S);
 
         // done
-        m_manualWithHeading.m_thetaSetpoint = new Control100(Math.PI / 2, 0);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(Math.PI / 2, 0);
         twistM_S = m_manualWithHeading.apply(
                 new ModelSE2(
                         new Pose2d(0, 0, new Rotation2d(Math.PI / 2)),
@@ -186,7 +186,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Supplier<Rotation2d> rotationSupplier = () -> desiredRotation;
 
-        Feedback100 thetaFeedback = new PIDFeedback(logger, 3.5, 0, 0, true, 0.05, 1);
+        FeedbackR1 thetaFeedback = new PIDFeedback(logger, 3.5, 0, 0, true, 0.05, 1);
         final ManualWithProfiledHeading m_manualWithHeading = new ManualWithProfiledHeading(
                 logger,
                 swerveKinodynamics,
@@ -213,7 +213,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         verify(0, 0, 0.017, v);
 
         // say we've rotated a little.
-        m_manualWithHeading.m_thetaSetpoint = new Control100(0.5, 1);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(0.5, 1);
         v = m_manualWithHeading.apply(
                 new ModelSE2(
                         new Pose2d(0, 0, new Rotation2d(0.5)),
@@ -224,7 +224,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         verify(0, 0, 1.017, v);
 
         // mostly rotated, so the FB controller is calm
-        m_manualWithHeading.m_thetaSetpoint = new Control100(1.555, 0.2);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(1.555, 0.2);
         v = m_manualWithHeading.apply(
                 new ModelSE2(
                         new Pose2d(0, 0, new Rotation2d(1.555)),
@@ -237,7 +237,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         verify(0, 0, 0.183, v);
 
         // at the setpoint
-        m_manualWithHeading.m_thetaSetpoint = new Control100(Math.PI / 2, 0);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(Math.PI / 2, 0);
         v = m_manualWithHeading.apply(
                 new ModelSE2(
                         new Pose2d(0, 0, new Rotation2d(Math.PI / 2)),
@@ -257,7 +257,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         Supplier<Rotation2d> rotationSupplier = () -> desiredRotation;
 
         // NOTE no feedback here.
-        Feedback100 thetaFeedback = new PIDFeedback(logger, 0, 0, 0, true, 0.05, 1);
+        FeedbackR1 thetaFeedback = new PIDFeedback(logger, 0, 0, 0, true, 0.05, 1);
 
         final ManualWithProfiledHeading m_manualWithHeading = new ManualWithProfiledHeading(
                 logger,
@@ -328,7 +328,7 @@ class ManualWithProfiledHeadingTest implements Timeless {
         assertEquals(8.485, swerveKinodynamics.getMaxAngleAccelRad_S2(), DELTA);
         Supplier<Rotation2d> rotationSupplier = () -> desiredRotation;
 
-        Feedback100 thetaFeedback = new PIDFeedback(logger, 3.5, 0, 0, true, 0.05, 1);
+        FeedbackR1 thetaFeedback = new PIDFeedback(logger, 3.5, 0, 0, true, 0.05, 1);
 
         final ManualWithProfiledHeading m_manualWithHeading = new ManualWithProfiledHeading(
                 logger,
@@ -396,10 +396,10 @@ class ManualWithProfiledHeadingTest implements Timeless {
                 4.2,
                 0.01);
         // at max heading rate
-        Model100 initialRaw = new Model100(0, 2.828);
+        ModelR1 initialRaw = new ModelR1(0, 2.828);
         // goal is the same but stopped, which is an overshoot profile
-        Model100 goalRaw = new Model100(0, 0);
-        Control100 u = initialRaw.control();
+        ModelR1 goalRaw = new ModelR1(0, 0);
+        ControlR1 u = initialRaw.control();
 
         // this produces nonsensical results. using a faster profile works fine
         // but the very slow profile is wrong somehow

@@ -12,7 +12,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.profile.se2.HolonomicProfileFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
-import org.team100.lib.trajectory.TrajectoryPlanner;
+import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
@@ -43,7 +43,7 @@ public class AllAutons {
                 .medium(autoLog);
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
-        final TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
+        final TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
         // WARNING! The glass widget will override the default, so check it!
         // Run the auto in pre-match testing!

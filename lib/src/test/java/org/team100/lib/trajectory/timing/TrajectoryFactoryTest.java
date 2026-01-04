@@ -19,7 +19,7 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
-import org.team100.lib.trajectory.Trajectory100;
+import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.path.PathSE2;
 
@@ -49,7 +49,7 @@ public class TrajectoryFactoryTest {
             GeometryUtil.fromDegrees(0),
             GeometryUtil.fromDegrees(0));
 
-    public Trajectory100 buildAndCheckTrajectory(
+    public TrajectorySE2 buildAndCheckTrajectory(
             final PathSE2 path,
             double step_size,
             List<TimingConstraint> constraints,
@@ -58,13 +58,13 @@ public class TrajectoryFactoryTest {
             double max_vel,
             double max_acc) {
         TrajectoryFactory u = new TrajectoryFactory(constraints);
-        Trajectory100 timed_traj = u.fromPath(path, start_vel, end_vel);
+        TrajectorySE2 timed_traj = u.fromPath(path, start_vel, end_vel);
         checkTrajectory(timed_traj, constraints, start_vel, end_vel, max_vel, max_acc);
         return timed_traj;
     }
 
     public void checkTrajectory(
-            final Trajectory100 traj,
+            final TrajectorySE2 traj,
             List<TimingConstraint> constraints,
             double start_vel,
             double end_vel,
@@ -76,8 +76,8 @@ public class TrajectoryFactoryTest {
 
         // Go state by state, verifying all constraints are satisfied and integration is
         // correct.
-        TimedState prev_state = null;
-        for (TimedState state : traj.getPoints()) {
+        TimedStateSE2 prev_state = null;
+        for (TimedStateSE2 state : traj.getPoints()) {
             for (final TimingConstraint constraint : constraints) {
                 assertTrue(state.velocityM_S() - EPSILON <= constraint.maxV(state.point()));
                 assertTrue(state.acceleration() - EPSILON <= constraint.maxAccel(
@@ -122,7 +122,7 @@ public class TrajectoryFactoryTest {
 
         List<TimingConstraint> constraints = new ArrayList<TimingConstraint>();
         TrajectoryFactory u = new TrajectoryFactory(constraints);
-        Trajectory100 traj = u.fromPath(path, 0.0, 0.0);
+        TrajectorySE2 traj = u.fromPath(path, 0.0, 0.0);
         assertEquals(0, traj.duration(), DELTA);
     }
 
@@ -137,7 +137,7 @@ public class TrajectoryFactoryTest {
         PathSE2 path = new PathSE2(WAYPOINTS);
 
         // Triangle profile.
-        Trajectory100 timed_traj = buildAndCheckTrajectory(path,
+        TrajectorySE2 timed_traj = buildAndCheckTrajectory(path,
                 1.0,
                 new ArrayList<TimingConstraint>(), 0.0, 0.0, 20.0, 5.0);
         assertEquals(4, timed_traj.length());
@@ -167,7 +167,7 @@ public class TrajectoryFactoryTest {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest(logger);
 
         // Triangle profile.
-        Trajectory100 timed_traj = buildAndCheckTrajectory(path,
+        TrajectorySE2 timed_traj = buildAndCheckTrajectory(path,
                 1.0,
                 List.of(new CapsizeAccelerationConstraint(logger, limits, 1.0)), 0.0, 0.0, 20.0, 5.0);
         assertEquals(4, timed_traj.length());
@@ -210,7 +210,7 @@ public class TrajectoryFactoryTest {
         }
 
         // Trapezoidal profile.
-        Trajectory100 timed_traj = buildAndCheckTrajectory(
+        TrajectorySE2 timed_traj = buildAndCheckTrajectory(
                 path, 1.0, Arrays.asList(new ConditionalTimingConstraint()), 0.0, 0.0, 10.0, 5.0);
         assertNotNull(timed_traj);
     }
@@ -238,7 +238,7 @@ public class TrajectoryFactoryTest {
         }
 
         // Trapezoidal profile.
-        Trajectory100 timed_traj = buildAndCheckTrajectory(
+        TrajectorySE2 timed_traj = buildAndCheckTrajectory(
                 path, 1.0, Arrays.asList(new ConditionalTimingConstraint()), 0.0, 0.0, 10.0, 5.0);
         assertNotNull(timed_traj);
     }
@@ -265,7 +265,7 @@ public class TrajectoryFactoryTest {
         final int iterations = 100;
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.2);
         PathSE2 path = pathFactory.fromWaypoints(waypoints);
-        Trajectory100 t = new Trajectory100();
+        TrajectorySE2 t = new TrajectorySE2();
         TrajectoryFactory m_trajectoryFactory = new TrajectoryFactory(new ArrayList<>());
         for (int i = 0; i < iterations; ++i) {
             t = m_trajectoryFactory.fromPath(path, 0, 0);
@@ -277,7 +277,7 @@ public class TrajectoryFactoryTest {
             System.out.printf("duration per iteration ms: %5.3f\n", totalDurationMs / iterations);
         }
         assertEquals(33, t.length());
-        TimedState p = t.getPoint(12);
+        TimedStateSE2 p = t.getPoint(12);
         assertEquals(0.605, p.point().waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.point().getHeadingRateRad_M(), DELTA);
 

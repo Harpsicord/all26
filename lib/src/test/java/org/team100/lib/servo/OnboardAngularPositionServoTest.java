@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
@@ -32,7 +32,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         final RotaryMechanism mech = new RotaryMechanism(
                 logger, turningMotor, positionSensor, 1, Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY);
-        final Feedback100 turningFeedback2 = new PIDFeedback(
+        final FeedbackR1 turningFeedback2 = new PIDFeedback(
                 logger, 1, 0, 0, false, 0.05, 1);
         final IncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 1, 1, 0.05);
         final IncrementalProfileReferenceR1 ref = new IncrementalProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
@@ -65,7 +65,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         RotaryMechanism mech = new RotaryMechanism(
                 logger, motor, sensor, 1, Double.NEGATIVE_INFINITY,
                 Double.POSITIVE_INFINITY);
-        Feedback100 turningFeedback2 = new PIDFeedback(
+        FeedbackR1 turningFeedback2 = new PIDFeedback(
                 logger, 10, 0, 0, false, 0.05, 1);
         IncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 2, 2, 0.05);
         IncrementalProfileReferenceR1 ref = new IncrementalProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
@@ -129,7 +129,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(logger, encoder, 1);
         RotaryMechanism mech = new RotaryMechanism(
                 logger, motor, sensor, 1, -3.1, 3.1);
-        Feedback100 turningFeedback2 = new PIDFeedback(
+        FeedbackR1 turningFeedback2 = new PIDFeedback(
                 logger, 10, 0, 0, false, 0.05, 1);
         IncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 2, 2, 0.05);
         // IncrementalProfile profile = new TrapezoidProfileWPI(2, 2);
@@ -191,7 +191,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
                 logger, motor, sensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
         final IncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 1, 1, 0.05);
         final IncrementalProfileReferenceR1 ref = new IncrementalProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
-        final Feedback100 turningFeedback2 = new PIDFeedback(
+        final FeedbackR1 turningFeedback2 = new PIDFeedback(
                 logger, 10, 0, 0, false, 0.05, 1);
         OnboardAngularPositionServo servo = new OnboardAngularPositionServo(
                 logger, mech, ref, turningFeedback2);
@@ -230,7 +230,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         final IncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 1, 1, 0.05);
         final IncrementalProfileReferenceR1 ref = new IncrementalProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         // lots of feedback here since there's no setpoint velocity.
-        final Feedback100 turningFeedback2 = new PIDFeedback(
+        final FeedbackR1 turningFeedback2 = new PIDFeedback(
                 logger, 10, 0, 0, false, 0.05, 1);
         OnboardAngularPositionServo servo = new OnboardAngularPositionServo(
                 logger, mech, ref, turningFeedback2);
@@ -300,7 +300,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
         final IncrementalProfileReferenceR1 ref = new IncrementalProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         // lots of feedback here since control velocity is zero
         // note that we don't use "continuous" feedback here
-        final Feedback100 turningFeedback2 = new PIDFeedback(
+        final FeedbackR1 turningFeedback2 = new PIDFeedback(
                 logger, 10, 0, 0, false, 0.05, 1);
         OnboardAngularPositionServo servo = new OnboardAngularPositionServo(
                 logger, mech, ref, turningFeedback2);

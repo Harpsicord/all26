@@ -2,7 +2,7 @@ package org.team100.lib.controller.r1;
 
 import java.util.function.DoubleUnaryOperator;
 
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 
 import edu.wpi.first.math.MathUtil;
 
@@ -10,7 +10,7 @@ import edu.wpi.first.math.MathUtil;
  * Feedback that is always zero: this is for use with outboard servos, where
  * feedback control is implemented in the motor controller.
  */
-public class ZeroFeedback implements Feedback100 {
+public class ZeroFeedback implements FeedbackR1 {
     private final boolean m_rotation;
     private final DoubleUnaryOperator m_modulus;
     private final double m_xtol;
@@ -26,7 +26,7 @@ public class ZeroFeedback implements Feedback100 {
     }
 
     @Override
-    public double calculate(Model100 measurement, Model100 setpoint) {
+    public double calculate(ModelR1 measurement, ModelR1 setpoint) {
         double xError = m_modulus.applyAsDouble(setpoint.x() - measurement.x());
         double xDotError = setpoint.v() - measurement.v();
         m_atSetpoint = Math.abs(xError) < m_xtol && Math.abs(xDotError) < m_vtol;

@@ -5,7 +5,7 @@ import java.util.List;
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
 import org.team100.lib.geometry.WaypointSE2;
-import org.team100.lib.trajectory.timing.TimedState;
+import org.team100.lib.trajectory.timing.TimedStateSE2;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -21,14 +21,14 @@ public class TrajectoryToVectorSeries {
     }
 
     /** Maps x to x, y to y */
-    public List<VectorSeries> convert(Trajectory100 t) {
+    public List<VectorSeries> convert(TrajectorySE2 t) {
         VectorSeries s = new VectorSeries("trajectory");
         double duration = t.duration();
         if (DEBUG)
             System.out.printf("duration %f\n", duration);
         double dt = duration / POINTS;
         for (double time = 0; time < duration; time += dt) {
-            TimedState p = t.sample(time);
+            TimedStateSE2 p = t.sample(time);
             WaypointSE2 pp = p.point().waypoint();
             double x = pp.pose().getTranslation().getX();
             double y = pp.pose().getTranslation().getY();
@@ -47,12 +47,12 @@ public class TrajectoryToVectorSeries {
      * 
      * @return (t, x)
      */
-    public static XYSeries x(String name, Trajectory100 trajectory) {
+    public static XYSeries x(String name, TrajectorySE2 trajectory) {
         XYSeries series = new XYSeries(name);
         double duration = trajectory.duration();
         double dt = duration / POINTS;
         for (double t = 0; t <= duration + 0.0001; t += dt) {
-            TimedState p = trajectory.sample(t);
+            TimedStateSE2 p = trajectory.sample(t);
             WaypointSE2 pp = p.point().waypoint();
             double x = pp.pose().getTranslation().getX();
             series.add(t, x);
@@ -65,12 +65,12 @@ public class TrajectoryToVectorSeries {
      * 
      * @return (t, \dot{x})
      */
-    public static XYSeries xdot(String name, Trajectory100 trajectory) {
+    public static XYSeries xdot(String name, TrajectorySE2 trajectory) {
         XYSeries series = new XYSeries(name);
         double duration = trajectory.duration();
         double dt = duration / POINTS;
         for (double t = 0; t <= duration + 0.0001; t += dt) {
-            TimedState p = trajectory.sample(t);
+            TimedStateSE2 p = trajectory.sample(t);
             Rotation2d course = p.point().waypoint().course().toRotation();
             double velocityM_s = p.velocityM_S();
             System.out.println(velocityM_s);

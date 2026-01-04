@@ -12,8 +12,8 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.se2.MockSubsystemSE2;
 import org.team100.lib.testing.Timeless;
-import org.team100.lib.trajectory.Trajectory100;
-import org.team100.lib.trajectory.TrajectoryPlanner;
+import org.team100.lib.trajectory.TrajectorySE2;
+import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraint;
@@ -43,13 +43,13 @@ public class DriveWithTrajectoryFunctionTest implements Timeless {
             new YawRateConstraint(log, 1, 1));
     PathFactorySE2 pathFactory = new PathFactorySE2();
     TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
-    TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
+    TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
     /**
      * This is the key to using DriveWithTrajectoryFunction: a function that takes a
      * starting pose and returns a trajectory.
      */
-    Trajectory100 makeTrajectory(Pose2d startingPose) {
+    TrajectorySE2 makeTrajectory(Pose2d startingPose) {
         return planner.restToRest(
                 List.of(
                         WaypointSE2.irrotational(startingPose, 0, 1.2),

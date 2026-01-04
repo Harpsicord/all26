@@ -18,8 +18,8 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
-import org.team100.lib.trajectory.Trajectory100;
 import org.team100.lib.trajectory.TrajectoryPlotter;
+import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.trajectory.TrajectoryToVectorSeries;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.path.PathSE2;
@@ -490,7 +490,7 @@ class SplineSE2Test implements Timeless {
             System.out.printf("path %s\n", path);
         List<TimingConstraint> constraints = List.of(new ConstantConstraint(logger, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
-        Trajectory100 traj = trajectoryFactory.fromPath(path, 0, 0);
+        TrajectorySE2 traj = trajectoryFactory.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
         TrajectoryPlotter.plotOverlay(new TrajectoryToVectorSeries(0.1).convert(traj));
@@ -550,7 +550,7 @@ class SplineSE2Test implements Timeless {
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
         // speed
         // a = v^2/r so v = sqrt(ar) = 2.858
-        Trajectory100 trajectory = trajectoryFactory.fromPath(path, 2.858, 2.858);
+        TrajectorySE2 trajectory = trajectoryFactory.fromPath(path, 2.858, 2.858);
 
         TrajectoryToVectorSeries converter = new TrajectoryToVectorSeries(0.1);
 

@@ -4,8 +4,8 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.profile.r1.IncrementalProfile;
 import org.team100.lib.profile.r1.TrapezoidProfileWPI;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.util.StrUtil;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -24,8 +24,8 @@ public class MoveCommand extends Command {
     private final IncrementalProfile m_profile;
     private final Timer m_timer;
 
-    private Control100 m_setpoint;
-    private Model100 m_profileGoal;
+    private ControlR1 m_setpoint;
+    private ModelR1 m_profileGoal;
 
     private Pose3d m_start;
     private double m_grip;
@@ -49,8 +49,8 @@ public class MoveCommand extends Command {
 
         // this doesn't work for twist-only moves without the minimum
         m_distance = Math.max(0.01, m_start.getTranslation().getDistance(m_goal.getTranslation()));
-        m_setpoint = new Control100();
-        m_profileGoal = new Model100(m_distance, 0);
+        m_setpoint = new ControlR1();
+        m_profileGoal = new ModelR1(m_distance, 0);
         m_timer.restart();
         m_done = false;
         if (DEBUG) {
@@ -67,7 +67,7 @@ public class MoveCommand extends Command {
         // good habit since some motor types do need this.
         m_arm.setGrip(m_grip);
         m_setpoint = m_profile.calculate(TimedRobot100.LOOP_PERIOD_S, m_setpoint, m_profileGoal);
-        Control100 c = m_setpoint;
+        ControlR1 c = m_setpoint;
         double s = c.x() / m_distance;
         Pose3d setpoint = GeometryUtil.interpolate(m_start, m_goal, s);
         Pose3d measurement = m_arm.getPosition().p6();

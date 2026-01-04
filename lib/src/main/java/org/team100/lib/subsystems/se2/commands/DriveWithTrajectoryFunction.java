@@ -11,7 +11,7 @@ import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.reference.se2.TrajectoryReferenceSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
-import org.team100.lib.trajectory.Trajectory100;
+import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,7 +28,7 @@ public class DriveWithTrajectoryFunction extends MoveAndHold {
     private final VelocitySubsystemSE2 m_drive;
     private final ControllerSE2 m_controller;
     private final TrajectoryVisualization m_viz;
-    private final Function<Pose2d, Trajectory100> m_trajectoryFn;
+    private final Function<Pose2d, TrajectorySE2> m_trajectoryFn;
 
     /**
      * Non-null when the command is active (between initialize and end), null
@@ -41,7 +41,7 @@ public class DriveWithTrajectoryFunction extends MoveAndHold {
             VelocitySubsystemSE2 drive,
             ControllerSE2 controller,
             TrajectoryVisualization viz,
-            Function<Pose2d, Trajectory100> trajectoryFn) {
+            Function<Pose2d, TrajectorySE2> trajectoryFn) {
         m_log = parent.type(this);
         m_logDone = m_log.booleanLogger(Level.TRACE, "done");
         m_logToGo = m_log.doubleLogger(Level.TRACE, "to go");
@@ -54,7 +54,7 @@ public class DriveWithTrajectoryFunction extends MoveAndHold {
 
     @Override
     public void initialize() {
-        Trajectory100 trajectory = m_trajectoryFn.apply(m_drive.getState().pose());
+        TrajectorySE2 trajectory = m_trajectoryFn.apply(m_drive.getState().pose());
         m_viz.setViz(trajectory);
         TrajectoryReferenceSE2 reference = new TrajectoryReferenceSE2(m_log, trajectory);
         m_referenceController = new VelocityReferenceControllerSE2(

@@ -1,16 +1,16 @@
 package org.team100.lib.servo;
 
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.logging.LoggerFactory.Control100Logger;
+import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.logging.LoggerFactory.Model100Logger;
+import org.team100.lib.logging.LoggerFactory.ModelR1Logger;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.reference.r1.SetpointsR1;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 /**
  * Uses mechanism velocity control.
@@ -21,11 +21,11 @@ import org.team100.lib.state.Model100;
 public class OnboardAngularPositionServo extends AngularPositionServoImpl {
     private static final boolean DEBUG = false;
 
-    private final Feedback100 m_feedback;
+    private final FeedbackR1 m_feedback;
 
     private final DoubleLogger m_log_feedforward_torque;
-    private final Model100Logger m_log_measurement;
-    private final Control100Logger m_log_control;
+    private final ModelR1Logger m_log_measurement;
+    private final ControlR1Logger m_log_control;
     private final DoubleLogger m_log_u_FB;
     private final DoubleLogger m_log_u_FF;
     private final DoubleLogger m_log_u_TOTAL;
@@ -36,7 +36,7 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
             LoggerFactory parent,
             RotaryMechanism mech,
             ProfileReferenceR1 ref,
-            Feedback100 feedback) {
+            FeedbackR1 feedback) {
         super(parent, mech, ref);
         if (feedback.handlesWrapping())
             throw new IllegalArgumentException("Do not supply wrapping feedback");
@@ -44,8 +44,8 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
         m_feedback = feedback;
 
         m_log_feedforward_torque = log.doubleLogger(Level.TRACE, "Feedforward Torque (Nm)");
-        m_log_measurement = log.model100Logger(Level.COMP, "measurement (rad)");
-        m_log_control = log.control100Logger(Level.COMP, "control (rad)");
+        m_log_measurement = log.ModelR1Logger(Level.COMP, "measurement (rad)");
+        m_log_control = log.ControlR1Logger(Level.COMP, "control (rad)");
         m_log_u_FB = log.doubleLogger(Level.TRACE, "u_FB (rad_s)");
         m_log_u_FF = log.doubleLogger(Level.TRACE, "u_FF (rad_s)");
 
@@ -69,9 +69,9 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
             System.out.printf("setpoint %s\n", unwrappedSetpoint);
         }
 
-        Model100 unwrappedMeasurement = m_mechanism.getUnwrappedMeasurement();
-        Model100 currentUnwrappedSetpoint = unwrappedSetpoint.current().model();
-        Control100 nextUnwrappedSetpoint = unwrappedSetpoint.next();
+        ModelR1 unwrappedMeasurement = m_mechanism.getUnwrappedMeasurement();
+        ModelR1 currentUnwrappedSetpoint = unwrappedSetpoint.current().model();
+        ControlR1 nextUnwrappedSetpoint = unwrappedSetpoint.next();
 
         if (DEBUG) {
             System.out.printf("unwrapped Measurement %s currentUnwrappedSetpoint %s\n",

@@ -15,9 +15,9 @@ import edu.wpi.first.math.interpolation.Interpolatable;
  * @param x position
  * @param v velocity
  */
-public record Model100(double x, double v) implements Interpolatable<Model100> {
+public record ModelR1(double x, double v) implements Interpolatable<ModelR1> {
 
-    public Model100() {
+    public ModelR1() {
         this(0, 0);
     }
 
@@ -25,33 +25,33 @@ public record Model100(double x, double v) implements Interpolatable<Model100> {
      * @return the control corresponding to this measurement, with zero
      *         acceleration.
      */
-    public Control100 control() {
-        return new Control100(x, v, 0);
+    public ControlR1 control() {
+        return new ControlR1(x, v, 0);
     }
 
-    public Model100 minus(Model100 other) {
-        return new Model100(x() - other.x(), v() - other.v());
+    public ModelR1 minus(ModelR1 other) {
+        return new ModelR1(x() - other.x(), v() - other.v());
     }
 
-    public Model100 plus(Model100 other) {
-        return new Model100(x() + other.x(), v() + other.v());
+    public ModelR1 plus(ModelR1 other) {
+        return new ModelR1(x() + other.x(), v() + other.v());
     }
 
-    public Model100 mult(double scalar) {
-        return new Model100(x * scalar, v * scalar);
+    public ModelR1 mult(double scalar) {
+        return new ModelR1(x * scalar, v * scalar);
     }
 
     /** Use the velocity to evolve the position. */
-    public Model100 evolve(double dt) {
+    public ModelR1 evolve(double dt) {
         double dx = v * dt;
-        return new Model100(x + dx, v);
+        return new ModelR1(x + dx, v);
     }
 
     /**
      * True if not null and position and velocity are both within (the same)
      * tolerance
      */
-    public boolean near(Model100 other, double tolerance) {
+    public boolean near(ModelR1 other, double tolerance) {
         return other != null
                 && MathUtil.isNear(x, other.x, tolerance)
                 && MathUtil.isNear(v, other.v, tolerance);
@@ -61,15 +61,15 @@ public record Model100(double x, double v) implements Interpolatable<Model100> {
      * True if not null, position is within xtolerance, velocity is within
      * vtolerance.
      */
-    public boolean near(Model100 other, double xTolerance, double vTolerance) {
+    public boolean near(ModelR1 other, double xTolerance, double vTolerance) {
         return other != null
                 && MathUtil.isNear(x, other.x, xTolerance)
                 && MathUtil.isNear(v, other.v, vTolerance);
     }
 
     @Override
-    public Model100 interpolate(Model100 endValue, double t) {
-        return new Model100(
+    public ModelR1 interpolate(ModelR1 endValue, double t) {
+        return new ModelR1(
                 MathUtil.interpolate(x, endValue.x, t),
                 MathUtil.interpolate(v, endValue.v, t));
 
@@ -77,13 +77,13 @@ public record Model100(double x, double v) implements Interpolatable<Model100> {
 
     @Override
     public String toString() {
-        return String.format("Model100(X %11.8f V %11.8f)", x, v);
+        return String.format("ModelR1(X %11.8f V %11.8f)", x, v);
     }
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof Model100) {
-            Model100 rhs = (Model100) other;
+        if (other instanceof ModelR1) {
+            ModelR1 rhs = (ModelR1) other;
             return this.x == rhs.x && this.v == rhs.v;
         } else {
             return false;

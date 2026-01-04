@@ -4,7 +4,7 @@ import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 
 import edu.wpi.first.math.controller.PIDController;
 
@@ -14,7 +14,7 @@ import edu.wpi.first.math.controller.PIDController;
  * This also logs the error that we have habitually logged elsewhere, because I
  * don't want the idea of "error" to be in the interface.
  */
-public class PIDFeedback implements Feedback100 {
+public class PIDFeedback implements FeedbackR1 {
     private final PIDController m_controller;
     private final DoubleLogger m_log_error;
     private final DoubleLogger m_log_errorD;
@@ -43,7 +43,7 @@ public class PIDFeedback implements Feedback100 {
      * Observe position error, produce PID output.
      */
     @Override
-    public double calculate(Model100 measurement, Model100 setpoint) {
+    public double calculate(ModelR1 measurement, ModelR1 setpoint) {
         // System.out.printf("PIDFeedback measurement %s setpoint %s\n", measurement,
         // setpoint);
         double u = m_controller.calculate(measurement.x(), setpoint.x());

@@ -19,7 +19,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N6;
-import edu.wpi.first.math.spline.PoseWithCurvature;
 
 /**
  * Lots of utility functions.
@@ -271,14 +270,6 @@ public class GeometryUtil {
         return new Twist2d(MathUtil.interpolate(a.dx, b.dx, x),
                 MathUtil.interpolate(a.dy, b.dy, x),
                 MathUtil.interpolate(a.dtheta, b.dtheta, x));
-    }
-
-    public static boolean poseWithCurvatureEquals(PoseWithCurvature a, PoseWithCurvature b) {
-        boolean poseEqual = a.poseMeters.equals(b.poseMeters);
-        if (!poseEqual) {
-            return false;
-        }
-        return Math.abs(a.curvatureRadPerMeter - b.curvatureRadPerMeter) <= 1e-12;
     }
 
     /** direction of the translational part of the twist */

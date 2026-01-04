@@ -127,7 +127,7 @@ public class ParameterizationTest {
                 new YawRateConstraint(log, 1, 1));
         TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2();
-        TrajectoryPlanner p = new TrajectoryPlanner(pathFactory, trajectoryFactory);
+        TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(
                         new Pose2d(
@@ -139,7 +139,7 @@ public class ParameterizationTest {
                                 new Translation2d(1, 0),
                                 new Rotation2d(0)),
                         new DirectionSE2(0, 1, 0), 1));
-        Trajectory100 trajectory = p.generateTrajectory(waypoints, 0, 0);
+        TrajectorySE2 trajectory = p.generateTrajectory(waypoints, 0, 0);
 
         // this is wrong somehow
         if (DEBUG)

@@ -3,8 +3,8 @@ package org.team100.lib.subsystems.prr.commands;
 import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.profile.r1.IncrementalProfile;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.subsystems.prr.EAWConfig;
 import org.team100.lib.subsystems.prr.JointAccelerations;
 import org.team100.lib.subsystems.prr.JointVelocities;
@@ -20,16 +20,16 @@ public class FollowJointProfiles extends MoveAndHold {
     private static final double DT = TimedRobot100.LOOP_PERIOD_S;
 
     private final SubsystemPRR m_subsystem;
-    private final Model100 m_g1;
-    private final Model100 m_g2;
-    private final Model100 m_g3;
+    private final ModelR1 m_g1;
+    private final ModelR1 m_g2;
+    private final ModelR1 m_g3;
     private final IncrementalProfile m_p1;
     private final IncrementalProfile m_p2;
     private final IncrementalProfile m_p3;
 
-    private Control100 m_c1;
-    private Control100 m_c2;
-    private Control100 m_c3;
+    private ControlR1 m_c1;
+    private ControlR1 m_c2;
+    private ControlR1 m_c3;
 
     public FollowJointProfiles(
             SubsystemPRR subsystem,
@@ -39,9 +39,9 @@ public class FollowJointProfiles extends MoveAndHold {
             IncrementalProfile p3) {
         m_subsystem = subsystem;
         // Joint goals are motionless
-        m_g1 = new Model100(goal.shoulderHeight(), 0);
-        m_g2 = new Model100(goal.shoulderAngle(), 0);
-        m_g3 = new Model100(goal.wristAngle(), 0);
+        m_g1 = new ModelR1(goal.shoulderHeight(), 0);
+        m_g2 = new ModelR1(goal.shoulderAngle(), 0);
+        m_g3 = new ModelR1(goal.wristAngle(), 0);
         m_p1 = p1;
         m_p2 = p2;
         m_p3 = p3;
@@ -54,9 +54,9 @@ public class FollowJointProfiles extends MoveAndHold {
         EAWConfig c = m_subsystem.getConfig();
         // initial velocity is current velocity
         JointVelocities jv = m_subsystem.getJointVelocity();
-        m_c1 = new Control100(c.shoulderHeight(), jv.elevator());
-        m_c2 = new Control100(c.shoulderAngle(), jv.shoulder());
-        m_c3 = new Control100(c.wristAngle(), jv.wrist());
+        m_c1 = new ControlR1(c.shoulderHeight(), jv.elevator());
+        m_c2 = new ControlR1(c.shoulderAngle(), jv.shoulder());
+        m_c3 = new ControlR1(c.wristAngle(), jv.wrist());
     }
 
     @Override

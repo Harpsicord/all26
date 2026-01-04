@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 public class CurrentLimitedExponentialProfileTest {
     private static final boolean DEBUG = false;
@@ -25,8 +25,8 @@ public class CurrentLimitedExponentialProfileTest {
                 maxVel,
                 limitedAccel,
                 stallAccel);
-        Control100 sample = new Control100(0, 0);
-        final Model100 end = new Model100(3, 0);
+        ControlR1 sample = new ControlR1(0, 0);
+        final ModelR1 end = new ModelR1(3, 0);
         double eta = profile.simulateForETA(0.2, sample, end);
         // approximate
         assertEquals(1.8, eta, 0.001);
@@ -50,8 +50,8 @@ public class CurrentLimitedExponentialProfileTest {
                 maxVel,
                 limitedAccel,
                 stallAccel);
-        Control100 sample = new Control100(0, 0);
-        final Model100 end = new Model100(3, 0);
+        ControlR1 sample = new ControlR1(0, 0);
+        final ModelR1 end = new ModelR1(3, 0);
         final double ETA_TOLERANCE = 0.02;
         double s = profile.solve(0.1, sample, end, 2.0, ETA_TOLERANCE);
         assertEquals(0.625, s, DELTA);
@@ -62,28 +62,28 @@ public class CurrentLimitedExponentialProfileTest {
         // motionless, doesn't really matter.
         assertFalse(
                 CurrentLimitedExponentialProfile.isAccel(
-                        new Control100(),
-                        new Control100()));
+                        new ControlR1(),
+                        new ControlR1()));
         // initial velocity is positive, control is more positive -> accelerating
         assertTrue(
                 CurrentLimitedExponentialProfile.isAccel(
-                        new Control100(0, 1),
-                        new Control100(0, 1.1, 1)));
+                        new ControlR1(0, 1),
+                        new ControlR1(0, 1.1, 1)));
         // initial velocity is positive, control is less positive -> braking
         assertFalse(
                 CurrentLimitedExponentialProfile.isAccel(
-                        new Control100(0, 1),
-                        new Control100(0, 0.9, -1)));
+                        new ControlR1(0, 1),
+                        new ControlR1(0, 0.9, -1)));
         // initial velocity is positive, control is negative -> braking
         assertFalse(
                 CurrentLimitedExponentialProfile.isAccel(
-                        new Control100(0, 1),
-                        new Control100(0, -0.9, -1)));
+                        new ControlR1(0, 1),
+                        new ControlR1(0, -0.9, -1)));
         // initial velocity is positive, control is negative -> braking
         assertFalse(
                 CurrentLimitedExponentialProfile.isAccel(
-                        new Control100(0, 1),
-                        new Control100(0, -1.1, -1)));
+                        new ControlR1(0, 1),
+                        new ControlR1(0, -1.1, -1)));
 
     }
 }

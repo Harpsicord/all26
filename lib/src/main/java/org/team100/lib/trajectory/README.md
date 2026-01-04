@@ -1,14 +1,17 @@
 # lib.trajectory
 
-This package represents an path in SE(2) and a schedule.
+This package represents trajectories.  A trajectory is a path with a schedule, i.e. a time parameterization.
 
-`Trajectory100` is adapted from 254.  Trajectories are holonomic,
-i.e. handle course and heading separately, so they have four dimensions (x, y, heading, course), and "point" below means four-dimensional holonomic state.
+Trajectories in SE(2), for Pose2d, handle course and heading separately, so
+they have four dimensions: (x, y, heading, course).  The word "point" below
+means four-dimensional holonomic state.
 
-The main entry point is `TrajectoryPlanner`.  Try `restToRest()` with a list of waypoints.
+In SE(3), trajectories have six dimensions.
+
+The main entry point is `TrajectorySE2Planner`.  Try `restToRest()` with a list of waypoints.
 Very often our trajectories have only two waypoints: the start and end.
 
-The process of constructing a trajectory has three stages.
+The process of constructing a trajectory has four stages.
 
 1. First, make a list of `WaypointSE2`.  These describe points in the SE(2) manifold that
 you want to travel through.  A waypoint includes
@@ -27,14 +30,14 @@ connecting the points ("secant lines") don't deviate too much from the true spli
 too far apart from each other. (This uses recursive bisection.)  These points will
 be close together where the curvature is high, and far apart along straighter sections
 of the spline.  Each point is a `WaypointSE2` and also the spatial rate of heading and course
-along the path.  These steps are performed by `PathFactory`, producing `Path100`.
+along the path.  These steps are performed by `PathFactory`, producing `PathSE2`.
 
 4. Using a list of kinodynamic constraints (implementations of `TimingConstraint`),
 assign a time for each point.  This process is identical to the what a `TimedProfile` does,
 but instead of a one-dimensional path, the path is a curve embedded in SE(2), so the
 constraints are aware of the extra dimensions.  (It would be possible to unify the
 trajectory scheduler and timed profile code someday.)  The resulting list of
-`TimedState` is created by `TrajectoryFactory`, producing `Trajectory100`.
+`TimedState` is created by `TrajectoryFactory`, producing `TrajectorySE2`.
 
 To use a trajectory, you `sample()` it, with time (in seconds) as the parameter.
 The resulting `TimedState` is interpolated from the list of `TimedState` above.

@@ -10,7 +10,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.reference.se2.TrajectoryReferenceSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
-import org.team100.lib.trajectory.Trajectory100;
+import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,17 +28,17 @@ public class DriveWithTrajectoryListFunction extends MoveAndHold {
     private final LoggerFactory m_log;
     private final VelocitySubsystemSE2 m_drive;
     private final ControllerSE2 m_controller;
-    private final Function<Pose2d, List<Trajectory100>> m_trajectories;
+    private final Function<Pose2d, List<TrajectorySE2>> m_trajectories;
     private final TrajectoryVisualization m_viz;
 
-    private Iterator<Trajectory100> m_trajectoryIter;
+    private Iterator<TrajectorySE2> m_trajectoryIter;
     private VelocityReferenceControllerSE2 m_referenceController;
 
     public DriveWithTrajectoryListFunction(
             LoggerFactory parent,
             VelocitySubsystemSE2 swerve,
             ControllerSE2 controller,
-            Function<Pose2d, List<Trajectory100>> trajectories,
+            Function<Pose2d, List<TrajectorySE2>> trajectories,
             TrajectoryVisualization viz) {
         m_log = parent.type(this);
         m_drive = swerve;
@@ -59,7 +59,7 @@ public class DriveWithTrajectoryListFunction extends MoveAndHold {
         if (m_referenceController == null || m_referenceController.isDone()) {
             // get the next trajectory
             if (m_trajectoryIter.hasNext()) {
-                Trajectory100 m_trajectory = m_trajectoryIter.next();
+                TrajectorySE2 m_trajectory = m_trajectoryIter.next();
                 TrajectoryReferenceSE2 reference = new TrajectoryReferenceSE2(m_log, m_trajectory);
                 m_referenceController = new VelocityReferenceControllerSE2(
                         m_log, m_drive, m_controller, reference);

@@ -1,16 +1,16 @@
 package org.team100.lib.reference.r1;
 
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 
 public class MockProfileReferenceR1 implements ProfileReferenceR1 {
 
     @Override
-    public void setGoal(Model100 goal) {
+    public void setGoal(ModelR1 goal) {
         //
     }
 
     @Override
-    public void init(Model100 measurement) {
+    public void init(ModelR1 measurement) {
         //
     }
 

@@ -6,7 +6,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.reference.se2.TrajectoryReferenceSE2;
 import org.team100.lib.subsystems.se2.VelocitySubsystemSE2;
 import org.team100.lib.subsystems.se2.commands.helper.VelocityReferenceControllerSE2;
-import org.team100.lib.trajectory.Trajectory100;
+import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 /**
@@ -21,7 +21,7 @@ public class DriveWithTrajectory extends MoveAndHold {
     private final LoggerFactory m_log;
     private final VelocitySubsystemSE2 m_drive;
     private final ControllerSE2 m_controller;
-    private final Trajectory100 m_trajectory;
+    private final TrajectorySE2 m_trajectory;
     private final TrajectoryVisualization m_viz;
 
     private VelocityReferenceControllerSE2 m_referenceController;
@@ -30,7 +30,7 @@ public class DriveWithTrajectory extends MoveAndHold {
             LoggerFactory parent,
             VelocitySubsystemSE2 drive,
             ControllerSE2 controller,
-            Trajectory100 trajectory,
+            TrajectorySE2 trajectory,
             TrajectoryVisualization viz) {
         m_log = parent.type(this);
         m_drive = drive;

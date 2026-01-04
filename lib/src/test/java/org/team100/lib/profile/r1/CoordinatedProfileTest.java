@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.testing.Timeless;
 
 /**
@@ -47,14 +47,14 @@ class CoordinatedProfileTest implements Timeless {
         TrapezoidIncrementalProfile p1 = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
         TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
         // initial state at the origin at rest
-        Model100 i1 = new Model100(0, 0);
-        Model100 i2 = new Model100(0, 0);
+        ModelR1 i1 = new ModelR1(0, 0);
+        ModelR1 i2 = new ModelR1(0, 0);
         // final state at 1, at rest
-        Model100 g1 = new Model100(1, 0);
-        Model100 g2 = new Model100(2, 0);
+        ModelR1 g1 = new ModelR1(1, 0);
+        ModelR1 g2 = new ModelR1(2, 0);
 
         // how long does it take to get to the first goal?
-        Control100 s1 = i1.control();
+        ControlR1 s1 = i1.control();
         double total_time = 0;
         double max_v = 0;
         for (int i = 0; i < 1000; ++i) {
@@ -76,7 +76,7 @@ class CoordinatedProfileTest implements Timeless {
         assertEquals(2.0, total_time, DELTA);
 
         // the second goal is farther away.
-        Control100 s2 = i2.control();
+        ControlR1 s2 = i2.control();
         total_time = 0;
         max_v = 0;
         for (int i = 0; i < 1000; ++i) {
@@ -109,14 +109,14 @@ class CoordinatedProfileTest implements Timeless {
         TrapezoidProfileWPI p1 = new TrapezoidProfileWPI(maxVel, maxAccel);
         TrapezoidProfileWPI p2 = new TrapezoidProfileWPI(maxVel, maxAccel);
         // initial state at the origin at rest
-        Model100 i1 = new Model100(0, 0);
-        Model100 i2 = new Model100(0, 0);
+        ModelR1 i1 = new ModelR1(0, 0);
+        ModelR1 i2 = new ModelR1(0, 0);
         // final state at 1, at rest
-        Model100 g1 = new Model100(1, 0);
-        Model100 g2 = new Model100(2, 0);
+        ModelR1 g1 = new ModelR1(1, 0);
+        ModelR1 g2 = new ModelR1(2, 0);
 
         // how long does it take to get to the first goal?
-        Control100 s1 = i1.control();
+        ControlR1 s1 = i1.control();
         double total_time = 0;
         double max_v = 0;
         for (int i = 0; i < 1000; ++i) {
@@ -139,7 +139,7 @@ class CoordinatedProfileTest implements Timeless {
         assertEquals(2.0, total_time, DELTA);
 
         // the second goal is farther away.
-        Control100 s2 = i2.control();
+        ControlR1 s2 = i2.control();
         total_time = 0;
         max_v = 0;
         for (int i = 0; i < 1000; ++i) {
@@ -171,11 +171,11 @@ class CoordinatedProfileTest implements Timeless {
         TrapezoidIncrementalProfile p1 = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
         TrapezoidIncrementalProfile p2 = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
         // initial state at the origin at rest
-        Model100 i1 = new Model100(0, 0);
-        Model100 i2 = new Model100(0, 0);
+        ModelR1 i1 = new ModelR1(0, 0);
+        ModelR1 i2 = new ModelR1(0, 0);
         // final state at 1, at rest
-        Model100 g1 = new Model100(1, 0);
-        Model100 g2 = new Model100(2, 0);
+        ModelR1 g1 = new ModelR1(1, 0);
+        ModelR1 g2 = new ModelR1(2, 0);
 
         double total_time = p1.simulateForETA(0.2, i1.control(), g1);
         assertEquals(2.0, total_time, DELTA);
@@ -193,11 +193,11 @@ class CoordinatedProfileTest implements Timeless {
         TrapezoidProfileWPI p1 = new TrapezoidProfileWPI(maxVel, maxAccel);
         TrapezoidProfileWPI p2 = new TrapezoidProfileWPI(maxVel, maxAccel);
         // initial state at the origin at rest
-        Model100 i1 = new Model100(0, 0);
-        Model100 i2 = new Model100(0, 0);
+        ModelR1 i1 = new ModelR1(0, 0);
+        ModelR1 i2 = new ModelR1(0, 0);
         // final state at 1, at rest
-        Model100 g1 = new Model100(1, 0);
-        Model100 g2 = new Model100(2, 0);
+        ModelR1 g1 = new ModelR1(1, 0);
+        ModelR1 g2 = new ModelR1(2, 0);
 
         double total_time = p1.simulateForETA(0.2, i1.control(), g1);
         assertEquals(2.0, total_time, DELTA);
@@ -215,13 +215,13 @@ class CoordinatedProfileTest implements Timeless {
         TrapezoidIncrementalProfile px = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
         TrapezoidIncrementalProfile py = new TrapezoidIncrementalProfile(logger, maxVel, maxAccel, tolerance);
         // initial x state is moving fast
-        Control100 ix = new Control100(0, 1);
+        ControlR1 ix = new ControlR1(0, 1);
         // initial y state is stationary
-        Control100 iy = new Control100(0, 0);
+        ControlR1 iy = new ControlR1(0, 0);
         // goal x state is still at the origin (i.e. a "slow and back up" profile)
-        Model100 gx = new Model100(0, 0);
+        ModelR1 gx = new ModelR1(0, 0);
         // goal y state is not far
-        Model100 gy = new Model100(0.5, 0);
+        ModelR1 gy = new ModelR1(0.5, 0);
 
         // the "default profiles" produce different ETA's
         double tx = px.simulateForETA(0.2, ix, gx);
@@ -255,8 +255,8 @@ class CoordinatedProfileTest implements Timeless {
 
         // then run the profiles to see where they end up
 
-        Control100 stateX = ix;
-        Control100 stateY = iy;
+        ControlR1 stateX = ix;
+        ControlR1 stateY = iy;
         @SuppressWarnings("unused")
         double total_time = 0;
         for (int i = 0; i < 1000; ++i) {

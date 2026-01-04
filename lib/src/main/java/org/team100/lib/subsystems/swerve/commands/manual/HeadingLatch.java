@@ -2,7 +2,7 @@ package org.team100.lib.subsystems.swerve.commands.manual;
 
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -21,7 +21,7 @@ public class HeadingLatch {
      */
     public Rotation2d latchedRotation(
             double maxARad_S2,
-            Model100 state,
+            ModelR1 state,
             Rotation2d pov,
             double inputOmega) {
         if (Math.abs(inputOmega) > unlatch) {

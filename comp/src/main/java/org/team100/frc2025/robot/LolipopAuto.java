@@ -18,7 +18,7 @@ import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
 import org.team100.lib.subsystems.se2.commands.DriveToTranslationFacingWithProfile;
 import org.team100.lib.subsystems.se2.commands.DriveWithTrajectoryFunction;
-import org.team100.lib.trajectory.TrajectoryPlanner;
+import org.team100.lib.trajectory.TrajectorySE2Planner;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,14 +32,14 @@ public class LolipopAuto {
     private final Machinery m_machinery;
     private final ProfileSE2 m_autoProfile;
     private final FullStateControllerSE2 m_autoController;
-    private final TrajectoryPlanner m_planner;
+    private final TrajectorySE2Planner m_planner;
 
     public LolipopAuto(
             LoggerFactory parent,
             Machinery machinery,
             ProfileSE2 autoProfile,
             FullStateControllerSE2 autoController,
-            TrajectoryPlanner planner) {
+            TrajectorySE2Planner planner) {
         m_log = parent.type(this);
         m_machinery = machinery;
         m_autoProfile = autoProfile;

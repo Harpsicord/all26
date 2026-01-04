@@ -9,7 +9,7 @@ import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.sensor.position.incremental.sim.SimulatedBareEncoder;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.util.Math100;
 
 import edu.wpi.first.math.MathUtil;
@@ -30,7 +30,7 @@ public class SimulatedBareMotor implements BareMotor {
     private final DoubleLogger m_log_positionInput;
     private final DoubleLogger m_log_accelInput;
     private final DoubleLogger m_log_torqueInput;
-    private final ObjectCache<Model100> m_stateCache;
+    private final ObjectCache<ModelR1> m_stateCache;
 
     // just like in a real motor, the inputs remain until zeroed by the watchdog.
     // nullable; only one (velocity or position) is used at a time.
@@ -39,7 +39,7 @@ public class SimulatedBareMotor implements BareMotor {
     private Double m_accelInput;
     private Double m_torqueInput;
 
-    private Model100 m_state = new Model100();
+    private ModelR1 m_state = new ModelR1();
 
     private double m_time = Takt.get();
 
@@ -54,7 +54,7 @@ public class SimulatedBareMotor implements BareMotor {
         m_stateCache = Cache.of(this::update);
     }
 
-    private Model100 update() {
+    private ModelR1 update() {
         // when disabled, motors don't keep moving.
         if (RobotState.isDisabled()) {
             m_velocityInput = 0.0;
@@ -73,9 +73,9 @@ public class SimulatedBareMotor implements BareMotor {
             }
             if (dt > 0.04) {
                 // probably we should not extrapolate
-                m_state = new Model100(m_state.x(), m_velocityInput);
+                m_state = new ModelR1(m_state.x(), m_velocityInput);
             } else {
-                m_state = new Model100(m_state.x() + m_velocityInput * dt, m_velocityInput);
+                m_state = new ModelR1(m_state.x() + m_velocityInput * dt, m_velocityInput);
             }
         }
         if (m_positionInput != null) {
@@ -84,9 +84,9 @@ public class SimulatedBareMotor implements BareMotor {
             }
             if (dt < 0.01) {
                 // probably we should not differentiate
-                m_state = new Model100(m_positionInput, m_state.v());
+                m_state = new ModelR1(m_positionInput, m_state.v());
             } else {
-                m_state = new Model100(m_positionInput, (m_positionInput - m_state.x()) / dt);
+                m_state = new ModelR1(m_positionInput, (m_positionInput - m_state.x()) / dt);
             }
         }
         if (DEBUG) {

@@ -2,7 +2,7 @@ package org.team100.frc2025.Swerve;
 
 import java.util.function.Supplier;
 
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.field.FieldConstants;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.VelocitySE2;
@@ -10,11 +10,11 @@ import org.team100.lib.hid.Velocity;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
-import org.team100.lib.logging.LoggerFactory.Control100Logger;
+import org.team100.lib.logging.LoggerFactory.ControlR1Logger;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.commands.manual.FieldRelativeDriver;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
@@ -43,14 +43,14 @@ public class ManualWithProfiledReefLock implements FieldRelativeDriver {
     /** lock rotation to reef center */
     private final Supplier<Boolean> m_lockToReef;
 
-    private final Feedback100 m_thetaFeedback;
+    private final FeedbackR1 m_thetaFeedback;
 
     // LOGGERS
     private final BooleanLogger m_log_snap_mode;
     private final DoubleLogger m_log_max_speed;
     private final DoubleLogger m_log_max_accel;
     private final DoubleLogger m_log_goal_theta;
-    private final Control100Logger m_log_setpoint_theta;
+    private final ControlR1Logger m_log_setpoint_theta;
     private final DoubleLogger m_log_theta_FF;
     private final DoubleLogger m_log_theta_FB;
     private final DoubleLogger m_log_output_omega;
@@ -58,13 +58,13 @@ public class ManualWithProfiledReefLock implements FieldRelativeDriver {
 
     // package private for testing
 
-    Control100 m_thetaSetpoint = null;
+    ControlR1 m_thetaSetpoint = null;
 
     public ManualWithProfiledReefLock(
             LoggerFactory parent,
             SwerveKinodynamics swerveKinodynamics,
             Supplier<Boolean> lockToReef,
-            Feedback100 thetaController,
+            FeedbackR1 thetaController,
             Supplier<Translation2d> robotLocation) {
         m_log = parent.type(this);
         m_swerveKinodynamics = swerveKinodynamics;
@@ -75,7 +75,7 @@ public class ManualWithProfiledReefLock implements FieldRelativeDriver {
         m_log_max_speed = m_log.doubleLogger(Level.TRACE, "maxSpeedRad_S");
         m_log_max_accel = m_log.doubleLogger(Level.TRACE, "maxAccelRad_S2");
         m_log_goal_theta = m_log.doubleLogger(Level.TRACE, "goal/theta");
-        m_log_setpoint_theta = m_log.control100Logger(Level.TRACE, "setpoint/theta");
+        m_log_setpoint_theta = m_log.ControlR1Logger(Level.TRACE, "setpoint/theta");
         m_log_theta_FF = m_log.doubleLogger(Level.TRACE, "thetaFF");
         m_log_theta_FB = m_log.doubleLogger(Level.TRACE, "thetaFB");
         m_log_output_omega = m_log.doubleLogger(Level.TRACE, "output/omega");
@@ -130,13 +130,13 @@ public class ManualWithProfiledReefLock implements FieldRelativeDriver {
                 FieldConstants.angleToReefCenter(m_robotLocation.get()));
 
         // use the modulus closest to the measurement
-        m_thetaSetpoint = new Control100(
+        m_thetaSetpoint = new ControlR1(
                 Math100.getMinDistance(yawMeasurement, m_thetaSetpoint.x()),
                 m_thetaSetpoint.v());
 
         final TrapezoidIncrementalProfile profile = makeProfile(state.velocity().norm());
         m_thetaSetpoint = profile.calculate(
-                TimedRobot100.LOOP_PERIOD_S, m_thetaSetpoint, new Model100(m_goal.getRadians(), 0));
+                TimedRobot100.LOOP_PERIOD_S, m_thetaSetpoint, new ModelR1(m_goal.getRadians(), 0));
 
         final double thetaFF = m_thetaSetpoint.v();
 

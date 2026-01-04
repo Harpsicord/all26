@@ -6,8 +6,8 @@ import java.util.function.Function;
 import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.targeting.TargetUtil;
-import org.team100.lib.trajectory.Trajectory100;
-import org.team100.lib.trajectory.TrajectoryPlanner;
+import org.team100.lib.trajectory.TrajectorySE2;
+import org.team100.lib.trajectory.TrajectorySE2Planner;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,14 +16,14 @@ import edu.wpi.first.math.geometry.Transform2d;
 /** Examples that are mostly only useful for testing. */
 public class TrajectoryExamples {
 
-    private final TrajectoryPlanner p;
+    private final TrajectorySE2Planner p;
 
-    public TrajectoryExamples(TrajectoryPlanner p) {
+    public TrajectoryExamples(TrajectorySE2Planner p) {
         this.p = p;
     }
 
     /** A square counterclockwise starting with +x. */
-    public List<Trajectory100> square(Pose2d p0) {
+    public List<TrajectorySE2> square(Pose2d p0) {
         Pose2d p1 = p0.plus(new Transform2d(1, 0, Rotation2d.kZero));
         Pose2d p2 = p0.plus(new Transform2d(1, 1, Rotation2d.kZero));
         Pose2d p3 = p0.plus(new Transform2d(0, 1, Rotation2d.kZero));
@@ -35,7 +35,7 @@ public class TrajectoryExamples {
     }
 
     /** Make a square that gets a reset starting point at each corner. */
-    public List<Function<Pose2d, Trajectory100>> permissiveSquare() {
+    public List<Function<Pose2d, TrajectorySE2>> permissiveSquare() {
         return List.of(
                 x -> restToRest(x, x.plus(new Transform2d(1, 0, Rotation2d.kZero))),
                 x -> restToRest(x, x.plus(new Transform2d(0, 1, Rotation2d.kZero))),
@@ -44,7 +44,7 @@ public class TrajectoryExamples {
     }
 
     /** From current to x+1 */
-    public Trajectory100 line(Pose2d initial) {
+    public TrajectorySE2 line(Pose2d initial) {
         return restToRest(
                 initial,
                 initial.plus(new Transform2d(1, 0, Rotation2d.kZero)));
@@ -55,7 +55,7 @@ public class TrajectoryExamples {
      * 
      * This is only useful for testing: in reality we always want rotation and curves.
      */
-    public Trajectory100 restToRest(Pose2d start, Pose2d end) {
+    public TrajectorySE2 restToRest(Pose2d start, Pose2d end) {
         Rotation2d courseToGoal = TargetUtil.absoluteBearing(start.getTranslation(), end.getTranslation());
         // direction towards goal without rotating
         DirectionSE2 direction = DirectionSE2.irrotational(courseToGoal);

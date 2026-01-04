@@ -1,8 +1,8 @@
 package org.team100.lib.profile.r1;
 
 import org.team100.lib.optimization.Bisection1d;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 
 /**
  * This profile takes incremental steps from the setpoint towards the goal.
@@ -16,10 +16,10 @@ public interface IncrementalProfile {
     static final boolean DEBUG = false;
 
     /**
-     * Return the control for dt in the future. The setpoint is a Control100 so that
+     * Return the control for dt in the future. The setpoint is a ControlR1 so that
      * we can regulate jerk.
      */
-    Control100 calculate(double dt, Control100 setpoint, Model100 goal);
+    ControlR1 calculate(double dt, ControlR1 setpoint, ModelR1 goal);
 
     /**
      * Find ETA by simply running the whole thing to the end.
@@ -30,11 +30,11 @@ public interface IncrementalProfile {
      * so it's not that hard to do, some profiles can be hard to reason about
      * without simulating anyway, and it's guaranteed to work.
      */
-    default double simulateForETA(double dt, Control100 initial, Model100 goal) {
+    default double simulateForETA(double dt, ControlR1 initial, ModelR1 goal) {
         double t = 0;
-        Model100 sample = initial.model();
+        ModelR1 sample = initial.model();
         while (!sample.near(goal, 0.01)) {
-            Control100 c = calculate(dt, sample.control(), goal);
+            ControlR1 c = calculate(dt, sample.control(), goal);
             sample = c.model();
             t += dt;
             if (t > MAX_ETA)
@@ -61,8 +61,8 @@ public interface IncrementalProfile {
      */
     default double solve(
             double dt,
-            Control100 i,
-            Model100 g,
+            ControlR1 i,
+            ModelR1 g,
             double goalETA,
             double etaTolerance) {
         final double minS = 0.01;

@@ -7,8 +7,8 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.testing.Timeless;
 
 public class IncrementalProfileTest implements Timeless {
@@ -18,8 +18,8 @@ public class IncrementalProfileTest implements Timeless {
     // 70 ns to get the ETA
     @Test
     void testETA() {
-        Control100 initial = new Control100();
-        Model100 goal = new Model100(1, 0);
+        ControlR1 initial = new ControlR1();
+        ModelR1 goal = new ModelR1(1, 0);
         double expectedEta = 2.0;
         double s = 1.0;
         IncrementalProfile p = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
@@ -46,8 +46,8 @@ public class IncrementalProfileTest implements Timeless {
     // 10x coarser step means only 0.5 us
     @Test
     void testETA2() {
-        Control100 initial = new Control100();
-        Model100 goal = new Model100(1, 0);
+        ControlR1 initial = new ControlR1();
+        ModelR1 goal = new ModelR1(1, 0);
         IncrementalProfile p = new TrapezoidIncrementalProfile(logger, 1, 1, 0.01);
         double eta = p.simulateForETA(0.02, initial, goal);
         assertEquals(2.000, eta, 0.001);
@@ -72,8 +72,8 @@ public class IncrementalProfileTest implements Timeless {
     // exponential eta in 1.6 us using coarse step.
     @Test
     void testETA2Exponential() {
-        Control100 initial = new Control100();
-        Model100 goal = new Model100(1, 0);
+        ControlR1 initial = new ControlR1();
+        ModelR1 goal = new ModelR1(1, 0);
         IncrementalProfile p = new ExponentialProfileWPI(1, 1);
         double eta = p.simulateForETA(0.02, initial, goal);
         assertEquals(2.180, eta, 0.001);

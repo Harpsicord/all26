@@ -17,8 +17,8 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.profile.r1.IncrementalProfile;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
 import org.team100.lib.sensor.gyro.MockGyro;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
@@ -136,7 +136,7 @@ class ManualWithFullStateHeadingTest {
         // say we've rotated a little.
         Pose2d currentPose = new Pose2d(0, 0, new Rotation2d(0.5));
         // cheat the setpoint for the test
-        m_manualWithHeading.m_thetaSetpoint = new Control100(0.5, 1);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(0.5, 1);
         twistM_S = m_manualWithHeading.apply(new ModelSE2(currentPose, twistM_S), zeroVelocity);
         // setpoint is the goal
         assertEquals(0.0, m_manualWithHeading.m_thetaSetpoint.v(), DELTA);
@@ -147,7 +147,7 @@ class ManualWithFullStateHeadingTest {
         // mostly rotated
         currentPose = new Pose2d(0, 0, new Rotation2d(1.55));
         // cheat the setpoint for the test
-        m_manualWithHeading.m_thetaSetpoint = new Control100(1.55, 0.2);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(1.55, 0.2);
         twistM_S = m_manualWithHeading.apply(new ModelSE2(currentPose, twistM_S), zeroVelocity);
         // setpoint is the goal
         assertEquals(0.0, m_manualWithHeading.m_thetaSetpoint.v(), DELTA);
@@ -157,7 +157,7 @@ class ManualWithFullStateHeadingTest {
 
         // done
         currentPose = new Pose2d(0, 0, new Rotation2d(Math.PI / 2));
-        m_manualWithHeading.m_thetaSetpoint = new Control100(Math.PI / 2, 0);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(Math.PI / 2, 0);
         twistM_S = m_manualWithHeading.apply(new ModelSE2(currentPose, twistM_S), zeroVelocity);
         assertNotNull(m_manualWithHeading.m_goal);
 
@@ -202,7 +202,7 @@ class ManualWithFullStateHeadingTest {
         currentPose = new Pose2d(0, 0, new Rotation2d(0.5));
 
         // cheat the setpoint for the test
-        m_manualWithHeading.m_thetaSetpoint = new Control100(0.5, 1);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(0.5, 1);
         v = m_manualWithHeading.apply(new ModelSE2(currentPose, v), twist1_1);
         // the setpoint is the goal
         assertEquals(0.0, m_manualWithHeading.m_thetaSetpoint.v(), DELTA);
@@ -212,7 +212,7 @@ class ManualWithFullStateHeadingTest {
         // mostly rotated, so the FB controller is calm
         currentPose = new Pose2d(0, 0, new Rotation2d(1.555));
         // cheat the setpoint for the test
-        m_manualWithHeading.m_thetaSetpoint = new Control100(1.555, 0.2);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(1.555, 0.2);
         v = m_manualWithHeading.apply(new ModelSE2(currentPose, v), twist1_1);
         // the setpoint is the goal
         assertEquals(0.0, m_manualWithHeading.m_thetaSetpoint.v(), DELTA);
@@ -223,7 +223,7 @@ class ManualWithFullStateHeadingTest {
 
         // at the setpoint
         currentPose = new Pose2d(0, 0, new Rotation2d(Math.PI / 2));
-        m_manualWithHeading.m_thetaSetpoint = new Control100(Math.PI / 2, 0);
+        m_manualWithHeading.m_thetaSetpoint = new ControlR1(Math.PI / 2, 0);
         v = m_manualWithHeading.apply(new ModelSE2(currentPose, v), twist1_1);
         assertNotNull(m_manualWithHeading.m_goal);
         // there should be no more profile to follow
@@ -358,10 +358,10 @@ class ManualWithFullStateHeadingTest {
                 4.2,
                 0.01);
         // at max heading rate
-        Model100 initialRaw = new Model100(0, 2.828);
+        ModelR1 initialRaw = new ModelR1(0, 2.828);
         // goal is the same but stopped, which is an overshoot profile
-        Model100 goalRaw = new Model100(0, 0);
-        Control100 u = initialRaw.control();
+        ModelR1 goalRaw = new ModelR1(0, 0);
+        ControlR1 u = initialRaw.control();
 
         // this produces nonsensical results. using a faster profile works fine
         // but the very slow profile is wrong somehow

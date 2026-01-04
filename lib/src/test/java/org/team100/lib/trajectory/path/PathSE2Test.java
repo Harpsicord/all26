@@ -16,7 +16,7 @@ import org.team100.lib.trajectory.path.spline.SplineSE2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-class Path100Test {
+class PathSE2Test {
 
     private static final List<Rotation2d> HEADINGS = Arrays.asList(
             GeometryUtil.fromDegrees(0),

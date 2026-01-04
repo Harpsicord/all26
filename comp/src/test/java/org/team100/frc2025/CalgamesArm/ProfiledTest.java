@@ -6,8 +6,8 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.profile.r1.IncrementalProfile;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.subsystems.prr.EAWConfig;
 import org.team100.lib.subsystems.prr.ElevatorArmWristKinematics;
 
@@ -39,16 +39,16 @@ public class ProfiledTest {
         // floor pick position
         EAWConfig goal = new EAWConfig(0, -3 * Math.PI / 4, Math.PI / 4);
 
-        Model100 g1 = new Model100(goal.shoulderHeight(), 0);
-        Model100 g2 = new Model100(goal.shoulderAngle(), 0);
-        Model100 g3 = new Model100(goal.wristAngle(), 0);
+        ModelR1 g1 = new ModelR1(goal.shoulderHeight(), 0);
+        ModelR1 g2 = new ModelR1(goal.shoulderAngle(), 0);
+        ModelR1 g3 = new ModelR1(goal.wristAngle(), 0);
         IncrementalProfile p1 = new TrapezoidIncrementalProfile(log, 1, 1, 0.05);
         IncrementalProfile p2 = new TrapezoidIncrementalProfile(log, 1, 1, 0.05);
         IncrementalProfile p3 = new TrapezoidIncrementalProfile(log, 1, 1, 0.05);
 
-        Control100 i1 = new Control100(start.shoulderHeight(), 0);
-        Control100 i2 = new Control100(start.shoulderAngle(), 0);
-        Control100 i3 = new Control100(start.wristAngle(), 0);
+        ControlR1 i1 = new ControlR1(start.shoulderHeight(), 0);
+        ControlR1 i2 = new ControlR1(start.shoulderAngle(), 0);
+        ControlR1 i3 = new ControlR1(start.wristAngle(), 0);
 
         double eta1 = p1.simulateForETA(DT, i1, g1);
         double eta2 = p1.simulateForETA(DT, i2, g2);
@@ -97,16 +97,16 @@ public class ProfiledTest {
         // floor pick position
         EAWConfig goal = k.inverse(pL4);
 
-        Model100 g1 = new Model100(goal.shoulderHeight(), 0);
-        Model100 g2 = new Model100(goal.shoulderAngle(), 0);
-        Model100 g3 = new Model100(goal.wristAngle(), 0);
+        ModelR1 g1 = new ModelR1(goal.shoulderHeight(), 0);
+        ModelR1 g2 = new ModelR1(goal.shoulderAngle(), 0);
+        ModelR1 g3 = new ModelR1(goal.wristAngle(), 0);
         IncrementalProfile p1 = new TrapezoidIncrementalProfile(log, 1, 1, 0.05);
         IncrementalProfile p2 = new TrapezoidIncrementalProfile(log, 1, 1, 0.05);
         IncrementalProfile p3 = new TrapezoidIncrementalProfile(log, 1, 1, 0.05);
 
-        Control100 i1 = new Control100(start.shoulderHeight(), 0);
-        Control100 i2 = new Control100(start.shoulderAngle(), 0);
-        Control100 i3 = new Control100(start.wristAngle(), 0);
+        ControlR1 i1 = new ControlR1(start.shoulderHeight(), 0);
+        ControlR1 i2 = new ControlR1(start.shoulderAngle(), 0);
+        ControlR1 i3 = new ControlR1(start.wristAngle(), 0);
 
         double eta1 = p1.simulateForETA(DT, i1, g1);
         double eta2 = p1.simulateForETA(DT, i2, g2);
@@ -148,16 +148,16 @@ public class ProfiledTest {
         // floor pick position
         EAWConfig goal = new EAWConfig(0, 0, 0);
 
-        Model100 g1 = new Model100(goal.shoulderHeight(), 0);
-        Model100 g2 = new Model100(goal.shoulderAngle(), 0);
-        Model100 g3 = new Model100(goal.wristAngle(), 0);
+        ModelR1 g1 = new ModelR1(goal.shoulderHeight(), 0);
+        ModelR1 g2 = new ModelR1(goal.shoulderAngle(), 0);
+        ModelR1 g3 = new ModelR1(goal.wristAngle(), 0);
         IncrementalProfile p1 = new TrapezoidIncrementalProfile(log, 1, 1, 0.05);
         IncrementalProfile p2 = new TrapezoidIncrementalProfile(log, 1, 1, 0.05);
         IncrementalProfile p3 = new TrapezoidIncrementalProfile(log, 1, 1, 0.05);
 
-        Control100 i1 = new Control100(start.shoulderHeight(), 0);
-        Control100 i2 = new Control100(start.shoulderAngle(), 0);
-        Control100 i3 = new Control100(start.wristAngle(), 0);
+        ControlR1 i1 = new ControlR1(start.shoulderHeight(), 0);
+        ControlR1 i2 = new ControlR1(start.shoulderAngle(), 0);
+        ControlR1 i3 = new ControlR1(start.wristAngle(), 0);
 
         double eta1 = p1.simulateForETA(DT, i1, g1);
         double eta2 = p1.simulateForETA(DT, i2, g2);

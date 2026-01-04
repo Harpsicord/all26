@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
@@ -46,7 +46,7 @@ class InterpolationRecordTest implements Timeless {
         // so
         // 1 = 1/2 * 1 * t; t = 2, a = 0.5.
 
-        ModelSE2 s1 = new ModelSE2(new Model100(), new Model100(), new Model100(1, 1));
+        ModelSE2 s1 = new ModelSE2(new ModelR1(), new ModelR1(), new ModelR1(1, 1));
         SwerveModulePositions p1 = new SwerveModulePositions(
                 new SwerveModulePosition100(Math.sqrt(2) / 2, Optional.of(new Rotation2d(3 * Math.PI / 4))),
                 new SwerveModulePosition100(Math.sqrt(2) / 2, Optional.of(new Rotation2d(Math.PI / 4))),
@@ -104,7 +104,7 @@ class InterpolationRecordTest implements Timeless {
         // so
         // 1 = 1/2 * 1 * t; t = 2, a = 0.5.
 
-        ModelSE2 s1 = new ModelSE2(new Model100(), new Model100(), new Model100(1, 1));
+        ModelSE2 s1 = new ModelSE2(new ModelR1(), new ModelR1(), new ModelR1(1, 1));
         SwerveModulePositions p1 = new SwerveModulePositions(
                 new SwerveModulePosition100(Math.sqrt(2) / 2, Optional.of(new Rotation2d(3 * Math.PI / 4))),
                 new SwerveModulePosition100(Math.sqrt(2) / 2, Optional.of(new Rotation2d(Math.PI / 4))),

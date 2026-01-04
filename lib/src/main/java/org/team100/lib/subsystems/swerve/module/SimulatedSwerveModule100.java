@@ -2,7 +2,7 @@ package org.team100.lib.subsystems.swerve.module;
 
 import java.util.function.Supplier;
 
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -75,7 +75,7 @@ public class SimulatedSwerveModule100 extends SwerveModule100 {
         RotaryMechanism turningMech = new RotaryMechanism(
                 parent, turningMotor, turningSensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-        Feedback100 turningPositionFeedback = new PIDFeedback(
+        FeedbackR1 turningPositionFeedback = new PIDFeedback(
                 parent,
                 10, // kP .. was 20
                 0, // kI

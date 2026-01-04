@@ -6,7 +6,7 @@ import java.util.function.DoubleUnaryOperator;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.controller.r1.Feedback100;
+import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.controller.r1.ZeroFeedback;
 import org.team100.lib.logging.LoggerFactory;
@@ -23,7 +23,7 @@ import org.team100.lib.reference.r1.ProfileReferenceR1;
 import org.team100.lib.sensor.position.absolute.MockRotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.sim.SimulatedRotaryPositionSensor;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.testing.Timeless;
 
 class GravityServoTest implements Timeless {
@@ -32,7 +32,7 @@ class GravityServoTest implements Timeless {
 
     @Test
     void testSetPosition() {
-        Feedback100 pivotFeedback = new PIDFeedback(
+        FeedbackR1 pivotFeedback = new PIDFeedback(
                 logger, 4.5, 0.0, 0.000, false, 0.05, 1);
         IncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 8, 8, 0.001);
         IncrementalProfileReferenceR1 ref = new IncrementalProfileReferenceR1(logger,() ->  profile, 0.05, 0.05);
@@ -46,7 +46,7 @@ class GravityServoTest implements Timeless {
         AngularPositionServo servo = new OnboardAngularPositionServo(
                 logger, simMech, ref, pivotFeedback);
         servo.reset();
-        ref.init(new Model100(servo.getWrappedPositionRad(), 0));
+        ref.init(new ModelR1(servo.getWrappedPositionRad(), 0));
 
         Gravity gravity = new Gravity(logger, 5, 0);
         Spring spring = new Spring(logger);
@@ -70,7 +70,7 @@ class GravityServoTest implements Timeless {
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         RotaryMechanism mech = new RotaryMechanism(
                 logger, motor, sensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-        Feedback100 fb = new ZeroFeedback(false, 0.01, 0.01);
+        FeedbackR1 fb = new ZeroFeedback(false, 0.01, 0.01);
         ProfileReferenceR1 ref = new MockProfileReferenceR1();
         OnboardAngularPositionServo servo = new OnboardAngularPositionServo(logger, mech, ref, fb);
         // these constants were used in Wrist2.

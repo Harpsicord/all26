@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.state.Control100;
-import org.team100.lib.state.Model100;
+import org.team100.lib.state.ControlR1;
+import org.team100.lib.state.ModelR1;
 import org.team100.lib.testing.Timeless;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -31,7 +31,7 @@ public class CompleteProfileTest implements Timeless{
         CompleteProfile p = new CompleteProfile(logger, 2, 6, 10, 40, 50, 50, 0.001);
         if (DEBUG) {
             for (double x = -10; x < 10; x += 0.01) {
-                Control100 sample = p.m_byDistance.get(x);
+                ControlR1 sample = p.m_byDistance.get(x);
                 System.out.printf("%12.4f %12.4f %12.4f\n", sample.x(), sample.v(), sample.a());
             }
         }
@@ -40,7 +40,7 @@ public class CompleteProfileTest implements Timeless{
     @Test
     void testInterpolation() {
         CompleteProfile p = new CompleteProfile(logger, 2, 6, 10, 40, 50, 50, 0.001);
-        Control100 c = p.m_byDistance.get(-500.0);
+        ControlR1 c = p.m_byDistance.get(-500.0);
         // we get back the x coord we provided
         assertEquals(-500, c.x(), DELTA);
         // v is always maxv
@@ -52,8 +52,8 @@ public class CompleteProfileTest implements Timeless{
     @Test
     void testFastAccelSlowDecel() {
         CompleteProfile p = new CompleteProfile(logger, 5, 12, 5, 50, 50, 50, 0.001);
-        final Model100 goal = new Model100(2, 0);
-        Control100 c = new Control100();
+        final ModelR1 goal = new ModelR1(2, 0);
+        ControlR1 c = new ControlR1();
         double t = 0;
         if (DEBUG)
             System.out.println("t, x, v, a");
@@ -69,8 +69,8 @@ public class CompleteProfileTest implements Timeless{
     @Test
     void testSlowAccelFastDecel() {
         CompleteProfile p = new CompleteProfile(logger, 5, 5, 12, 50, 50, 50, 0.001);
-        final Model100 goal = new Model100(2, 0);
-        Control100 c = new Control100();
+        final ModelR1 goal = new ModelR1(2, 0);
+        ControlR1 c = new ControlR1();
         double t = 0;
         if (DEBUG)
             System.out.println("t, x, v, a");
@@ -86,8 +86,8 @@ public class CompleteProfileTest implements Timeless{
     @Test
     void testSimpleBackward() {
         CompleteProfile p = new CompleteProfile(logger, 3, 8, 12, 15, 50, 50, 0.001);
-        final Model100 goal = new Model100(-2, 0);
-        Control100 c = new Control100();
+        final ModelR1 goal = new ModelR1(-2, 0);
+        ControlR1 c = new ControlR1();
         double t = 0;
         for (int i = 0; i < 100; ++i) {
             if (DEBUG)
@@ -100,8 +100,8 @@ public class CompleteProfileTest implements Timeless{
     @Test
     void testMovingEntry() {
         CompleteProfile p = new CompleteProfile(logger, 2, 6, 10, 30, 50, 50, 0.001);
-        final Model100 goal = new Model100(1, 0);
-        Control100 c = new Control100(0, -1);
+        final ModelR1 goal = new ModelR1(1, 0);
+        ControlR1 c = new ControlR1(0, -1);
         double t = 0;
         for (int i = 0; i < 100; ++i) {
             if (DEBUG)
@@ -114,9 +114,9 @@ public class CompleteProfileTest implements Timeless{
     @Test
     void testUTurn() {
         CompleteProfile p = new CompleteProfile(logger, 3, 8, 12, 15, 50, 50, 0.001);
-        final Model100 goal = new Model100(0, 0);
+        final ModelR1 goal = new ModelR1(0, 0);
         // to the left and moving to the left
-        Control100 c = new Control100(-2, -2);
+        ControlR1 c = new ControlR1(-2, -2);
         double t = 0;
         for (int i = 0; i < 100; ++i) {
             if (DEBUG)
@@ -131,7 +131,7 @@ public class CompleteProfileTest implements Timeless{
     void testMovingGoal() {
         CompleteProfile p = new CompleteProfile(logger, 2, 6, 10, 30, 50, 50, 0.01);
         assertThrows(IllegalArgumentException.class,
-                () -> p.calculate(0.02, new Control100(), new Model100(1, 1)));
+                () -> p.calculate(0.02, new ControlR1(), new ModelR1(1, 1)));
     }
 
     /** How does interpolation work? */
@@ -151,14 +151,14 @@ public class CompleteProfileTest implements Timeless{
     /** What if one of the points is really far away? */
     @Test
     void testKeyInterpolation2() {
-        InterpolatingTreeMap<Double, Control100> m = new InterpolatingTreeMap<>(
+        InterpolatingTreeMap<Double, ControlR1> m = new InterpolatingTreeMap<>(
                 InverseInterpolator.forDouble(),
-                Control100::interpolate);
+                ControlR1::interpolate);
         // without this far-away point, the interpolator returns the endpoint at -1.
-        m.put(-384400000.0, new Control100(-384400000, 1, 0));
-        m.put(-1.0, new Control100(-1, 1, 0));
-        m.put(1.0, new Control100(1, -1, 0));
-        m.put(384400000.0, new Control100(384400000, -1, 0));
+        m.put(-384400000.0, new ControlR1(-384400000, 1, 0));
+        m.put(-1.0, new ControlR1(-1, 1, 0));
+        m.put(1.0, new ControlR1(1, -1, 0));
+        m.put(384400000.0, new ControlR1(384400000, -1, 0));
         // it takes the endpoint forever
         assertEquals(-3, m.get(-3.0).x(), DELTA);
         assertEquals(1, m.get(-3.0).v(), DELTA);
