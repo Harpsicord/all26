@@ -91,8 +91,8 @@ class SplineSE2Test implements Timeless {
                                 new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1));
 
-        TrajectoryPlotter plotter = new TrajectoryPlotter(0.1);
-        plotter.plot("rotation", List.of(s));
+        SplineToVectorSeries splineConverter = new SplineToVectorSeries(0.1);
+        TrajectoryPlotter.plotOverlay(splineConverter.convert(List.of(s)));
 
         Translation2d t = s.sample(0).waypoint().pose().getTranslation();
         assertEquals(0, t.getX(), DELTA);
@@ -122,8 +122,8 @@ class SplineSE2Test implements Timeless {
                                 new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1));
 
-        TrajectoryPlotter plotter = new TrajectoryPlotter(0.1);
-        plotter.plot("rotation", List.of(s));
+        SplineToVectorSeries splineConverter = new SplineToVectorSeries(0.1);
+        TrajectoryPlotter.plotOverlay(splineConverter.convert(List.of(s)));
 
         Translation2d t = s.sample(0).waypoint().pose().getTranslation();
         assertEquals(0, t.getX(), DELTA);
@@ -156,8 +156,8 @@ class SplineSE2Test implements Timeless {
                                 new Rotation2d(1)),
                         new DirectionSE2(1, 0, 0), 1.2));
 
-        TrajectoryPlotter plotter = new TrajectoryPlotter(0.1);
-        plotter.plot("rotation", List.of(s));
+        SplineToVectorSeries splineConverter = new SplineToVectorSeries(0.1);
+        TrajectoryPlotter.plotOverlay(splineConverter.convert(List.of(s)));
 
         // now that the magic numbers apply to the rotational scaling, the heading rate
         // is constant.
@@ -204,8 +204,8 @@ class SplineSE2Test implements Timeless {
                                 new Rotation2d(1)),
                         new DirectionSE2(1, 0, 1), 1));
 
-        TrajectoryPlotter plotter = new TrajectoryPlotter(0.1);
-        plotter.plot("rotation", List.of(s));
+        SplineToVectorSeries splineConverter = new SplineToVectorSeries(0.1);
+        TrajectoryPlotter.plotOverlay(splineConverter.convert(List.of(s)));
 
         // now that the magic numbers apply to the rotational scaling, the heading rate
         // is constant.
@@ -244,8 +244,9 @@ class SplineSE2Test implements Timeless {
                                 new Translation2d(1, 0),
                                 new Rotation2d(-2.5)),
                         new DirectionSE2(1, 0, 0), 1));
-        TrajectoryPlotter plotter = new TrajectoryPlotter(0.1);
-        plotter.plot("rotation", List.of(s));
+
+        SplineToVectorSeries splineConverter = new SplineToVectorSeries(0.1);
+        TrajectoryPlotter.plotOverlay(splineConverter.convert(List.of(s)));
     }
 
     /** Turning in place splines do not work. */
@@ -295,7 +296,7 @@ class SplineSE2Test implements Timeless {
         SplineSE2 s3 = new SplineSE2(p3, p0);
         List<SplineSE2> splines = List.of(s0, s1, s2, s3);
         checkCircle(splines, 0.008, 0.006);
-        TrajectoryPlotter.plot(new SplineToVectorSeries(0.1).convert("before", splines));
+        TrajectoryPlotter.plotOverlay(new SplineToVectorSeries(0.1).convert(splines));
     }
 
     @Test
@@ -398,7 +399,7 @@ class SplineSE2Test implements Timeless {
         List<SplineSE2> splines = new ArrayList<>();
         splines.add(s0);
         splines.add(s1);
-        TrajectoryPlotter.plot(new SplineToVectorSeries(0.1).convert("before", splines));
+        TrajectoryPlotter.plotOverlay(new SplineToVectorSeries(0.1).convert(splines));
     }
 
     /**
@@ -438,7 +439,7 @@ class SplineSE2Test implements Timeless {
         List<SplineSE2> splines = new ArrayList<>();
         splines.add(s01);
         splines.add(s12);
-        TrajectoryPlotter.plot(new SplineToVectorSeries(0.1).convert("before", splines));
+        TrajectoryPlotter.plotOverlay(new SplineToVectorSeries(0.1).convert(splines));
     }
 
     @Test
@@ -476,7 +477,7 @@ class SplineSE2Test implements Timeless {
         splines.add(s0);
         splines.add(s1);
 
-        TrajectoryPlotter.plot(new SplineToVectorSeries(0.1).convert("before", splines));
+        TrajectoryPlotter.plotOverlay(new SplineToVectorSeries(0.1).convert(splines));
 
         for (SplineSE2 s : splines) {
             if (DEBUG)
@@ -492,7 +493,7 @@ class SplineSE2Test implements Timeless {
         Trajectory100 traj = trajectoryFactory.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
-        TrajectoryPlotter.plot(new TrajectoryToVectorSeries(0.1).convert("trajectory", traj));
+        TrajectoryPlotter.plotOverlay(new TrajectoryToVectorSeries(0.1).convert(traj));
     }
 
     @Test
@@ -519,8 +520,8 @@ class SplineSE2Test implements Timeless {
 
         List<SplineSE2> splines = List.of(s0);
 
-        TrajectoryPlotter plotter = new TrajectoryPlotter(0.1);
-        plotter.plot("splines", splines);
+        SplineToVectorSeries splineConverter = new SplineToVectorSeries(0.1);
+        TrajectoryPlotter.plotOverlay(splineConverter.convert(splines));
 
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.05);
         List<PathPointSE2> motion = pathFactory.samplesFromSplines(splines);
@@ -551,7 +552,9 @@ class SplineSE2Test implements Timeless {
         // a = v^2/r so v = sqrt(ar) = 2.858
         Trajectory100 trajectory = trajectoryFactory.fromPath(path, 2.858, 2.858);
 
-        plotter.plot("plot", trajectory);
+        TrajectoryToVectorSeries converter = new TrajectoryToVectorSeries(0.1);
+
+        TrajectoryPlotter.plotOverlay(converter.convert(trajectory));
 
         if (DEBUG)
             System.out.printf("trajectory %s\n", trajectory);

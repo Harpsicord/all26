@@ -153,7 +153,7 @@ public class PathFactorySE2Test implements Timeless {
                         new DirectionSE2(1, 0, 0), 1));
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.01, 0.01, 0.1);
         PathSE2 path = pathFactory.fromWaypoints(waypoints);
-        TrajectoryPlotter.plot(new PathToVectorSeries(0.1).convert("path", path));
+        TrajectoryPlotter.plotOverlay(new PathToVectorSeries(0.1).convert(path));
         assertEquals(59, path.length(), 0.001);
     }
 

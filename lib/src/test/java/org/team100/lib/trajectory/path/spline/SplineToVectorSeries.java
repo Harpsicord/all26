@@ -1,5 +1,6 @@
 package org.team100.lib.trajectory.path.spline;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jfree.data.xy.VectorSeries;
@@ -24,9 +25,11 @@ public class SplineToVectorSeries {
      * 
      * @return (x, y, dx, dy)
      */
-    public VectorSeries convert(String name, List<SplineSE2> splines) {
-        VectorSeries series = new VectorSeries(name);
-        for (SplineSE2 spline : splines) {
+    public List<VectorSeries> convert(List<SplineSE2> splines) {
+        List<VectorSeries> result = new ArrayList<>();
+        for (int i = 0; i < splines.size(); i++) {
+            SplineSE2 spline = splines.get(i);
+            VectorSeries series = new VectorSeries(String.format("%d", i));
             for (double s = 0; s <= 1.001; s += DS) {
                 Pose2d p = spline.sample(s).waypoint().pose();
                 if (DEBUG)
@@ -38,9 +41,9 @@ public class SplineToVectorSeries {
                 double dy = m_scale * heading.getSin();
                 series.add(x, y, dx, dy);
             }
-
+            result.add(series);
         }
-        return series;
+        return result;
     }
 
     /**

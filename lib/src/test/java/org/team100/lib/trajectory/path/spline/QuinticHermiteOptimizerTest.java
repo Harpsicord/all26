@@ -30,7 +30,7 @@ public class QuinticHermiteOptimizerTest {
         splines.add(new SplineSE2(a, b));
         splines.add(new SplineSE2(b, c));
 
-        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines));
+        TrajectoryPlotter.plotOverlay(new SplineToVectorSeries(5).convert(splines));
 
     }
 
@@ -57,7 +57,7 @@ public class QuinticHermiteOptimizerTest {
         splines.add(new SplineSE2(e, f));
         splines.add(new SplineSE2(f, g));
 
-        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines));
+        TrajectoryPlotter.plotOverlay(new SplineToVectorSeries(5).convert(splines));
 
     }
 
@@ -85,7 +85,7 @@ public class QuinticHermiteOptimizerTest {
         splines2.add(new SplineSE2(j, k));
         splines2.add(new SplineSE2(k, l));
 
-        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines2));
+        TrajectoryPlotter.plotOverlay(new SplineToVectorSeries(5).convert(splines2));
 
     }
 
@@ -105,7 +105,7 @@ public class QuinticHermiteOptimizerTest {
         splines.add(new SplineSE2(a, b));
         splines.add(new SplineSE2(b, c));
 
-        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines));
+        TrajectoryPlotter.plotOverlay(new SplineToVectorSeries(5).convert(splines));
 
     }
 
@@ -130,7 +130,7 @@ public class QuinticHermiteOptimizerTest {
         splines.add(new SplineSE2(e, f));
         splines.add(new SplineSE2(f, g));
 
-        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines));
+        TrajectoryPlotter.plotOverlay(new SplineToVectorSeries(5).convert(splines));
     }
 
     @Test
@@ -158,7 +158,7 @@ public class QuinticHermiteOptimizerTest {
         splines.add(new SplineSE2(j, k));
         splines.add(new SplineSE2(k, l));
 
-        TrajectoryPlotter.plot(new SplineToVectorSeries(5).convert("before", splines));
+        TrajectoryPlotter.plotOverlay(new SplineToVectorSeries(5).convert(splines));
 
     }
 }

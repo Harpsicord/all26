@@ -45,7 +45,9 @@ public class TrajectoryTest {
         Trajectory100 t = ex.restToRest(
                 new Pose2d(0, 0, new Rotation2d()),
                 new Pose2d(10, 1, new Rotation2d()));
-        new TrajectoryPlotter(0.5).plot("simple", t);
+
+        TrajectoryToVectorSeries converter = new TrajectoryToVectorSeries(0.5);
+        TrajectoryPlotter.plotOverlay(converter.convert(t));
     }
 
     /** Turning in place does not work */
@@ -90,7 +92,7 @@ public class TrajectoryTest {
         TrajectoryPlanner planner = new TrajectoryPlanner(pathFactory, trajectoryFactory);
         Trajectory100 trajectory = planner.generateTrajectory(waypoints, 0, 0);
 
-        TrajectoryPlotter.plot(new TrajectoryToVectorSeries(0.25).convert("trajectory", trajectory));
+        TrajectoryPlotter.plotOverlay(new TrajectoryToVectorSeries(0.25).convert(trajectory));
     }
 
     @Test
@@ -144,7 +146,7 @@ public class TrajectoryTest {
             p0 = p1;
         }
 
-        TrajectoryPlotter.plot(new TrajectoryToVectorSeries(0.25).convert("trajectory", trajectory));
+        TrajectoryPlotter.plotOverlay(new TrajectoryToVectorSeries(0.25).convert(trajectory));
     }
 
     /**
@@ -176,7 +178,9 @@ public class TrajectoryTest {
                                 new Rotation2d(-Math.PI / 2)),
                         new DirectionSE2(0, 1, 0), 1));
         Trajectory100 t = p.restToRest(waypoints);
-        new TrajectoryPlotter(0.5).plot("curved", t);
+
+        TrajectoryToVectorSeries converter = new TrajectoryToVectorSeries(0.5);
+        TrajectoryPlotter.plotOverlay(converter.convert(t));
     }
 
     /**
@@ -209,6 +213,9 @@ public class TrajectoryTest {
                                 new Rotation2d(-Math.PI / 2)),
                         new DirectionSE2(0, 1, 0), 1));
         Trajectory100 t = p.restToRest(waypoints);
-        new TrajectoryPlotter(0.3).plot("multiple", t);
+
+        TrajectoryToVectorSeries converter = new TrajectoryToVectorSeries(0.3);
+
+        TrajectoryPlotter.plotOverlay(converter.convert(t));
     }
 }

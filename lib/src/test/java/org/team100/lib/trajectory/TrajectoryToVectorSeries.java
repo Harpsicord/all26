@@ -1,5 +1,7 @@
 package org.team100.lib.trajectory;
 
+import java.util.List;
+
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
 import org.team100.lib.geometry.WaypointSE2;
@@ -19,8 +21,8 @@ public class TrajectoryToVectorSeries {
     }
 
     /** Maps x to x, y to y */
-    public VectorSeries convert(String name, Trajectory100 t) {
-        VectorSeries s = new VectorSeries(name);
+    public List<VectorSeries> convert(Trajectory100 t) {
+        VectorSeries s = new VectorSeries("trajectory");
         double duration = t.duration();
         if (DEBUG)
             System.out.printf("duration %f\n", duration);
@@ -37,7 +39,7 @@ public class TrajectoryToVectorSeries {
             if (DEBUG)
                 System.out.printf("%f\n", time);
         }
-        return s;
+        return List.of(s);
     }
 
     /**

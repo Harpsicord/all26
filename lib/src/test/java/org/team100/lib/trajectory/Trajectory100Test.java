@@ -215,7 +215,7 @@ class Trajectory100Test implements Timeless {
         TrajectoryFactory generator = new TrajectoryFactory(constraints);
 
         Trajectory100 trajectory = generator.fromPath(path, 0, 0);
-        TrajectoryPlotter.plot(new TrajectoryToVectorSeries(1).convert("trajectory", trajectory));
+        TrajectoryPlotter.plotOverlay(new TrajectoryToVectorSeries(1).convert(trajectory));
 
         assertEquals(313, trajectory.length());
 

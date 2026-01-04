@@ -20,8 +20,8 @@ public class PathToVectorSeries {
     }
 
     /** Maps x to x, y to y */
-    public VectorSeries convert(String name, PathSE2 path) {
-        VectorSeries s = new VectorSeries(name);
+    public List<VectorSeries> convert(PathSE2 path) {
+        VectorSeries s = new VectorSeries("path");
         double l = path.getMaxDistance();
         double dl = l / 20;
         for (double d = 0; d < l; d += dl) {
@@ -37,7 +37,7 @@ public class PathToVectorSeries {
             double dy = m_scale * heading.getSin();
             s.add(x, y, dx, dy);
         }
-        return s;
+        return List.of(s);
     }
 
     public static XYSeries x(String name, List<PathPointSE2> poses) {
