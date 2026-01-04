@@ -26,7 +26,7 @@ import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.timing.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraint;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -489,7 +489,7 @@ class SplineSE2Test implements Timeless {
         if (DEBUG)
             System.out.printf("path %s\n", path);
         List<TimingConstraint> constraints = List.of(new ConstantConstraint(logger, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         TrajectorySE2 traj = trajectoryFactory.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
@@ -547,7 +547,7 @@ class SplineSE2Test implements Timeless {
         assertEquals(8.166666, limits.getMaxCapsizeAccelM_S2(), 1e-6);
         List<TimingConstraint> constraints = List.of(
                 new CapsizeAccelerationConstraint(logger, limits, 1.0));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         // speed
         // a = v^2/r so v = sqrt(ar) = 2.858
         TrajectorySE2 trajectory = trajectoryFactory.fromPath(path, 2.858, 2.858);

@@ -13,7 +13,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
 
@@ -38,7 +38,7 @@ public class GoToCoralStation implements Function<Pose2d, TrajectorySE2> {
         m_station = station;
         m_scale = scale;
         List<TimingConstraint> constraints = new TimingConstraintFactory(kinodynamics).auto(log.type(this));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
     }

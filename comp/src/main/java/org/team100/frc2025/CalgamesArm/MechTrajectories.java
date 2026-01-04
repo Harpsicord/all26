@@ -14,7 +14,7 @@ import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TorqueConstraint;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 import org.team100.lib.trajectory.timing.YawRateConstraint;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,7 +46,7 @@ public class MechTrajectories extends Command {
         // These finer grains make smoother paths and schedules but
         // take longer to compute, so if it takes too long, make these
         // numbers bigger!
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2(0.05, 0.01, 0.01, 0.1);
         m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
     }

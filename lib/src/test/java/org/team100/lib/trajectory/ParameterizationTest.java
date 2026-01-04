@@ -17,7 +17,7 @@ import org.team100.lib.trajectory.path.spline.SplineSE2;
 import org.team100.lib.trajectory.path.spline.SplineToVectorSeries;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraint;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 import org.team100.lib.trajectory.timing.YawRateConstraint;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -125,7 +125,7 @@ public class ParameterizationTest {
         List<TimingConstraint> c = List.of(
                 new ConstantConstraint(log, 2, 0.5),
                 new YawRateConstraint(log, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         List<WaypointSE2> waypoints = List.of(

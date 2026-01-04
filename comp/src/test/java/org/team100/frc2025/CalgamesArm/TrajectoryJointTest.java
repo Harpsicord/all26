@@ -19,7 +19,7 @@ import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.YawRateConstraint;
 
@@ -49,7 +49,7 @@ public class TrajectoryJointTest {
         List<TimingConstraint> c = List.of(
                 new ConstantConstraint(log, 1, 1),
                 new YawRateConstraint(log, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 

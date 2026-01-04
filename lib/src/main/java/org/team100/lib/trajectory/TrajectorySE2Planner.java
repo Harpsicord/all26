@@ -5,7 +5,7 @@ import java.util.List;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.path.PathFactorySE2;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 
 /**
  * Creates a trajectory in three steps:
@@ -22,9 +22,9 @@ public class TrajectorySE2Planner {
     private static final boolean DEBUG = false;
 
     private final PathFactorySE2 m_pathFactory;
-    private final TrajectoryFactory m_trajectoryFactory;
+    private final TrajectorySE2Factory m_trajectoryFactory;
 
-    public TrajectorySE2Planner(PathFactorySE2 pathFactory, TrajectoryFactory trajectoryFactory) {
+    public TrajectorySE2Planner(PathFactorySE2 pathFactory, TrajectorySE2Factory trajectoryFactory) {
         m_pathFactory = pathFactory;
         m_trajectoryFactory = trajectoryFactory;
     }

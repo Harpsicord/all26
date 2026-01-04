@@ -38,7 +38,7 @@ import org.team100.lib.trajectory.examples.TrajectoryExamples;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -55,7 +55,7 @@ public class DriveWithTrajectoryTest implements Timeless {
     void testTrajectoryStart() {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(logger);
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(logger);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
@@ -112,7 +112,7 @@ public class DriveWithTrajectoryTest implements Timeless {
     void testTrajectoryDone() {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(logger);
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(logger);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(planner);
@@ -155,7 +155,7 @@ public class DriveWithTrajectoryTest implements Timeless {
         SwerveModuleCollection collection = SwerveModuleCollection.get(logger, 10, 20, swerveKinodynamics);
         collection.reset();
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(logger);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(planner);

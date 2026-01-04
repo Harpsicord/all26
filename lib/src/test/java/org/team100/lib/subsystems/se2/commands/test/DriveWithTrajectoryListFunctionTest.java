@@ -24,7 +24,7 @@ import org.team100.lib.trajectory.examples.TrajectoryExamples;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -44,7 +44,7 @@ class DriveWithTrajectoryListFunctionTest implements Timeless {
     void testSimple() throws IOException {
         Fixture fixture = new Fixture();
         List<TimingConstraint> constraints = new TimingConstraintFactory(fixture.swerveKinodynamics).allGood(logger);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(planner);

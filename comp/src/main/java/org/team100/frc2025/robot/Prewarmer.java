@@ -11,7 +11,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.Logging;
 import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
 
@@ -42,7 +42,7 @@ public class Prewarmer {
                 new DirectionSE2(1, 0, 0),
                 1));
         List<TimingConstraint> constraints = new TimingConstraintFactory(machinery.m_swerveKinodynamics).medium(logger);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         planner.restToRest(waypoints);

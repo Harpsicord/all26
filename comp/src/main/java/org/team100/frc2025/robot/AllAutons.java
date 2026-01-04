@@ -16,7 +16,7 @@ import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -41,7 +41,7 @@ public class AllAutons {
                 .auto2025LooseTolerance(autoLog);
         List<TimingConstraint> constraints = new TimingConstraintFactory(machinery.m_swerveKinodynamics)
                 .medium(autoLog);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         final TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 

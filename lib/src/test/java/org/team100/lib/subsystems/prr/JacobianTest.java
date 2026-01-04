@@ -20,7 +20,7 @@ import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimedStateSE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -233,7 +233,7 @@ public class JacobianTest {
         Jacobian j = new Jacobian(k);
 
         List<TimingConstraint> constraints = List.of(new ConstantConstraint(logger, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         Pose2d start = new Pose2d(1, -1, Rotation2d.kZero);

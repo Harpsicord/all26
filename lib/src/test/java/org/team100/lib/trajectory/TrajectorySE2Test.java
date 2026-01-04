@@ -19,7 +19,7 @@ import org.team100.lib.trajectory.path.spline.SplineSE2;
 import org.team100.lib.trajectory.timing.TimedStateSE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,7 +46,7 @@ class TrajectorySE2Test implements Timeless {
                 new WaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
 
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast(logger);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
@@ -80,7 +80,7 @@ class TrajectorySE2Test implements Timeless {
                 new WaypointSE2(end, DirectionSE2.irrotational(angleToGoal), 1));
 
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast(logger);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
@@ -116,7 +116,7 @@ class TrajectorySE2Test implements Timeless {
 
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTest3(logger);
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast(logger);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
@@ -212,7 +212,7 @@ class TrajectorySE2Test implements Timeless {
 
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTest3(logger);
         List<TimingConstraint> constraints = new TimingConstraintFactory(limits).fast(logger);
-        TrajectoryFactory generator = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory generator = new TrajectorySE2Factory(constraints);
 
         TrajectorySE2 trajectory = generator.fromPath(path, 0, 0);
         TrajectoryPlotter.plotOverlay(new TrajectoryToVectorSeries(1).convert(trajectory));

@@ -12,7 +12,7 @@ import org.team100.lib.util.Math100;
  * Given a path, produces a trajectory, which includes the path and adds a
  * schedule.
  */
-public class TrajectoryFactory {
+public class TrajectorySE2Factory {
     public static final boolean DEBUG = false;
     private static final double EPSILON = 1e-6;
 
@@ -22,7 +22,7 @@ public class TrajectoryFactory {
 
     private final List<TimingConstraint> m_constraints;
 
-    public TrajectoryFactory(List<TimingConstraint> constraints) {
+    public TrajectorySE2Factory(List<TimingConstraint> constraints) {
         m_constraints = constraints;
     }
 

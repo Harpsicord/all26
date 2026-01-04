@@ -27,7 +27,7 @@ import org.team100.lib.trajectory.timing.SwerveDriveDynamicsConstraint;
 import org.team100.lib.trajectory.timing.TimedStateSE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 import org.team100.lib.trajectory.timing.YawRateConstraint;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -53,7 +53,7 @@ class TrajectorySE2PlannerTest implements Timeless {
                                 new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1.2));
         List<TimingConstraint> constraints = new ArrayList<>();
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectorySE2 t = planner.restToRest(waypoints);
@@ -86,7 +86,7 @@ class TrajectorySE2PlannerTest implements Timeless {
                 new SwerveDriveDynamicsConstraint(log, limits, 1, 1),
                 new YawRateConstraint(log, limits, 0.2),
                 new CapsizeAccelerationConstraint(log, limits, 0.2));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectorySE2 t = planner.restToRest(waypoints);
@@ -117,7 +117,7 @@ class TrajectorySE2PlannerTest implements Timeless {
                                 new Rotation2d()),
                         new DirectionSE2(0, 1, 0), 1.2));
         List<TimingConstraint> constraints = new ArrayList<>();
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         long startTimeNs = System.nanoTime();
@@ -144,7 +144,7 @@ class TrajectorySE2PlannerTest implements Timeless {
     void testRestToRest() {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(log);
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(log);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         ModelSE2 start = new ModelSE2(Pose2d.kZero, new VelocitySE2(0, 0, 0));
@@ -175,7 +175,7 @@ class TrajectorySE2PlannerTest implements Timeless {
     void testMovingToRest() {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(log);
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(log);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         ModelSE2 start = new ModelSE2(Pose2d.kZero, new VelocitySE2(1, 0, 0));
@@ -220,7 +220,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         List<TimingConstraint> constraints = List.of(
                 new ConstantConstraint(log, 1, 1),
                 new CapsizeAccelerationConstraint(log, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         ModelSE2 start = new ModelSE2(Pose2d.kZero, new VelocitySE2(0, 1, 0));
@@ -275,7 +275,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         List<TimingConstraint> constraints = List.of(
                 new ConstantConstraint(log, 1, 1),
                 new CapsizeAccelerationConstraint(log, 0.5, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
@@ -321,7 +321,7 @@ class TrajectorySE2PlannerTest implements Timeless {
 
         List<TimingConstraint> constraints = List.of(
                 new ConditionalTimingConstraint());
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         List<WaypointSE2> waypoints = List.of(
@@ -345,7 +345,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         List<TimingConstraint> c = List.of(
                 new ConstantConstraint(log, 1, 0.1),
                 new YawRateConstraint(log, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(p);
@@ -360,7 +360,7 @@ class TrajectorySE2PlannerTest implements Timeless {
     /** Turning in place does not work */
     @Test
     void testTurnInPlace() throws InterruptedException {
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(List.of(new ConstantConstraint(log, 1, 0.1)));
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(List.of(new ConstantConstraint(log, 1, 0.1)));
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectoryExamples ex = new TrajectoryExamples(p);
@@ -394,7 +394,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         List<TimingConstraint> c = List.of(
                 new ConstantConstraint(log, 2, 0.5),
                 new YawRateConstraint(log, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectorySE2 trajectory = planner.generateTrajectory(waypoints, 0, 0);
@@ -416,7 +416,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         List<TimingConstraint> c = List.of(
                 new ConstantConstraint(log, 2, 0.5),
                 new YawRateConstraint(log, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         TrajectorySE2 trajectory = planner.generateTrajectory(waypoints, 0, 0);
@@ -470,7 +470,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         List<TimingConstraint> c = List.of(
                 new ConstantConstraint(log, 2, 0.5),
                 new YawRateConstraint(log, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         List<WaypointSE2> waypoints = List.of(
@@ -500,7 +500,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         List<TimingConstraint> c = List.of(
                 new ConstantConstraint(log, 2, 0.5),
                 new YawRateConstraint(log, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(c);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         List<WaypointSE2> waypoints = List.of(

@@ -17,7 +17,7 @@ import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraint;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 import org.team100.lib.trajectory.timing.YawRateConstraint;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
@@ -42,7 +42,7 @@ public class DriveWithTrajectoryFunctionTest implements Timeless {
             new ConstantConstraint(log, 2, 2),
             new YawRateConstraint(log, 1, 1));
     PathFactorySE2 pathFactory = new PathFactorySE2();
-    TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+    TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
     TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
     /**

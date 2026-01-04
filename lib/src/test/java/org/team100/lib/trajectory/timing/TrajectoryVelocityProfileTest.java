@@ -48,7 +48,7 @@ public class TrajectoryVelocityProfileTest implements Timeless {
     @Test
     void testNoConstraint() {
         List<TimingConstraint> constraints = new ArrayList<TimingConstraint>();
-        TrajectoryFactory u = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory u = new TrajectorySE2Factory(constraints);
         TrajectorySE2 traj = u.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
@@ -63,7 +63,7 @@ public class TrajectoryVelocityProfileTest implements Timeless {
         // somewhat realistic numbers
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTrajectoryTimingTest(logger);
         List<TimingConstraint> constraints = List.of(new ConstantConstraint(logger, 1, 1, limits));
-        TrajectoryFactory u = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory u = new TrajectorySE2Factory(constraints);
         TrajectorySE2 traj = u.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
@@ -79,7 +79,7 @@ public class TrajectoryVelocityProfileTest implements Timeless {
     void testSwerveConstraint() {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTrajectoryTimingTest(logger);
         List<TimingConstraint> constraints = List.of(new SwerveDriveDynamicsConstraint(logger, limits, 1, 1));
-        TrajectoryFactory u = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory u = new TrajectorySE2Factory(constraints);
         TrajectorySE2 traj = u.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();
@@ -95,7 +95,7 @@ public class TrajectoryVelocityProfileTest implements Timeless {
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forTrajectoryTimingTest(logger);
         TimingConstraintFactory timing = new TimingConstraintFactory(limits);
         List<TimingConstraint> constraints = timing.testAuto(logger);
-        TrajectoryFactory u = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory u = new TrajectorySE2Factory(constraints);
         TrajectorySE2 traj = u.fromPath(path, 0, 0);
         if (DEBUG)
             traj.dump();

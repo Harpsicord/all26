@@ -27,7 +27,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class TrajectoryFactoryTest {
+public class TrajectorySE2FactoryTest {
     private static final boolean DEBUG = false;
     public static final double EPSILON = 1e-12;
     private static final double DELTA = 0.01;
@@ -57,7 +57,7 @@ public class TrajectoryFactoryTest {
             double end_vel,
             double max_vel,
             double max_acc) {
-        TrajectoryFactory u = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory u = new TrajectorySE2Factory(constraints);
         TrajectorySE2 timed_traj = u.fromPath(path, start_vel, end_vel);
         checkTrajectory(timed_traj, constraints, start_vel, end_vel, max_vel, max_acc);
         return timed_traj;
@@ -121,7 +121,7 @@ public class TrajectoryFactoryTest {
             System.out.printf("PATH:\n%s\n", path);
 
         List<TimingConstraint> constraints = new ArrayList<TimingConstraint>();
-        TrajectoryFactory u = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory u = new TrajectorySE2Factory(constraints);
         TrajectorySE2 traj = u.fromPath(path, 0.0, 0.0);
         assertEquals(0, traj.duration(), DELTA);
     }
@@ -266,7 +266,7 @@ public class TrajectoryFactoryTest {
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.2);
         PathSE2 path = pathFactory.fromWaypoints(waypoints);
         TrajectorySE2 t = new TrajectorySE2();
-        TrajectoryFactory m_trajectoryFactory = new TrajectoryFactory(new ArrayList<>());
+        TrajectorySE2Factory m_trajectoryFactory = new TrajectorySE2Factory(new ArrayList<>());
         for (int i = 0; i < iterations; ++i) {
             t = m_trajectoryFactory.fromPath(path, 0, 0);
         }

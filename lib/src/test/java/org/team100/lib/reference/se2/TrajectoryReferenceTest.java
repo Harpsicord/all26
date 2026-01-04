@@ -20,7 +20,7 @@ import org.team100.lib.trajectory.examples.TrajectoryExamples;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,7 +32,7 @@ public class TrajectoryReferenceTest implements Timeless {
     SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(logger);
     List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(logger);
     PathFactorySE2 pathFactory = new PathFactorySE2();
-    TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+    TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
     TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
     @Test

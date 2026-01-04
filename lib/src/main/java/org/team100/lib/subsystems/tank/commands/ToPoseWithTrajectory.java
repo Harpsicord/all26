@@ -11,7 +11,7 @@ import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.timing.ConstantConstraint;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 import org.team100.lib.trajectory.timing.TimedStateSE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.visualization.TrajectoryVisualization;
@@ -42,7 +42,7 @@ public class ToPoseWithTrajectory extends Command {
         m_drive = drive;
         m_viz = viz;
         List<TimingConstraint> constraints = List.of(new ConstantConstraint(log, 1, 1));
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         m_controller = new LTVUnicycleController(0.020);

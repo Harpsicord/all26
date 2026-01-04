@@ -29,7 +29,7 @@ import org.team100.lib.trajectory.path.PathFactorySE2;
 import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 import org.team100.lib.trajectory.timing.TimingConstraintFactory;
-import org.team100.lib.trajectory.timing.TrajectoryFactory;
+import org.team100.lib.trajectory.timing.TrajectorySE2Factory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,7 +45,7 @@ public class ReferenceControllerSE2Test implements Timeless {
     void testTrajectoryStart() {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(logger);
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(logger);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         // stepTime();
@@ -101,7 +101,7 @@ public class ReferenceControllerSE2Test implements Timeless {
     void testTrajectoryDone() {
         SwerveKinodynamics swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(logger);
         List<TimingConstraint> constraints = new TimingConstraintFactory(swerveKinodynamics).allGood(logger);
-        TrajectoryFactory trajectoryFactory = new TrajectoryFactory(constraints);
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
         PathFactorySE2 pathFactory = new PathFactorySE2();
         TrajectorySE2Planner planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         stepTime();
@@ -162,7 +162,7 @@ public class ReferenceControllerSE2Test implements Timeless {
         PathSE2 path = pathFactory.fromWaypoints(waypoints);
         assertFalse(path.isEmpty());
 
-        TrajectoryFactory u = new TrajectoryFactory(Arrays.asList());
+        TrajectorySE2Factory u = new TrajectorySE2Factory(Arrays.asList());
         TrajectorySE2 trajectory = u.fromPath(path, start_vel, end_vel);
         if (DEBUG)
             System.out.printf("TRAJECTORY:\n%s\n", trajectory);
