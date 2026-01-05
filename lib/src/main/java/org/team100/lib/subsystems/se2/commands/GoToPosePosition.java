@@ -22,22 +22,22 @@ public class GoToPosePosition extends MoveAndHold {
     private final LoggerFactory m_log;
     private final PositionSubsystemSE2 m_subsystem;
     private final WaypointSE2 m_goal;
-    private final Rotation2d m_course;
-    private final TrajectorySE2Planner m_trajectoryPlanner;
+    private final DirectionSE2 m_course;
+    private final TrajectorySE2Planner m_planner;
 
     private PositionReferenceControllerSE2 m_referenceController;
 
     public GoToPosePosition(
             LoggerFactory parent,
             PositionSubsystemSE2 subsystem,
-            Rotation2d course,
+            DirectionSE2 course,
             WaypointSE2 goal,
-            TrajectorySE2Planner trajectoryPlanner) {
+            TrajectorySE2Planner planner) {
         m_log = parent.type(this);
         m_subsystem = subsystem;
         m_goal = goal;
         m_course = course;
-        m_trajectoryPlanner = trajectoryPlanner;
+        m_planner = planner;
         addRequirements(subsystem);
     }
 
@@ -45,8 +45,8 @@ public class GoToPosePosition extends MoveAndHold {
     public void initialize() {
         WaypointSE2 m_currentPose = new WaypointSE2(
                 m_subsystem.getState().pose(),
-                DirectionSE2.irrotational(m_course), 1);
-        TrajectorySE2 m_trajectory = m_trajectoryPlanner.restToRest(
+                m_course, 1);
+        TrajectorySE2 m_trajectory = m_planner.restToRest(
                 List.of(m_currentPose, m_goal));
         m_referenceController = new PositionReferenceControllerSE2(
                 m_log, m_subsystem, new TrajectoryReferenceSE2(m_log, m_trajectory));

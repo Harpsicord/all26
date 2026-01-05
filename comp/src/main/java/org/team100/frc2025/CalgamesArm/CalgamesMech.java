@@ -13,6 +13,7 @@ import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.geometry.AccelerationSE2;
+import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.logging.Level;
@@ -69,7 +70,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
     /// CANONICAL CONFIGS
     /// These are used with profiles.
     ///
-    private static final EAWConfig HOME = new EAWConfig(0, 0, 0);
+    public static final EAWConfig HOME = new EAWConfig(0, 0, 0);
     private static final EAWConfig CORAL_GROUND_PICK = new EAWConfig(0, -1.83, -0.12);
     private static final EAWConfig CLIMB = new EAWConfig(0, -1.83, 2);
     private static final EAWConfig STATION = new EAWConfig(0, -1, 0);
@@ -82,7 +83,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
     /// CANONICAL POSES
     /// These are used with trajectories.
     ///
-    private static final Pose2d L2 = new Pose2d(0.56, 0.54, rad(2.0));
+     public static final Pose2d L2 = new Pose2d(0.56, 0.54, rad(2.0));
     private static final Pose2d L3 = new Pose2d(0.94, 0.56, rad(1.7));
     private static final Pose2d L4 = new Pose2d(1.57, 0.54, rad(2.0));
     private static final Pose2d L4_BACK = new Pose2d(1.92, -.54, rad(.75));
@@ -490,86 +491,86 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
 
     public MoveAndHold homeToL1() {
         return m_transit.endless("homeToL1",
-                WaypointSE2.irrotational(m_home, -1.5, 1.2),
+                DirectionSE2.irrotational(-1.5),
                 WaypointSE2.irrotational(L2, -1.7, 1.2));
     }
 
     // NEVER CALL
     public Command l1ToHome() {
         return m_transit.terminal("l1ToHome",
-                WaypointSE2.irrotational(L2, 1.3, 1.2),
+                DirectionSE2.irrotational(1.3),
                 WaypointSE2.irrotational(m_home, 1.5, 1.2));
     }
 
     public MoveAndHold homeToL2() {
         return m_transit.endless("homeToL2",
-                WaypointSE2.irrotational(m_home, 1.5, 1.2),
+                DirectionSE2.irrotational(1.5),
                 WaypointSE2.irrotational(L2, 1.5, 1.2));
     }
 
     public Command l2ToHome() {
         return m_transit.terminal("l2ToHome",
-                WaypointSE2.irrotational(L2, -1.5, 1.2),
+                DirectionSE2.irrotational(-1.5),
                 WaypointSE2.irrotational(m_home, -1.5, 1.2));
     }
 
     public MoveAndHold homeToL3() {
         return m_transit.endless("homeToL3",
-                WaypointSE2.irrotational(m_home, 0.8, 1.2),
+                DirectionSE2.irrotational(0.8),
                 WaypointSE2.irrotational(L3, 1.5, 1.2));
     }
 
     public Command l3ToHome() {
         return m_transit.terminal("l3ToHome",
-                WaypointSE2.irrotational(L3, -1.5, 1.2),
+                DirectionSE2.irrotational(-1.5),
                 WaypointSE2.irrotational(m_home, -2.3, 1.2));
     }
 
     public MoveAndHold homeToL4() {
         return m_transit.endless("homeToL4",
-                WaypointSE2.irrotational(m_home, 0.1, 1.2),
+                DirectionSE2.irrotational(0.1),
                 WaypointSE2.irrotational(L4, 1.5, 1.2));
     }
 
     public MoveAndHold homeToL4Back() {
         return m_transit.endless("homeToL4",
-                WaypointSE2.irrotational(m_home, 0.1, 1.2),
+                DirectionSE2.irrotational(0.1),
                 WaypointSE2.irrotational(L4_BACK, -1.5, 1.2));
     }
 
     public Command l4ToHome() {
         return m_transit.terminal("l4ToHome",
-                WaypointSE2.irrotational(L4, -1.5, 1.2),
+                DirectionSE2.irrotational(-1.5),
                 WaypointSE2.irrotational(m_home, -3, 1.2));
     }
 
     public Command l4BackToHome() {
         return m_transit.terminal("l4ToHome",
-                WaypointSE2.irrotational(L4_BACK, 1.5, 1.2),
+                DirectionSE2.irrotational(1.5),
                 WaypointSE2.irrotational(m_home, -3, 1.2));
     }
 
     public Command homeToAlgaeL2() {
         return m_transit.endless("homeToAlgaeL2",
-                WaypointSE2.irrotational(m_home, 1.5, 1.2),
+                DirectionSE2.irrotational(1.5),
                 WaypointSE2.irrotational(ALGAE_L2, 1.5, 1.2));
     }
 
     public Command homeToAlgaeL3() {
         return m_transit.endless("homeToAlgaeL3",
-                WaypointSE2.irrotational(m_home, 0, 1.2),
+                DirectionSE2.irrotational(0),
                 WaypointSE2.irrotational(ALGAE_L3, 1.5, 1.2));
     }
 
     public Command algaeL2ToHome() {
         return m_transit.terminal("homeToAlgaeL2",
-                WaypointSE2.irrotational(ALGAE_L2, -1.0, 1.2),
+                DirectionSE2.irrotational(-1.0),
                 WaypointSE2.irrotational(m_home, Math.PI, 1.2));
     }
 
     public Command algaeL3ToHome() {
         return m_transit.terminal("homeToAlgaeL3",
-                WaypointSE2.irrotational(ALGAE_L3, -1.0, 1.2),
+                DirectionSE2.irrotational(-1.0),
                 WaypointSE2.irrotational(m_home, Math.PI, 1.2));
     }
 
@@ -598,13 +599,13 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
      */
     public MoveAndHold homeToBarge() {
         return m_transit.endless("homeToBarge",
-                WaypointSE2.irrotational(m_home, 0, 1.2),
+                DirectionSE2.irrotational(0),
                 WaypointSE2.irrotational(BARGE, -1, 1.2));
     }
 
     public MoveAndHold bargeToHome() {
         return m_transit.endless("bargeToHome",
-                WaypointSE2.irrotational(BARGE, 2.5, 1.2),
+                DirectionSE2.irrotational(2.5),
                 WaypointSE2.irrotational(m_home, Math.PI, 1.2));
 
     }
