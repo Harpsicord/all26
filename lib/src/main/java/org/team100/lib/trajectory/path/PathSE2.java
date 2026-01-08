@@ -20,14 +20,14 @@ public class PathSE2 {
     // scheduler can't see
     // TODO: make this a constructor parameter.
     private static final double INTERPOLATION_LIMIT = 0.3;
-    private final List<PathPointSE2> m_points;
+    private final List<PathEntrySE2> m_points;
     /**
      * Translational distance, just the xy plane, not the Twist arc
      * or anything else, just xy distance.
      */
     private final double[] m_distances;
 
-    public PathSE2(final List<PathPointSE2> states) {
+    public PathSE2(final List<PathEntrySE2> states) {
         int n = states.size();
         m_points = new ArrayList<>(n);
         m_distances = new double[n];
@@ -56,7 +56,7 @@ public class PathSE2 {
     public PathPointSE2 getPoint(int index) {
         if (m_points.isEmpty())
             return null;
-        return m_points.get(index);
+        return m_points.get(index).point();
     }
 
     /** This is always non-negative. */
@@ -110,8 +110,8 @@ public class PathSE2 {
     }
 
     /** Just returns the list of points with no further sampling. */
-    public PathPointSE2[] resample() {
-        return m_points.toArray(PathPointSE2[]::new);
+    public PathEntrySE2[] resample() {
+        return m_points.toArray(PathEntrySE2[]::new);
     }
 
     @Override
@@ -151,7 +151,8 @@ public class PathSE2 {
             // the values here are just interpolated from the original values.
             double d = Math.min(i * step, maxDistance);
             PathPointSE2 state = sample(d);
-            if (state == null) continue; 
+            if (state == null)
+                continue;
             if (DEBUG)
                 System.out.printf("RESAMPLE: i=%d d=%f state=%s\n", i, d, state);
             samples[i] = state;

@@ -3,6 +3,7 @@ package org.team100.lib.trajectory.path.spline;
 import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.WaypointSE2;
+import org.team100.lib.trajectory.path.PathEntrySE2;
 import org.team100.lib.trajectory.path.PathPointSE2;
 
 import edu.wpi.first.math.VecBuilder;
@@ -112,6 +113,10 @@ public class SplineSE2 {
                 this, s,
                 headingRate(s),
                 curvature(s));
+    }
+
+    public PathEntrySE2 entry(double s) {
+        return new PathEntrySE2(new PathEntrySE2.Parameter(this, s), sample(s));
     }
 
     ////////////////////////////////////////////////////////////

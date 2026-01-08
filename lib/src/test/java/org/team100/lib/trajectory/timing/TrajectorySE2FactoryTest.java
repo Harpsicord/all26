@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.DirectionSE2;
-import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
@@ -35,21 +34,15 @@ public class TrajectorySE2FactoryTest {
     private static final double DELTA = 0.01;
     private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
 
-    public static final List<PathPointSE2> WAYPOINTS = Arrays.asList(
-            new PathPointSE2(WaypointSE2.irrotational(
-                    new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2), 0, 0),
-            new PathPointSE2(WaypointSE2.irrotational(
-                    new Pose2d(24.0, 0.0, new Rotation2d(0)), 0, 1.2), 0, 0),
-            new PathPointSE2(WaypointSE2.irrotational(
-                    new Pose2d(36, 12, new Rotation2d(0)), 0, 1.2), 0, 0),
-            new PathPointSE2(WaypointSE2.irrotational(
-                    new Pose2d(60, 12, new Rotation2d(0)), 0, 1.2), 0, 0));
-
-    public static final List<Rotation2d> HEADINGS = List.of(
-            GeometryUtil.fromDegrees(0),
-            GeometryUtil.fromDegrees(0),
-            GeometryUtil.fromDegrees(0),
-            GeometryUtil.fromDegrees(0));
+    public static final List<WaypointSE2> waypoints2 = Arrays.asList(
+            WaypointSE2.irrotational(
+                    new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
+            WaypointSE2.irrotational(
+                    new Pose2d(2.4, 0.0, new Rotation2d(0)), 0, 1.2),
+            WaypointSE2.irrotational(
+                    new Pose2d(3.6, 1.2, new Rotation2d(0)), 0, 1.2),
+            WaypointSE2.irrotational(
+                    new Pose2d(6.0, 1.2, new Rotation2d(0)), 0, 1.2));
 
     public TrajectorySE2 buildAndCheckTrajectory(
             final PathSE2 path,
@@ -101,34 +94,6 @@ public class TrajectorySE2FactoryTest {
     }
 
     /**
-     * Turning in place does not work, but it also doesn't fail.
-     */
-    @Test
-    void testJustTurningInPlace() {
-        PathSE2 path = new PathSE2(Arrays.asList(
-                new PathPointSE2(
-                        new WaypointSE2(
-                                new Pose2d(0, 0, new Rotation2d(0)),
-                                new DirectionSE2(0, 0, 1), 1),
-                        1, 0),
-                new PathPointSE2(
-                        new WaypointSE2(
-                                new Pose2d(0, 0, new Rotation2d(Math.PI)),
-                                new DirectionSE2(0, 0, 1), 1),
-                        1, 0)));
-
-        assertEquals(0, path.getMaxDistance(), DELTA);
-        assertEquals(2, path.length());
-        if (DEBUG)
-            System.out.printf("PATH:\n%s\n", path);
-
-        List<TimingConstraint> constraints = new ArrayList<TimingConstraint>();
-        TrajectorySE2Factory u = new TrajectorySE2Factory(constraints);
-        TrajectorySE2 traj = u.fromPath(path, 0.0, 0.0);
-        assertEquals(0, traj.duration(), DELTA);
-    }
-
-    /**
      * The path here is just four waypoints, so sharp corners.
      * 
      * The trajectory just notices velocity and acceleration along the path, so it
@@ -136,27 +101,30 @@ public class TrajectorySE2FactoryTest {
      */
     @Test
     void testNoConstraints() {
-        PathSE2 path = new PathSE2(WAYPOINTS);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.2, 0.2, 0.2, 0.2);
+        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints2);
+        PathSE2 path = pathFactory.get(splines);
+        assertEquals(55, path.length());
 
         // Triangle profile.
         TrajectorySE2 timed_traj = buildAndCheckTrajectory(path,
                 1.0,
                 new ArrayList<TimingConstraint>(), 0.0, 0.0, 20.0, 5.0);
-        assertEquals(4, timed_traj.length());
+        assertEquals(55, timed_traj.length());
 
         // Trapezoidal profile.
         timed_traj = buildAndCheckTrajectory(path,
                 1.0, new ArrayList<TimingConstraint>(),
                 0.0, 0.0,
                 10.0, 5.0);
-        assertEquals(4, timed_traj.length());
+        assertEquals(55, timed_traj.length());
 
         // Trapezoidal profile with start and end velocities.
         timed_traj = buildAndCheckTrajectory(path,
                 1.0, new ArrayList<TimingConstraint>(),
                 5.0, 2.0,
                 10.0, 5.0);
-        assertEquals(4, timed_traj.length());
+        assertEquals(55, timed_traj.length());
     }
 
     /**
@@ -165,13 +133,17 @@ public class TrajectorySE2FactoryTest {
      */
     @Test
     void testCentripetalConstraint() {
-        PathSE2 path = new PathSE2(WAYPOINTS);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.2, 0.2, 0.2, 0.2);
+        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints2);
+        PathSE2 path = pathFactory.get(splines);
+
         SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest(logger);
 
         // Triangle profile.
         TrajectorySE2 timed_traj = buildAndCheckTrajectory(path,
                 1.0,
-                List.of(new CapsizeAccelerationConstraint(logger, limits, 1.0)), 0.0, 0.0, 20.0, 5.0);
+                List.of(new CapsizeAccelerationConstraint(logger, limits, 1.0)),
+                 0.0, 0.0, 20.0, 5.0);
         assertEquals(4, timed_traj.length());
         assertNotNull(timed_traj);
 
@@ -188,7 +160,10 @@ public class TrajectorySE2FactoryTest {
 
     @Test
     void testConditionalVelocityConstraint() {
-        PathSE2 path = new PathSE2(WAYPOINTS);
+
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.1, 0.1, 0.1);
+        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints2);
+        PathSE2 path = pathFactory.get(splines);
 
         class ConditionalTimingConstraint implements TimingConstraint {
             @Override
@@ -219,7 +194,9 @@ public class TrajectorySE2FactoryTest {
 
     @Test
     void testConditionalAccelerationConstraint() {
-        PathSE2 path = new PathSE2(WAYPOINTS);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.1, 0.1, 0.1);
+        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints2);
+        PathSE2 path = pathFactory.get(splines);
 
         class ConditionalTimingConstraint implements TimingConstraint {
             @Override

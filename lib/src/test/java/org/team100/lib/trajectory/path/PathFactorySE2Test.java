@@ -115,20 +115,20 @@ public class PathFactorySE2Test implements Timeless {
 
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.1);
 
-        List<PathPointSE2> samples = new ArrayList<>();
-        samples.add(s.sample(0.0));
+        List<PathEntrySE2> samples = new ArrayList<>();
+        samples.add(s.entry(0.0));
         pathFactory.addEndpointOrBisect(s, samples, 0, 1);
 
         double arclength = 0;
-        PathPointSE2 cur_pose = samples.get(0);
-        for (PathPointSE2 sample : samples) {
+        PathPointSE2 cur_pose = samples.get(0).point();
+        for (PathEntrySE2 sample : samples) {
             Twist2d twist = GeometryUtil.slog(
                     GeometryUtil.transformBy(
                             GeometryUtil.inverse(
                                     cur_pose.waypoint().pose()),
-                            sample.waypoint().pose()));
+                            sample.point().waypoint().pose()));
             arclength += Math.hypot(twist.dx, twist.dy);
-            cur_pose = sample;
+            cur_pose = sample.point();
         }
 
         WaypointSE2 pose = cur_pose.waypoint();
@@ -178,11 +178,11 @@ public class PathFactorySE2Test implements Timeless {
 
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.02, 0.2, 0.1);
 
-        List<PathPointSE2> poses = new ArrayList<>();
-        poses.add(spline.sample(0.0));
+        List<PathEntrySE2> poses = new ArrayList<>();
+        poses.add(spline.entry(0.0));
         pathFactory.addEndpointOrBisect(spline, poses, 0, 1);
 
-        XYSeries sx = PathToVectorSeries.x("spline", poses);
+        XYSeries sx = PathToVectorSeries.x("spline", poses.stream().map(x -> x.point()).toList());
         XYDataset dataSet = new XYSeriesCollection(sx);
         ChartUtil.plotStacked(dataSet);
     }

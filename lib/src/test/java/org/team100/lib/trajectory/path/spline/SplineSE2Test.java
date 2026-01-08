@@ -52,7 +52,7 @@ class SplineSE2Test implements Timeless {
                                 new Translation2d(1, 0),
                                 new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1));
-        assertEquals(0, s.sample(0.5).getCurvatureRad_M(), DELTA);
+        assertEquals(0, s.entry(0.5).point().getCurvatureRad_M(), DELTA);
 
         // left turn
         s = new SplineSE2(
@@ -66,7 +66,7 @@ class SplineSE2Test implements Timeless {
                                 new Translation2d(1, 1),
                                 new Rotation2d()),
                         new DirectionSE2(0, 1, 0), 1));
-        assertEquals(0.950, s.sample(0.5).getCurvatureRad_M(), DELTA);
+        assertEquals(0.950, s.entry(0.5).point().getCurvatureRad_M(), DELTA);
 
     }
 
@@ -96,15 +96,15 @@ class SplineSE2Test implements Timeless {
         List<VectorSeries> series = splineConverter.convert(List.of(s));
         ChartUtil.plotOverlay(series, 100);
 
-        Translation2d t = s.sample(0).waypoint().pose().getTranslation();
+        Translation2d t = s.entry(0).point().waypoint().pose().getTranslation();
         assertEquals(0, t.getX(), DELTA);
-        t = s.sample(1).waypoint().pose().getTranslation();
+        t = s.entry(1).point().waypoint().pose().getTranslation();
         assertEquals(1, t.getX(), DELTA);
-        PathPointSE2 p = s.sample(0);
+        PathPointSE2 p = s.entry(0).point();
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
         assertEquals(0, p.getHeadingRateRad_M(), DELTA);
-        p = s.sample(1);
+        p = s.entry(1).point();
         assertEquals(1, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
         assertEquals(0, p.getHeadingRateRad_M(), DELTA);
@@ -128,15 +128,15 @@ class SplineSE2Test implements Timeless {
         List<VectorSeries> series = splineConverter.convert(List.of(s));
         ChartUtil.plotOverlay(series, 100);
 
-        Translation2d t = s.sample(0).waypoint().pose().getTranslation();
+        Translation2d t = s.entry(0).point().waypoint().pose().getTranslation();
         assertEquals(0, t.getX(), DELTA);
-        t = s.sample(1).waypoint().pose().getTranslation();
+        t = s.entry(1).point().waypoint().pose().getTranslation();
         assertEquals(2, t.getX(), DELTA);
-        PathPointSE2 p = s.sample(0);
+        PathPointSE2 p = s.entry(0).point();
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
         assertEquals(0, p.getHeadingRateRad_M(), DELTA);
-        p = s.sample(1);
+        p = s.entry(1).point();
         assertEquals(2, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
         assertEquals(0, p.getHeadingRateRad_M(), DELTA);
@@ -165,24 +165,24 @@ class SplineSE2Test implements Timeless {
 
         // now that the magic numbers apply to the rotational scaling, the heading rate
         // is constant.
-        Translation2d t = s.sample(0).waypoint().pose().getTranslation();
+        Translation2d t = s.entry(0).point().waypoint().pose().getTranslation();
         assertEquals(0, t.getX(), DELTA);
-        t = s.sample(1).waypoint().pose().getTranslation();
+        t = s.entry(1).point().waypoint().pose().getTranslation();
         assertEquals(1, t.getX(), DELTA);
 
-        PathPointSE2 p = s.sample(0);
+        PathPointSE2 p = s.entry(0).point();
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
         // initial rotation rate is zero
         assertEquals(0, p.getHeadingRateRad_M(), DELTA);
 
-        p = s.sample(0.5);
+        p = s.entry(0.5).point();
         assertEquals(0.5, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0.5, p.waypoint().pose().getRotation().getRadians(), DELTA);
         // high rotation rate in the middle
         assertEquals(2.273, p.getHeadingRateRad_M(), DELTA);
 
-        p = s.sample(1);
+        p = s.entry(1).point();
         assertEquals(1, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(1, p.waypoint().pose().getRotation().getRadians(), DELTA);
         // rotation rate is zero at the end
@@ -214,22 +214,22 @@ class SplineSE2Test implements Timeless {
 
         // now that the magic numbers apply to the rotational scaling, the heading rate
         // is constant.
-        Translation2d t = s.sample(0).waypoint().pose().getTranslation();
+        Translation2d t = s.entry(0).point().waypoint().pose().getTranslation();
         assertEquals(0, t.getX(), DELTA);
-        t = s.sample(1).waypoint().pose().getTranslation();
+        t = s.entry(1).point().waypoint().pose().getTranslation();
         assertEquals(1, t.getX(), DELTA);
 
-        PathPointSE2 p = s.sample(0);
+        PathPointSE2 p = s.entry(0).point();
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.waypoint().pose().getRotation().getRadians(), DELTA);
         assertEquals(1, p.getHeadingRateRad_M(), DELTA);
 
-        p = s.sample(0.5);
+        p = s.entry(0.5).point();
         assertEquals(0.5, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0.5, p.waypoint().pose().getRotation().getRadians(), DELTA);
         assertEquals(1, p.getHeadingRateRad_M(), DELTA);
 
-        p = s.sample(1);
+        p = s.entry(1).point();
         assertEquals(1, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(1, p.waypoint().pose().getRotation().getRadians(), DELTA);
         assertEquals(1, p.getHeadingRateRad_M(), DELTA);
@@ -317,12 +317,12 @@ class SplineSE2Test implements Timeless {
                 new Pose2d(new Translation2d(0, 1), Rotation2d.kCW_90deg),
                 new DirectionSE2(-1, 0, 1), scale);
         SplineSE2 spline = new SplineSE2(w0, w1);
-        PathPointSE2 p0 = spline.sample(0.0);
+        PathPointSE2 p0 = spline.entry(0.0).point();
         if (DEBUG)
             System.out.println(
                     "s, p0_heading_rate, p0_curvature, distance, post_hoc_heading_rate, post_hoc_curvature, post_hoc_heading_rate2, post_hoc_curvature2");
         for (double s = 0.01; s <= 1.0; s += 0.01) {
-            PathPointSE2 p1 = spline.sample(s);
+            PathPointSE2 p1 = spline.entry(s).point();
             double cartesianDistance = p1.distanceCartesian(p0);
             Rotation2d heading0 = p0.waypoint().pose().getRotation();
             Rotation2d heading1 = p1.waypoint().pose().getRotation();
@@ -352,7 +352,7 @@ class SplineSE2Test implements Timeless {
             System.out.println("s, x, y, k, dh");
         for (SplineSE2 spline : splines) {
             for (double s = 0; s < 0.99; s += 0.01) {
-                Pose2d p = spline.sample(s).waypoint().pose();
+                Pose2d p = spline.entry(s).point().waypoint().pose();
                 // the position should be on the circle
                 double range = p.getTranslation().getNorm();
                 actualRangeError = Math.max(actualRangeError, Math.abs(1.0 - range));
@@ -364,8 +364,8 @@ class SplineSE2Test implements Timeless {
                 // circle.
                 // 3/10/25 i made generation coarser so it's less accurate.
                 actualAzimuthError = Math.max(actualAzimuthError, Math.abs(error.getRadians()));
-                double k = spline.sample(s).getCurvatureRad_M();
-                double dh = spline.sample(s).getHeadingRateRad_M();
+                double k = spline.entry(s).point().getCurvatureRad_M();
+                double dh = spline.entry(s).point().getHeadingRateRad_M();
                 if (DEBUG)
                     System.out.printf("%f, %f, %f, %f, %f\n", s, p.getX(), p.getY(), k, dh);
             }
@@ -516,7 +516,7 @@ class SplineSE2Test implements Timeless {
                         new DirectionSE2(0, 1, 0), 1.2));
         if (DEBUG) {
             for (double s = 0; s < 1; s += 0.03) {
-                Pose2d pose = s0.sample(s).waypoint().pose();
+                Pose2d pose = s0.entry(s).point().waypoint().pose();
                 System.out.printf("%5.3f %5.3f\n", pose.getX(), pose.getY());
             }
         }
@@ -580,10 +580,10 @@ class SplineSE2Test implements Timeless {
                                 new Rotation2d(1)),
                         new DirectionSE2(1, 0, 1), 1));
 
-        double splineHR = spline.sample(0.5).getHeadingRateRad_M();
+        double splineHR = spline.entry(0.5).point().getHeadingRateRad_M();
         assertEquals(1.388, splineHR, DELTA);
-        Pose2d p0 = spline.sample(0.49).waypoint().pose();
-        Pose2d p1 = spline.sample(0.51).waypoint().pose();
+        Pose2d p0 = spline.entry(0.49).point().waypoint().pose();
+        Pose2d p1 = spline.entry(0.51).point().waypoint().pose();
         double discreteHR = GeometryUtil.headingRatio(p0, p1);
         assertEquals(0.811, discreteHR, DELTA);
     }
@@ -603,11 +603,11 @@ class SplineSE2Test implements Timeless {
                         new DirectionSE2(0, 1, 0), 1));
         // verify one point
         {
-            double splineCurvature = spline.sample(0.5).getCurvatureRad_M();
+            double splineCurvature = spline.entry(0.5).point().getCurvatureRad_M();
             assertEquals(0.950, splineCurvature, DELTA);
-            Pose2d p0 = spline.sample(0.49).waypoint().pose();
-            Pose2d p1 = spline.sample(0.50).waypoint().pose();
-            Pose2d p2 = spline.sample(0.51).waypoint().pose();
+            Pose2d p0 = spline.entry(0.49).point().waypoint().pose();
+            Pose2d p1 = spline.entry(0.50).point().waypoint().pose();
+            Pose2d p2 = spline.entry(0.51).point().waypoint().pose();
             double mengerCurvature = GeometryUtil.mengerCurvature(
                     p0.getTranslation(), p1.getTranslation(), p2.getTranslation());
             assertEquals(0.950, mengerCurvature, DELTA);
@@ -615,10 +615,10 @@ class SplineSE2Test implements Timeless {
         // verify all the points
         double DS = 0.01;
         for (double s = DS; s <= 1 - DS; s += DS) {
-            double splineCurvature = spline.sample(s).getCurvatureRad_M();
-            Pose2d p0 = spline.sample(s - DS).waypoint().pose();
-            Pose2d p1 = spline.sample(s).waypoint().pose();
-            Pose2d p2 = spline.sample(s + DS).waypoint().pose();
+            double splineCurvature = spline.entry(s).point().getCurvatureRad_M();
+            Pose2d p0 = spline.entry(s - DS).point().waypoint().pose();
+            Pose2d p1 = spline.entry(s).point().waypoint().pose();
+            Pose2d p2 = spline.entry(s + DS).point().waypoint().pose();
             double mengerCurvature = GeometryUtil.mengerCurvature(
                     p0.getTranslation(), p1.getTranslation(), p2.getTranslation());
             if (DEBUG)
@@ -643,11 +643,11 @@ class SplineSE2Test implements Timeless {
                                 new Translation2d(1, 0),
                                 new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1));
-        double splineCurvature = spline.sample(0.5).getCurvatureRad_M();
+        double splineCurvature = spline.entry(0.5).point().getCurvatureRad_M();
         assertEquals(0, splineCurvature, DELTA);
-        Pose2d p0 = spline.sample(0.49).waypoint().pose();
-        Pose2d p1 = spline.sample(0.50).waypoint().pose();
-        Pose2d p2 = spline.sample(0.51).waypoint().pose();
+        Pose2d p0 = spline.entry(0.49).point().waypoint().pose();
+        Pose2d p1 = spline.entry(0.50).point().waypoint().pose();
+        Pose2d p2 = spline.entry(0.51).point().waypoint().pose();
         double mengerCurvature = GeometryUtil.mengerCurvature(
                 p0.getTranslation(), p1.getTranslation(), p2.getTranslation());
         assertEquals(0, mengerCurvature, DELTA);

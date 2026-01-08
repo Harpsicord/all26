@@ -55,7 +55,7 @@ public class SplineUtilTest {
 
         // the toolpoint path has no curvature
         for (double s = 0; s <= 1; s += 0.1) {
-            assertEquals(0, toolpoint.sample(s).getCurvatureRad_M(), DELTA);
+            assertEquals(0, toolpoint.entry(s).point().getCurvatureRad_M(), DELTA);
         }
         double l = 1.0;
 

@@ -184,7 +184,7 @@ class TrajectorySE2Test implements Timeless {
         long start = System.nanoTime();
         for (int rep = 0; rep < reps; ++rep) {
             for (int t = 0; t < times; ++t) {
-                spline.sample(0.1 * t);
+                spline.entry(0.1 * t).point();
             }
         }
         long end = System.nanoTime();

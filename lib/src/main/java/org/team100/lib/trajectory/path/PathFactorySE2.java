@@ -65,10 +65,10 @@ public class PathFactorySE2 {
      * with straight lines.
      */
     public PathSE2 get(List<? extends SplineSE2> splines) {
-        List<PathPointSE2> result = new ArrayList<>();
+        List<PathEntrySE2> result = new ArrayList<>();
         if (splines.isEmpty())
             return new PathSE2(result);
-        result.add(splines.get(0).sample(0.0));
+        result.add(splines.get(0).entry(0.0));
         for (int i = 0; i < splines.size(); i++) {
             SplineSE2 s = splines.get(i);
             if (DEBUG)
@@ -91,7 +91,7 @@ public class PathFactorySE2 {
      */
     void addEndpointOrBisect(
             SplineSE2 spline,
-            List<PathPointSE2> rv,
+            List<PathEntrySE2> rv,
             double s0,
             double s1) {
         Pose2d p0 = spline.sample(s0).waypoint().pose();
@@ -127,7 +127,7 @@ public class PathFactorySE2 {
             addEndpointOrBisect(spline, rv, shalf, s1);
         } else {
             // midpoint is close enough, so add the endpoint
-            rv.add(spline.sample(s1));
+            rv.add(spline.entry(s1));
         }
     }
 }

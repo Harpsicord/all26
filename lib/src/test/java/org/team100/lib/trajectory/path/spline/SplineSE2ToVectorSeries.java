@@ -31,7 +31,7 @@ public class SplineSE2ToVectorSeries {
             SplineSE2 spline = splines.get(i);
             VectorSeries series = new VectorSeries(String.format("%d", i));
             for (double s = 0; s <= 1.001; s += DS) {
-                Pose2d p = spline.sample(s).waypoint().pose();
+                Pose2d p = spline.entry(s).point().waypoint().pose();
                 if (DEBUG)
                     System.out.println(p);
                 double x = p.getX();
@@ -55,7 +55,7 @@ public class SplineSE2ToVectorSeries {
         XYSeries series = new XYSeries(name);
         for (SplineSE2 spline : splines) {
             for (double s = 0; s <= 1.001; s += DS) {
-                double x = spline.sample(s).waypoint().pose().getX();
+                double x = spline.entry(s).point().waypoint().pose().getX();
                 series.add(s, x);
             }
         }
