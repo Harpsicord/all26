@@ -3,7 +3,6 @@ package org.team100.lib.trajectory.path;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.WaypointSE3;
 import org.team100.lib.trajectory.spline.SplineSE3;
-import org.team100.lib.util.Math100;
 
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N3;
@@ -13,13 +12,15 @@ import edu.wpi.first.math.numbers.N3;
  * 
  * Includes a WaypointSE3, heading rate, and curvature.
  */
-public class PathPointSE3 {
-    private static final boolean DEBUG = false;
+public class PathSE3Point {
+    static final boolean DEBUG = false;
 
-    /** Pose and course. */
+    /**
+     * Pose and course.
+     */
     private final WaypointSE3 m_waypoint;
-    private final SplineSE3 m_spline;
-    private final double m_s;
+    final SplineSE3 m_spline;
+    final double m_s;
     /**
      * The curvature vector is the path-length-derivative of the unit tangent
      * vector. It's an R3 vector here but it's constrained to the plane
@@ -43,7 +44,7 @@ public class PathPointSE3 {
      * @param K        curvature vector
      * @param H        path-length angular velocity of heading
      */
-    public PathPointSE3(
+    public PathSE3Point(
             WaypointSE3 waypoint,
             SplineSE3 spline,
             double s,
@@ -75,46 +76,8 @@ public class PathPointSE3 {
         return m_H;
     }
 
-    public double distanceCartesian(PathPointSE3 other) {
+    public double distanceCartesian(PathSE3Point other) {
         return Metrics.translationalDistance(m_waypoint.pose(), other.m_waypoint.pose());
-    }
-
-    public PathPointSE3 interpolate(PathPointSE3 other, double x) {
-        if (DEBUG)
-            System.out.printf("this s %f other s %f\n",
-                    m_s, other.m_s);
-        SplineSE3 spline = null;
-        double s = 0;
-        if (m_spline == other.m_spline) {
-            // ok to interpolate using this spline
-            if (DEBUG)
-                System.out.println("same spline");
-            spline = m_spline;
-            s = Math100.interpolate(m_s, other.m_s, x);
-        } else {
-            // which one to use?
-            // one of the endpoints should be the spline endpoint
-            // which is always the zero (not the 1)
-            if (other.m_s < 1e-6) {
-                // other one is the start, so use this one
-                if (DEBUG)
-                    System.out.println("use this spline");
-                spline = m_spline;
-                s = Math100.interpolate(m_s, 1, x);
-            } else {
-                if (DEBUG)
-                    System.out.println("use the other spline");
-                spline = other.m_spline;
-                s = Math100.interpolate(0, other.m_s, x);
-            }
-        }
-        if (DEBUG)
-            System.out.printf("s0 %f s1 %f x %f s %f\n",
-                    m_s, other.m_s, x, s);
-        // sample the spline again instead of interpolating.
-        if (spline != null)
-            return spline.sample(s);
-        return null;
     }
 
 }

@@ -9,7 +9,7 @@ import org.team100.lib.geometry.DirectionSE3;
 import org.team100.lib.geometry.WaypointSE3;
 import org.team100.lib.trajectory.constraint.ConstantConstraintSE3;
 import org.team100.lib.trajectory.constraint.TimingConstraintSE3;
-import org.team100.lib.trajectory.path.PathFactorySE3;
+import org.team100.lib.trajectory.path.PathSE3Factory;
 import org.team100.lib.util.ChartUtil3d;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -31,7 +31,7 @@ public class TrajectorySE3Test {
         List<TimingConstraintSE3> constraints = List.of(new ConstantConstraintSE3());
 
         TrajectorySE3Factory trajectoryFactory = new TrajectorySE3Factory(constraints);
-        PathFactorySE3 pathFactory = new PathFactorySE3();
+        PathSE3Factory pathFactory = new PathSE3Factory();
         TrajectorySE3Planner planner = new TrajectorySE3Planner(pathFactory, trajectoryFactory);
 
         TrajectorySE3 trajectory = planner.restToRest(waypoints);

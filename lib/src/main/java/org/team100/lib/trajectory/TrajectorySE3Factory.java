@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.team100.lib.trajectory.constraint.TimingConstraintSE3;
-import org.team100.lib.trajectory.path.PathPointSE3;
+import org.team100.lib.trajectory.path.PathSE3Point;
 import org.team100.lib.trajectory.path.PathSE3;
 import org.team100.lib.util.Math100;
 
@@ -25,16 +25,16 @@ public class TrajectorySE3Factory {
     }
 
     public TrajectorySE3 fromPath(PathSE3 path, double start_vel, double end_vel) {
-        PathPointSE3[] samples = getSamples(path);
+        PathSE3Point[] samples = getSamples(path);
         return fromSamples(samples, start_vel, end_vel);
     }
 
-    private PathPointSE3[] getSamples(PathSE3 path) {
+    private PathSE3Point[] getSamples(PathSE3 path) {
         return path.resample();
     }
 
     public TrajectorySE3 fromSamples(
-            PathPointSE3[] samples,
+            PathSE3Point[] samples,
             double start_vel,
             double end_vel) {
         double[] distances = distances(samples);
@@ -45,7 +45,7 @@ public class TrajectorySE3Factory {
         return new TrajectorySE3(timedStates, m_constraints);
     }
 
-    private double[] distances(PathPointSE3[] samples) {
+    private double[] distances(PathSE3Point[] samples) {
         int n = samples.length;
         double distances[] = new double[n];
         for (int i = 1; i < n; ++i) {
@@ -56,7 +56,7 @@ public class TrajectorySE3Factory {
     }
 
     private double[] velocities(
-            PathPointSE3[] samples, double start_vel, double end_vel, double[] distances) {
+            PathSE3Point[] samples, double start_vel, double end_vel, double[] distances) {
         double velocities[] = new double[samples.length];
         forward(samples, start_vel, distances, velocities);
         backward(samples, end_vel, distances, velocities);
@@ -89,7 +89,7 @@ public class TrajectorySE3Factory {
     }
 
     private List<TrajectorySE3Entry> timedStates(
-            PathPointSE3[] samples, double[] velocities, double[] accels, double[] runningTime) {
+            PathSE3Point[] samples, double[] velocities, double[] accels, double[] runningTime) {
         int n = samples.length;
         List<TrajectorySE3Entry> timedStates = new ArrayList<>(n);
         for (int i = 0; i < n; ++i) {
@@ -99,7 +99,7 @@ public class TrajectorySE3Factory {
     }
 
     private void forward(
-            PathPointSE3[] samples, double start_vel, double[] distances, double[] velocities) {
+            PathSE3Point[] samples, double start_vel, double[] distances, double[] velocities) {
         int n = samples.length;
         velocities[0] = start_vel;
         for (int i = 0; i < n - 1; ++i) {
@@ -134,7 +134,7 @@ public class TrajectorySE3Factory {
     }
 
     private void backward(
-            PathPointSE3[] samples, double end_vel, double[] distances, double[] velocities) {
+            PathSE3Point[] samples, double end_vel, double[] distances, double[] velocities) {
         int n = samples.length;
         velocities[n - 1] = end_vel;
         for (int i = n - 2; i >= 0; --i) {
@@ -170,7 +170,7 @@ public class TrajectorySE3Factory {
         }
     }
 
-    private double maxVelocity(PathPointSE3 sample) {
+    private double maxVelocity(PathSE3Point sample) {
         double minVelocity = HIGH_V;
         for (TimingConstraintSE3 constraint : m_constraints) {
             minVelocity = Math.min(minVelocity, constraint.maxV(sample));
@@ -178,7 +178,7 @@ public class TrajectorySE3Factory {
         return minVelocity;
     }
 
-    private double maxAccel(PathPointSE3 sample, double velocity) {
+    private double maxAccel(PathSE3Point sample, double velocity) {
         double minAccel = HIGH_ACCEL;
         for (TimingConstraintSE3 constraint : m_constraints) {
             minAccel = Math.min(minAccel, constraint.maxAccel(sample, velocity));
@@ -186,7 +186,7 @@ public class TrajectorySE3Factory {
         return minAccel;
     }
 
-    private double maxDecel(PathPointSE3 sample, double velocity) {
+    private double maxDecel(PathSE3Point sample, double velocity) {
         double maxDecel = -HIGH_ACCEL;
         for (TimingConstraintSE3 constraint : m_constraints) {
             maxDecel = Math.max(maxDecel, constraint.maxDecel(sample, velocity));

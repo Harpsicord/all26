@@ -100,22 +100,9 @@ public class SplineSE2 {
         m_heading = SplineR1.get(0.0, delta, dtheta0, dtheta1, ddtheta0, ddtheta1);
     }
 
-    /**
-     * TODO: remove the "1" scale here
-     * 
-     * @param s [0,1]
-     */
-    public PathSE2Point sample(double s) {
-        return new PathSE2Point(
-                waypoint(s),
-                headingRate(s),
-                curvature(s));
-    }
-
     public WaypointSE2 waypoint(double s) {
-        Pose2d pose = pose(s);
-        DirectionSE2 course = course(s);
-        return new WaypointSE2(pose, course, 1);
+        // TODO: remove the "1" here
+        return new WaypointSE2(pose(s), course(s), 1);
     }
 
     public Pose2d pose(double s) {
@@ -123,7 +110,9 @@ public class SplineSE2 {
     }
 
     public PathSE2Entry entry(double s) {
-        return new PathSE2Entry(new PathSE2Parameter(this, s), sample(s));
+        return new PathSE2Entry(
+                new PathSE2Parameter(this, s),
+                new PathSE2Point(waypoint(s), headingRate(s), curvature(s)));
     }
 
     ////////////////////////////////////////////////////////////

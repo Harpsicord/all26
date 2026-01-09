@@ -3,16 +3,16 @@ package org.team100.lib.trajectory;
 import java.util.List;
 
 import org.team100.lib.geometry.WaypointSE3;
-import org.team100.lib.trajectory.path.PathFactorySE3;
+import org.team100.lib.trajectory.path.PathSE3Factory;
 import org.team100.lib.trajectory.path.PathSE3;
 
 public class TrajectorySE3Planner {
     private static final boolean DEBUG = false;
 
-    private final PathFactorySE3 m_pathFactory;
+    private final PathSE3Factory m_pathFactory;
     private final TrajectorySE3Factory m_trajectoryFactory;
 
-    public TrajectorySE3Planner(PathFactorySE3 pathFactory, TrajectorySE3Factory trajectoryFactory) {
+    public TrajectorySE3Planner(PathSE3Factory pathFactory, TrajectorySE3Factory trajectoryFactory) {
         m_pathFactory = pathFactory;
         m_trajectoryFactory = trajectoryFactory;
     }

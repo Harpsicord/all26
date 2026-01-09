@@ -2,7 +2,10 @@ package org.team100.lib.trajectory.spline;
 
 import org.team100.lib.geometry.DirectionSE3;
 import org.team100.lib.geometry.WaypointSE3;
-import org.team100.lib.trajectory.path.PathPointSE3;
+import org.team100.lib.trajectory.path.PathSE2Entry;
+import org.team100.lib.trajectory.path.PathSE3Entry;
+import org.team100.lib.trajectory.path.PathSE3Parameter;
+import org.team100.lib.trajectory.path.PathSE3Point;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
@@ -139,13 +142,22 @@ public class SplineSE3 {
      * 
      * @param s [0,1]
      */
-    public PathPointSE3 sample(double s) {
-        Pose3d pose = new Pose3d(new Translation3d(x(s), y(s), z(s)), heading(s));
-        DirectionSE3 course = course(s);
-        WaypointSE3 waypoint = new WaypointSE3(pose, course, 1);
+    public PathSE3Point sample(double s) {
         Vector<N3> K = K(s);
         Vector<N3> H = headingRate(s);
-        return new PathPointSE3(waypoint, this, s, K, H);
+        return new PathSE3Point(waypoint(s), this, s, K, H);
+    }
+
+    public WaypointSE3 waypoint(double s) {
+        return new WaypointSE3(pose(s), course(s), 1);
+    }
+
+    public Pose3d pose(double s) {
+        return new Pose3d(new Translation3d(x(s), y(s), z(s)), heading(s));
+    }
+
+    public PathSE3Entry entry(double s) {
+        return new PathSE3Entry(new PathSE3Parameter(this, s), sample(s));
     }
 
     ////////////////////////////////////////////////////////////
@@ -218,7 +230,7 @@ public class SplineSE3 {
     }
 
     /** Heading angular velocity with respect to s. */
-    private Vector<N3> headingRate(double s) {
+    public Vector<N3> headingRate(double s) {
         // drad/ds
         double droll = droll(s);
         double dpitch = dpitch(s);
@@ -260,7 +272,7 @@ public class SplineSE3 {
      * 
      * see MATH.md
      */
-    private Vector<N3> K(double s) {
+    public Vector<N3> K(double s) {
         return SplineUtil.K(rprime(s), rprimeprime(s));
     }
 

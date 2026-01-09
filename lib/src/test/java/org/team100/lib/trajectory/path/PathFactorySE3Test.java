@@ -28,10 +28,10 @@ public class PathFactorySE3Test {
                                 new Translation3d(1, 0, 0),
                                 new Rotation3d()),
                         new DirectionSE3(1, 0, 0, 0, 0, 0), 1));
-        PathFactorySE3 pathFactory = new PathFactorySE3(0.1, 0.01, 0.1);
+        PathSE3Factory pathFactory = new PathSE3Factory(0.1, 0.01, 0.1);
         PathSE3 path = pathFactory.fromWaypoints(waypoints);
         assertEquals(17, path.length());
-        PathPointSE3 p = path.getPoint(0);
+        PathSE3Point p = path.getPoint(0);
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.waypoint().pose().getRotation().getAngle(), DELTA);
         assertEquals(0, p.headingRate().norm(), DELTA);

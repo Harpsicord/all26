@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.DirectionSE3;
 import org.team100.lib.geometry.WaypointSE3;
 import org.team100.lib.testing.Timeless;
-import org.team100.lib.trajectory.path.PathPointSE3;
-import org.team100.lib.trajectory.spline.SplineSE3;
+import org.team100.lib.trajectory.path.PathSE3Point;
 import org.team100.lib.util.ChartUtil3d;
 
 import edu.wpi.first.math.Vector;
@@ -35,9 +34,9 @@ public class SplineSE3Test implements Timeless {
                         new Rotation3d()),
                 new DirectionSE3(1, 0, 0, 0, 0, 0), 1);
         SplineSE3 spline = new SplineSE3(w0, w1);
-        Translation3d t = spline.sample(0).waypoint().pose().getTranslation();
+        Translation3d t = spline.pose(0).getTranslation();
         assertEquals(0, t.getX(), DELTA);
-        t = spline.sample(1).waypoint().pose().getTranslation();
+        t = spline.pose(1).getTranslation();
         assertEquals(1, t.getX(), DELTA);
     }
 
@@ -76,8 +75,7 @@ public class SplineSE3Test implements Timeless {
                         new Rotation3d(0, 0, 0)),
                 new DirectionSE3(1, 1, 1, 0, 0, 0), 1);
         SplineSE3 spline = new SplineSE3(w0, w1);
-        PathPointSE3 p = spline.sample(0.5);
-        Vector<N3> K = p.curvature();
+        Vector<N3> K = spline.K(0.5);
         assertEquals(0, K.get(0), DELTA);
         assertEquals(0, K.get(1), DELTA);
         assertEquals(0, K.get(2), DELTA);
@@ -97,8 +95,7 @@ public class SplineSE3Test implements Timeless {
                         new Rotation3d(0, 0, 0)),
                 new DirectionSE3(1, 1, 1, 0, 0, 0), 1);
         SplineSE3 spline = new SplineSE3(w0, w1);
-        PathPointSE3 p = spline.sample(0.5);
-        Vector<N3> H = p.headingRate();
+        Vector<N3> H = spline.headingRate(0.5);
         assertEquals(0, H.get(0), DELTA);
         assertEquals(0, H.get(1), DELTA);
         assertEquals(0, H.get(2), DELTA);
@@ -122,8 +119,7 @@ public class SplineSE3Test implements Timeless {
                 new DirectionSE3(0, 1, 1, 0, 0, 2), 1);
         SplineSE3 spline = new SplineSE3(w0, w1);
         for (double s = 0; s <= 1; s += 0.1) {
-            PathPointSE3 p = spline.sample(s);
-            Vector<N3> K = p.curvature();
+            Vector<N3> K = spline.K(s);
             // Rotation3d r = p.waypoint().pose().getRotation();
             // System.out.printf("R (%5.3f, %5.3f, %5.3f)\n", r.getX(), r.getY(), r.getZ());
             // curvature should be roughly towards (0,1) with z of ~zero.
@@ -153,8 +149,7 @@ public class SplineSE3Test implements Timeless {
                 new DirectionSE3(0, 1, 1, 0, 0, 2), 1);
         SplineSE3 spline = new SplineSE3(w0, w1);
         for (double s = 0; s <= 1; s += 0.1) {
-            PathPointSE3 p = spline.sample(s);
-            Vector<N3> H = p.headingRate();
+            Vector<N3> H = spline.headingRate(s);
             // in the helix, the heading only changes about the z axis
             // and it should be roughly constant.
             // total heading change is 1.5ish, total path length is around 1.9

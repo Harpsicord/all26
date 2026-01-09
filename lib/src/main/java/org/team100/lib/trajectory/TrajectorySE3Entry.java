@@ -1,6 +1,7 @@
 package org.team100.lib.trajectory;
 
-import org.team100.lib.trajectory.path.PathPointSE3;
+import org.team100.lib.trajectory.path.PathSE3Point;
+import org.team100.lib.trajectory.path.PathUtil;
 
 /**
  * Represents a state within a trajectory in SE(3).
@@ -8,13 +9,13 @@ import org.team100.lib.trajectory.path.PathPointSE3;
 public class TrajectorySE3Entry {
     private static final boolean DEBUG = false;
 
-    private final PathPointSE3 m_point;
+    private final PathSE3Point m_point;
     private final double m_timeS;
     private final double m_velocityM_S;
     private final double m_accelM_S_S;
 
     public TrajectorySE3Entry(
-            PathPointSE3 point,
+            PathSE3Point point,
             double t,
             double velocity,
             double acceleration) {
@@ -24,7 +25,7 @@ public class TrajectorySE3Entry {
         m_accelM_S_S = acceleration;
     }
 
-    public PathPointSE3 point() {
+    public PathSE3Point point() {
         return m_point;
     }
 
@@ -64,8 +65,7 @@ public class TrajectorySE3Entry {
         if (DEBUG)
             System.out.printf("tlerp %f\n", tLerp);
         return new TrajectorySE3Entry(
-                // m_point.interpolate(other.m_point, interpolant),
-                m_point.interpolate(other.m_point, s),
+                PathUtil.interpolate(m_point, other.m_point, s),
                 tLerp,
                 vLerp,
                 m_accelM_S_S);

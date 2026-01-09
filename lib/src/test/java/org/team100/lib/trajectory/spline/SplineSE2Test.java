@@ -24,10 +24,9 @@ import org.team100.lib.trajectory.TrajectorySE2ToVectorSeries;
 import org.team100.lib.trajectory.constraint.CapsizeAccelerationConstraint;
 import org.team100.lib.trajectory.constraint.ConstantConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraint;
+import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.path.PathSE2Factory;
 import org.team100.lib.trajectory.path.PathSE2Point;
-import org.team100.lib.trajectory.spline.SplineSE2;
-import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.util.ChartUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;

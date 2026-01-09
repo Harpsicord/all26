@@ -1,12 +1,12 @@
 package org.team100.lib.trajectory.constraint;
 
-import org.team100.lib.trajectory.path.PathPointSE3;
+import org.team100.lib.trajectory.path.PathSE3Point;
 
 public interface TimingConstraintSE3 {
-    double maxV(PathPointSE3 state);
+    double maxV(PathSE3Point state);
 
-    double maxAccel(PathPointSE3 state, double velocityM_S);
+    double maxAccel(PathSE3Point state, double velocityM_S);
 
-    double maxDecel(PathPointSE3 state, double velocityM_S);
+    double maxDecel(PathSE3Point state, double velocityM_S);
 
 }

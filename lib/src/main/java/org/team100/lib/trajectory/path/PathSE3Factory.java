@@ -3,6 +3,7 @@ package org.team100.lib.trajectory.path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.team100.lib.geometry.DirectionSE3;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.WaypointSE3;
@@ -12,7 +13,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Twist3d;
 
-public class PathFactorySE3 {
+public class PathSE3Factory {
     private static final boolean DEBUG = false;
     private static final double SPLINE_SAMPLE_TOLERANCE_M = 0.02;
     private static final double SPLINE_SAMPLE_TOLERANCE_RAD = 0.2;
@@ -21,13 +22,13 @@ public class PathFactorySE3 {
     private final double maxDx;
     private final double maxDTheta;
 
-    public PathFactorySE3() {
+    public PathSE3Factory() {
         this(TRAJECTORY_STEP_M,
                 SPLINE_SAMPLE_TOLERANCE_M,
                 SPLINE_SAMPLE_TOLERANCE_RAD);
     }
 
-    public PathFactorySE3(
+    public PathSE3Factory(
             double maxNorm,
             double maxDx,
             double maxDTheta) {
@@ -49,8 +50,8 @@ public class PathFactorySE3 {
         return splines;
     }
 
-    List<PathPointSE3> samplesFromSpline(SplineSE3 spline) {
-        List<PathPointSE3> result = new ArrayList<>();
+    List<PathSE3Point> samplesFromSpline(SplineSE3 spline) {
+        List<PathSE3Point> result = new ArrayList<>();
         result.add(spline.sample(0.0));
         getSegmentArc(spline, result, 0, 1);
         return result;
@@ -60,8 +61,8 @@ public class PathFactorySE3 {
         return new PathSE3(samplesFromSplines(splines));
     }
 
-    public List<PathPointSE3> samplesFromSplines(List<? extends SplineSE3> splines) {
-        List<PathPointSE3> result = new ArrayList<>();
+    public List<PathSE3Point> samplesFromSplines(List<? extends SplineSE3> splines) {
+        List<PathSE3Point> result = new ArrayList<>();
         if (splines.isEmpty())
             return result;
         result.add(splines.get(0).sample(0.0));
@@ -69,7 +70,7 @@ public class PathFactorySE3 {
             SplineSE3 s = splines.get(i);
             if (DEBUG)
                 System.out.printf("SPLINE:\n%d\n%s\n", i, s);
-            List<PathPointSE3> samples = samplesFromSpline(s);
+            List<PathSE3Point> samples = samplesFromSpline(s);
             // the sample at the end of the previous spline is the same as the one for the
             // beginning of the next, so don't include it twice.
             samples.remove(0);
@@ -80,13 +81,13 @@ public class PathFactorySE3 {
 
     private void getSegmentArc(
             SplineSE3 spline,
-            List<PathPointSE3> rv,
+            List<PathSE3Point> rv,
             double s0,
             double s1) {
-        Pose3d p0 = spline.sample(s0).waypoint().pose();
         double shalf = (s0 + s1) / 2;
-        Pose3d phalf = spline.sample(shalf).waypoint().pose();
-        Pose3d p1 = spline.sample(s1).waypoint().pose();
+        Pose3d p0 = spline.pose(s0);
+        Pose3d phalf = spline.pose(shalf);
+        Pose3d p1 = spline.pose(s1);
 
         // twist from p0 to p1
         Twist3d twist_full = p0.log(p1);
@@ -98,9 +99,9 @@ public class PathFactorySE3 {
         Transform3d error = phalf_predicted.minus(phalf);
 
         // also prohibit large changes in direction between points
-        PathPointSE3 p20 = spline.sample(s0);
-        PathPointSE3 p21 = spline.sample(s1);
-        Twist3d p2t = p20.waypoint().course().minus(p21.waypoint().course());
+        DirectionSE3 course0 = spline.waypoint(s0).course();
+        DirectionSE3 course1 = spline.waypoint(s1).course();
+        Twist3d p2t = course0.minus(course1);
 
         // note the extra conditions to avoid points too far apart.
         // checks both translational and l2 norms

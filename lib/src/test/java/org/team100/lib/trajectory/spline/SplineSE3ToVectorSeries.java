@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.jfree.chart3d.data.xyz.XYZDataset;
 import org.jfree.chart3d.data.xyz.XYZSeriesCollection;
-import org.team100.lib.trajectory.spline.SplineSE3;
 import org.team100.lib.util.ChartUtil3d;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -30,7 +29,7 @@ public class SplineSE3ToVectorSeries {
         for (int i = 0; i < splines.size(); i++) {
             SplineSE3 spline = splines.get(i);
             for (double s = 0; s <= 1.001; s += DS) {
-                Pose3d p = spline.sample(s).waypoint().pose();
+                Pose3d p = spline.pose(s);
                 double x = p.getX();
                 double y = p.getY();
                 double z = p.getZ();

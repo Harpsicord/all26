@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.team100.lib.geometry.WaypointSE3;
 import org.team100.lib.trajectory.constraint.TimingConstraintSE3;
-import org.team100.lib.trajectory.path.PathPointSE3;
+import org.team100.lib.trajectory.path.PathSE3Point;
 
 import edu.wpi.first.math.geometry.Pose3d;
 
@@ -79,7 +79,7 @@ public class TrajectorySE3 {
         System.out.println("i, s, t, v, a, k, x, y");
         for (int i = 0; i < length(); ++i) {
             TrajectorySE3Entry ts = getPoint(i);
-            PathPointSE3 pwm = ts.point();
+            PathSE3Point pwm = ts.point();
             WaypointSE3 w = pwm.waypoint();
             Pose3d p = w.pose();
             System.out.printf("%d, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f\n",
