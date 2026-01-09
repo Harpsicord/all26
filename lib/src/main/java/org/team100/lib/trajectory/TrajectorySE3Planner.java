@@ -3,8 +3,10 @@ package org.team100.lib.trajectory;
 import java.util.List;
 
 import org.team100.lib.geometry.WaypointSE3;
-import org.team100.lib.trajectory.path.PathSE3Factory;
 import org.team100.lib.trajectory.path.PathSE3;
+import org.team100.lib.trajectory.path.PathSE3Factory;
+import org.team100.lib.trajectory.spline.SplineSE3;
+import org.team100.lib.trajectory.spline.SplineSE3Factory;
 
 public class TrajectorySE3Planner {
     private static final boolean DEBUG = false;
@@ -25,7 +27,8 @@ public class TrajectorySE3Planner {
             List<WaypointSE3> waypoints, double start_vel, double end_vel) {
         try {
             // Create a path from splines.
-            PathSE3 path = m_pathFactory.fromWaypoints(waypoints);
+            List<SplineSE3> splines = SplineSE3Factory.splinesFromWaypoints(waypoints);
+            PathSE3 path = m_pathFactory.fromWaypoints(splines);
             if (DEBUG)
                 System.out.printf("PATH\n%s\n", path);
             // Generate the timed trajectory.

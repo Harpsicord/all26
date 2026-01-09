@@ -486,7 +486,7 @@ class SplineSE2Test implements Timeless {
                 System.out.printf("spline %s\n", s);
         }
 
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.05, 0.05, 0.05);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.05, 0.05);
         PathSE2 path = pathFactory.get(splines);
         if (DEBUG)
             System.out.printf("path %s\n", path);
@@ -527,7 +527,7 @@ class SplineSE2Test implements Timeless {
         List<VectorSeries> series = splineConverter.convert(splines);
         ChartUtil.plotOverlay(series, 100);
 
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.05, 0.05, 0.05);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.05, 0.05);
         PathSE2 path = pathFactory.get(splines);
         if (DEBUG) {
             for (int i = 0; i < path.length(); ++i) {

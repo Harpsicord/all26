@@ -24,7 +24,7 @@ public class TrajectorySE3 {
             List<TrajectorySE3Entry> points, List<TimingConstraintSE3> constraints) {
         m_points = points;
         m_constraints = constraints;
-        m_duration = m_points.get(m_points.size() - 1).getTimeS();
+        m_duration = m_points.get(m_points.size() - 1).point().time();
     }
 
     public TrajectorySE3Entry sample(double timeS) {
@@ -42,14 +42,14 @@ public class TrajectorySE3 {
 
         for (int i = 1; i < length(); ++i) {
             final TrajectorySE3Entry ceil = getPoint(i);
-            if (ceil.getTimeS() >= timeS) {
+            if (ceil.point().time() >= timeS) {
                 final TrajectorySE3Entry floor = getPoint(i - 1);
-                double span = ceil.getTimeS() - floor.getTimeS();
+                double span = ceil.point().time() - floor.point().time();
                 if (Math.abs(span) <= 1e-12) {
                     return ceil;
                 }
-                double delta_t = timeS - floor.getTimeS();
-                return floor.interpolate(ceil, delta_t);
+                double delta_t = timeS - floor.point().time();
+                return TrajectoryUtil.interpolate(floor, ceil, delta_t);
             }
         }
         throw new IllegalStateException("impossible trajectory: " + toString());
@@ -79,11 +79,11 @@ public class TrajectorySE3 {
         System.out.println("i, s, t, v, a, k, x, y");
         for (int i = 0; i < length(); ++i) {
             TrajectorySE3Entry ts = getPoint(i);
-            PathSE3Point pwm = ts.point();
+            PathSE3Point pwm = ts.point().point();
             WaypointSE3 w = pwm.waypoint();
             Pose3d p = w.pose();
             System.out.printf("%d, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f\n",
-                    i, pwm.getS(), ts.getTimeS(), ts.velocityM_S(), ts.acceleration(),
+                    i, pwm.getS(), ts.point().time(), ts.point().velocity(), ts.point().accel(),
                     p.getX(), p.getY());
         }
     }

@@ -29,7 +29,7 @@ public class SplineFactorySE2Test {
                                 Rotation2d.kCCW_90deg),
                         new DirectionSE2(0, 0, 1), 1));
         assertThrows(IllegalArgumentException.class,
-                () -> SplineFactorySE2.splinesFromWaypoints(waypoints));
+                () -> SplineSE2Factory.splinesFromWaypoints(waypoints));
     }
 
     /** Hard corners do not work. */
@@ -49,7 +49,7 @@ public class SplineFactorySE2Test {
                 new DirectionSE2(0, 1, 0), 1);
         List<WaypointSE2> waypoints = List.of(w0, w1, w2, w3);
         assertThrows(IllegalArgumentException.class,
-                () -> SplineFactorySE2.splinesFromWaypoints(waypoints));
+                () -> SplineSE2Factory.splinesFromWaypoints(waypoints));
     }
 
 }

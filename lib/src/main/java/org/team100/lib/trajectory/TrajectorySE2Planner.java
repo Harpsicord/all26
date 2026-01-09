@@ -5,7 +5,7 @@ import java.util.List;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.path.PathSE2Factory;
-import org.team100.lib.trajectory.spline.SplineFactorySE2;
+import org.team100.lib.trajectory.spline.SplineSE2Factory;
 import org.team100.lib.trajectory.spline.SplineSE2;
 
 /**
@@ -52,7 +52,7 @@ public class TrajectorySE2Planner {
             List<WaypointSE2> waypoints, double start_vel, double end_vel) {
         try {
             // Create splines from waypoints.
-            List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
+            List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
             // Create a path from splines.
             PathSE2 path = m_pathFactory.get(splines);
             if (DEBUG)

@@ -27,7 +27,7 @@ public class TrajectorySE3ToVectorSeries {
         double dt = duration / POINTS;
         for (double time = 0; time < duration; time += dt) {
             TrajectorySE3Entry p = t.sample(time);
-            WaypointSE3 pp = p.point().waypoint();
+            WaypointSE3 pp = p.point().point().waypoint();
             double x = pp.pose().getTranslation().getX();
             double y = pp.pose().getTranslation().getY();
             double z = pp.pose().getTranslation().getZ();

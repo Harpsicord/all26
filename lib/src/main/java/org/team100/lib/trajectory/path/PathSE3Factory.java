@@ -6,13 +6,13 @@ import java.util.List;
 import org.team100.lib.geometry.DirectionSE3;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.Metrics;
-import org.team100.lib.geometry.WaypointSE3;
 import org.team100.lib.trajectory.spline.SplineSE3;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Twist3d;
 
+// TODO: combine this with the SE2 version since they're identical
 public class PathSE3Factory {
     private static final boolean DEBUG = false;
     private static final double SPLINE_SAMPLE_TOLERANCE_M = 0.02;
@@ -37,51 +37,23 @@ public class PathSE3Factory {
         this.maxDTheta = maxDTheta;
     }
 
-    public PathSE3 fromWaypoints(List<WaypointSE3> waypoints) {
-        List<SplineSE3> splines = splinesFromWaypoints(waypoints);
-        return fromSplines(splines);
-    }
-
-    private List<SplineSE3> splinesFromWaypoints(List<WaypointSE3> waypoints) {
-        List<SplineSE3> splines = new ArrayList<>(waypoints.size() - 1);
-        for (int i = 1; i < waypoints.size(); ++i) {
-            splines.add(new SplineSE3(waypoints.get(i - 1), waypoints.get(i)));
-        }
-        return splines;
-    }
-
-    List<PathSE3Point> samplesFromSpline(SplineSE3 spline) {
-        List<PathSE3Point> result = new ArrayList<>();
-        result.add(spline.sample(0.0));
-        getSegmentArc(spline, result, 0, 1);
-        return result;
-    }
-
-    public PathSE3 fromSplines(List<? extends SplineSE3> splines) {
-        return new PathSE3(samplesFromSplines(splines));
-    }
-
-    public List<PathSE3Point> samplesFromSplines(List<? extends SplineSE3> splines) {
-        List<PathSE3Point> result = new ArrayList<>();
+    public PathSE3 fromWaypoints(List<? extends SplineSE3> splines) {
+        List<PathSE3Entry> result = new ArrayList<>();
         if (splines.isEmpty())
-            return result;
-        result.add(splines.get(0).sample(0.0));
+            return new PathSE3(result);
+        result.add(splines.get(0).entry(0.0));
         for (int i = 0; i < splines.size(); i++) {
             SplineSE3 s = splines.get(i);
             if (DEBUG)
                 System.out.printf("SPLINE:\n%d\n%s\n", i, s);
-            List<PathSE3Point> samples = samplesFromSpline(s);
-            // the sample at the end of the previous spline is the same as the one for the
-            // beginning of the next, so don't include it twice.
-            samples.remove(0);
-            result.addAll(samples);
+            addEndpointOrBisect(s, result, 0, 1);
         }
-        return result;
+        return new PathSE3(result);
     }
 
-    private void getSegmentArc(
+    private void addEndpointOrBisect(
             SplineSE3 spline,
-            List<PathSE3Point> rv,
+            List<PathSE3Entry> rv,
             double s0,
             double s1) {
         double shalf = (s0 + s1) / 2;
@@ -101,7 +73,7 @@ public class PathSE3Factory {
         // also prohibit large changes in direction between points
         DirectionSE3 course0 = spline.waypoint(s0).course();
         DirectionSE3 course1 = spline.waypoint(s1).course();
-        Twist3d p2t = course0.minus(course1);
+        Twist3d courseChange = course0.minus(course1);
 
         // note the extra conditions to avoid points too far apart.
         // checks both translational and l2 norms
@@ -110,13 +82,13 @@ public class PathSE3Factory {
                 || Math.abs(error.getRotation().getAngle()) > maxDTheta
                 || Metrics.translationalNorm(twist_full) > maxNorm
                 || Metrics.l2Norm(twist_full) > maxNorm
-                || Metrics.l2Norm(p2t) > maxNorm) {
+                || Metrics.l2Norm(courseChange) > maxNorm) {
             // add a point in between
-            getSegmentArc(spline, rv, s0, shalf);
-            getSegmentArc(spline, rv, shalf, s1);
+            addEndpointOrBisect(spline, rv, s0, shalf);
+            addEndpointOrBisect(spline, rv, shalf, s1);
         } else {
             // midpoint is close enough, so add the endpoint
-            rv.add(spline.sample(s1));
+            rv.add(spline.entry(s1));
         }
     }
 

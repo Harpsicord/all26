@@ -7,6 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.DirectionSE3;
 import org.team100.lib.geometry.WaypointSE3;
+import org.team100.lib.trajectory.spline.SplineSE3;
+import org.team100.lib.trajectory.spline.SplineSE3Factory;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -29,13 +31,14 @@ public class PathFactorySE3Test {
                                 new Rotation3d()),
                         new DirectionSE3(1, 0, 0, 0, 0, 0), 1));
         PathSE3Factory pathFactory = new PathSE3Factory(0.1, 0.01, 0.1);
-        PathSE3 path = pathFactory.fromWaypoints(waypoints);
+        List<SplineSE3> splines = SplineSE3Factory.splinesFromWaypoints(waypoints);
+        PathSE3 path = pathFactory.fromWaypoints(splines);
         assertEquals(17, path.length());
-        PathSE3Point p = path.getPoint(0);
+        PathSE3Point p = path.getEntry(0).point();
         assertEquals(0, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.waypoint().pose().getRotation().getAngle(), DELTA);
         assertEquals(0, p.headingRate().norm(), DELTA);
-        p = path.getPoint(8);
+        p = path.getEntry(8).point();
         assertEquals(0.5, p.waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.waypoint().pose().getRotation().getAngle(), DELTA);
         assertEquals(0, p.headingRate().norm(), DELTA);

@@ -15,7 +15,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.path.PathSE2Factory;
-import org.team100.lib.trajectory.spline.SplineFactorySE2;
+import org.team100.lib.trajectory.path.PathUtil;
+import org.team100.lib.trajectory.spline.SplineSE2Factory;
 import org.team100.lib.trajectory.spline.SplineSE2;
 import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraintFactory;
@@ -170,7 +171,7 @@ class TrajectorySE2Test implements Timeless {
         WaypointSE2 p2 = new WaypointSE2(new Pose2d(new Translation2d(10, 10), Rotation2d.kPi),
                 new DirectionSE2(1, 0, 0), 1);
         List<WaypointSE2> waypoints = List.of(p0, p1, p2);
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
 
         int reps = 100000;
         int times = 10;
@@ -193,14 +194,14 @@ class TrajectorySE2Test implements Timeless {
 
         // INTERPOLATE SPLINE POINTS (170 ns)
 
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.02, 0.2, 0.1);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.02, 0.1);
         PathSE2 path = pathFactory.get(splines);
         assertEquals(22.734, path.getMaxDistance(), 0.001);
 
         start = System.nanoTime();
         for (int rep = 0; rep < reps; ++rep) {
             for (int t = 0; t < times; ++t) {
-                path.sample(0.1 * t);
+                PathUtil.sample(path, 0.1 * t);
             }
         }
         end = System.nanoTime();

@@ -21,7 +21,7 @@ import org.team100.lib.trajectory.TrajectorySE2Factory;
 import org.team100.lib.trajectory.TrajectorySE2ToVectorSeries;
 import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.path.PathSE2Factory;
-import org.team100.lib.trajectory.spline.SplineFactorySE2;
+import org.team100.lib.trajectory.spline.SplineSE2Factory;
 import org.team100.lib.trajectory.spline.SplineSE2;
 import org.team100.lib.util.ChartUtil;
 
@@ -195,9 +195,9 @@ public class TrajectorySE2FactoryTest {
                 new WaypointSE2(
                         new Pose2d(new Translation2d(1, 1), new Rotation2d()),
                         new DirectionSE2(0, 1, 0), 1.2));
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
 
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.05, 0.05, 0.2);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.05, 0.2);
 
         TrajectorySE2 trajectory = new TrajectorySE2();
         TrajectorySE2Factory m_trajectoryFactory = new TrajectorySE2Factory(new ArrayList<>());
@@ -228,8 +228,8 @@ public class TrajectorySE2FactoryTest {
      * Produce the path for testing.
      */
     private PathSE2 getPath() {
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
-        PathSE2Factory pathFactory = new PathSE2Factory(0.2, 0.2, 0.2, 0.2);
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.2, 0.2, 0.2);
         PathSE2 path = pathFactory.get(splines);
         List<VectorSeries> series = new PathToVectorSeries(0.1).convert(path);
         ChartUtil.plotOverlay(series, 200);

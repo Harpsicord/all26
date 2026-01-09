@@ -99,7 +99,7 @@ public class TrajectoryGallery {
         // This is new
         c.add(new TorqueConstraint(20));
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
-        PathSE2Factory pathFactory = new PathSE2Factory(0.05, 0.01, 0.01, 0.1);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.05, 0.01, 0.1);
         TrajectorySE2Planner m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
 
         ElevatorArmWristKinematics m_kinematics = new ElevatorArmWristKinematics(0.5, 0.343);

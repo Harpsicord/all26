@@ -117,11 +117,11 @@ public class TrajectorySE2Factory {
         int n = path.length();
         List<TrajectorySE2Entry> timedStates = new ArrayList<>(n);
         for (int i = 0; i < n; ++i) {
-            PathSE2Entry entry = path.getEntry(i);
-            TrajectorySE2Entry ts = new TrajectorySE2Entry(
-                    entry.parameter(),
-                    new TrajectorySE2Point(entry.point(), runningTime[i], velocities[i], accels[i]));
-            timedStates.add(ts);
+            PathSE2Entry pe = path.getEntry(i);
+            TrajectorySE2Entry te = new TrajectorySE2Entry(
+                    pe.parameter(),
+                    new TrajectorySE2Point(pe.point(), runningTime[i], velocities[i], accels[i]));
+            timedStates.add(te);
         }
         return timedStates;
     }
@@ -147,17 +147,15 @@ public class TrajectorySE2Factory {
                 break;
             }
             // velocity constraint depends only on state
-
             double maxVelocity = maxVelocity(path.getEntry(i1).point());
             if (DEBUG)
                 System.out.printf("maxV i %d %f\n", i1, maxVelocity);
             // start with the maximum velocity
             velocities[i1] = maxVelocity;
             // reduce velocity to fit under the acceleration constraint
-
             double impliedAccel = Math100.accel(velocities[i0], velocities[i1], arclength);
             double maxAccel = maxAccel(path.getEntry(i0), velocities[i0]);
-            if (impliedAccel > maxAccel/* + EPSILON */) {
+            if (impliedAccel > maxAccel) {
                 velocities[i1] = Math100.v1(velocities[i0], maxAccel, arclength);
                 if (DEBUG) {
                     System.out.printf("adjust vi+1 %f\n", velocities[i1]);

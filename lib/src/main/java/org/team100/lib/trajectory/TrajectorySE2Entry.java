@@ -8,13 +8,12 @@ import org.team100.lib.trajectory.path.PathSE2Parameter;
 public class TrajectorySE2Entry {
     private static final boolean DEBUG = false;
 
+    /** Source of the point */
     private final PathSE2Parameter m_parameter;
     /** Path point and timing, velocity, acceleration */
     private final TrajectorySE2Point m_point;
 
-    public TrajectorySE2Entry(
-            PathSE2Parameter parameter,
-            TrajectorySE2Point point) {
+    public TrajectorySE2Entry(PathSE2Parameter parameter, TrajectorySE2Point point) {
         m_parameter = parameter;
         m_point = point;
     }

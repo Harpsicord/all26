@@ -42,11 +42,11 @@ public class TrajectorySE3Test {
 
         assertEquals(1.610, trajectory.duration(), DELTA);
         TrajectorySE3Entry sample = trajectory.sample(0);
-        assertEquals(0, sample.point().waypoint().pose().getTranslation().getX(), DELTA);
+        assertEquals(0, sample.point().point().waypoint().pose().getTranslation().getX(), DELTA);
         sample = trajectory.sample(1);
-        assertEquals(0.461, sample.point().waypoint().pose().getTranslation().getX(), DELTA);
+        assertEquals(0.461, sample.point().point().waypoint().pose().getTranslation().getX(), DELTA);
         sample = trajectory.sample(2);
-        assertEquals(1, sample.point().waypoint().pose().getTranslation().getX(), DELTA);
+        assertEquals(1, sample.point().point().waypoint().pose().getTranslation().getX(), DELTA);
     }
 
 }

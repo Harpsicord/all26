@@ -29,7 +29,7 @@ import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.examples.TrajectoryExamples;
 import org.team100.lib.trajectory.path.PathSE2Factory;
-import org.team100.lib.trajectory.spline.SplineFactorySE2;
+import org.team100.lib.trajectory.spline.SplineSE2Factory;
 import org.team100.lib.trajectory.spline.SplineSE2;
 import org.team100.lib.trajectory.path.PathSE2;
 
@@ -160,8 +160,8 @@ public class ReferenceControllerSE2Test implements Timeless {
 
         double stepSize = 2;
 
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
-        PathSE2Factory pathFactory = new PathSE2Factory(stepSize, 2, 0.25, 0.1);
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
+        PathSE2Factory pathFactory = new PathSE2Factory(stepSize, 2, 0.1);
         PathSE2 path = pathFactory.get(splines);
         assertFalse(path.isEmpty());
 

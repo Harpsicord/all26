@@ -35,12 +35,10 @@ public class PathSE2Factory {
 
     private final double m_maxNorm;
     private final double m_maxDx;
-    private final double m_maxDy;
     private final double m_maxDTheta;
 
     public PathSE2Factory() {
         this(TRAJECTORY_STEP_M,
-                SPLINE_SAMPLE_TOLERANCE_M,
                 SPLINE_SAMPLE_TOLERANCE_M,
                 SPLINE_SAMPLE_TOLERANCE_RAD);
     }
@@ -48,11 +46,9 @@ public class PathSE2Factory {
     public PathSE2Factory(
             double maxNorm,
             double maxDx,
-            double maxDy,
             double maxDTheta) {
         m_maxNorm = maxNorm;
         m_maxDx = maxDx;
-        m_maxDy = maxDy;
         m_maxDTheta = maxDTheta;
     }
 
@@ -120,8 +116,7 @@ public class PathSE2Factory {
         // note the extra conditions to avoid points too far apart.
         // checks both translational and l2 norms
         // also checks change in course
-        if (Math.abs(error.getTranslation().getX()) > m_maxDx
-                || Math.abs(error.getTranslation().getY()) > m_maxDy
+        if (Math.abs(error.getTranslation().getNorm()) > m_maxDx
                 || Math.abs(error.getRotation().getRadians()) > m_maxDTheta
                 || Metrics.translationalNorm(twist_full) > m_maxNorm
                 || Metrics.l2Norm(twist_full) > m_maxNorm

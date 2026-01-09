@@ -48,7 +48,7 @@ public class MechTrajectories extends Command {
         // take longer to compute, so if it takes too long, make these
         // numbers bigger!
         TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(c);
-        PathSE2Factory pathFactory = new PathSE2Factory(0.05, 0.01, 0.01, 0.1);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.05, 0.01, 0.1);
         m_planner = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
     }
 

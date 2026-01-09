@@ -5,6 +5,7 @@ import java.util.List;
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
 import org.team100.lib.trajectory.path.PathSE2Point;
+import org.team100.lib.trajectory.path.PathUtil;
 import org.team100.lib.trajectory.path.PathSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,7 +29,7 @@ public class PathToVectorSeries {
             if (DEBUG)
                 System.out.printf("%f\n", d);
             PathSE2Point pwm;
-            pwm = path.sample(d);
+            pwm = PathUtil.sample(path, d);
             Pose2d p = pwm.waypoint().pose();
             double x = p.getX();
             double y = p.getY();

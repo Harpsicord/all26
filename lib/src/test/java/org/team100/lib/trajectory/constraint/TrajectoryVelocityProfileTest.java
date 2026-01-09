@@ -15,7 +15,7 @@ import org.team100.lib.trajectory.TrajectorySE2;
 import org.team100.lib.trajectory.TrajectorySE2Factory;
 import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.path.PathSE2Factory;
-import org.team100.lib.trajectory.spline.SplineFactorySE2;
+import org.team100.lib.trajectory.spline.SplineSE2Factory;
 import org.team100.lib.trajectory.spline.SplineSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,9 +35,9 @@ public class TrajectoryVelocityProfileTest implements Timeless {
     static WaypointSE2 w1 = WaypointSE2.irrotational(new Pose2d(2.5, 0, new Rotation2d(0)), 0, 1.2);
     static WaypointSE2 w2 = WaypointSE2.irrotational(new Pose2d(5, 0, new Rotation2d(0)), 0, 1.2);
     private static final List<WaypointSE2> waypoints = List.of(w0, w1, w2);
-    static List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
+    static List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
 
-    private static PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.1, 0.1, 0.1);
+    private static PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.1, 0.1);
     private static PathSE2 path = pathFactory.get(splines);
 
     /**

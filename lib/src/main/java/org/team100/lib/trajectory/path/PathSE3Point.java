@@ -14,7 +14,6 @@ import edu.wpi.first.math.numbers.N3;
  */
 public class PathSE3Point {
     static final boolean DEBUG = false;
-
     /**
      * Pose and course.
      */

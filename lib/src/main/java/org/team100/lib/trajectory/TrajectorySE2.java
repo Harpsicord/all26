@@ -62,7 +62,7 @@ public class TrajectorySE2 {
                     return ceil;
                 }
                 double delta_t = timeS - floor.point().time();
-                return TimingUtil.interpolate(floor, ceil, delta_t);
+                return TrajectoryUtil.interpolate(floor, ceil, delta_t);
             }
         }
         throw new IllegalStateException("impossible trajectory: " + toString());

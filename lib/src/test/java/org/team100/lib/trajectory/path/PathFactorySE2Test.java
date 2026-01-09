@@ -15,7 +15,7 @@ import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.PathToVectorSeries;
-import org.team100.lib.trajectory.spline.SplineFactorySE2;
+import org.team100.lib.trajectory.spline.SplineSE2Factory;
 import org.team100.lib.trajectory.spline.SplineSE2;
 import org.team100.lib.util.ChartUtil;
 
@@ -41,9 +41,9 @@ public class PathFactorySE2Test implements Timeless {
                 new Pose2d(new Translation2d(1, 1), new Rotation2d()),
                 new DirectionSE2(0, 1, 0), 1);
         List<WaypointSE2> waypoints = List.of(w0, w1, w2);
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
 
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.01, 0.01, 0.1);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.01, 0.1);
         PathSE2 path = pathFactory.get(splines);
 
         assertEquals(54, path.length());
@@ -66,9 +66,9 @@ public class PathFactorySE2Test implements Timeless {
                 new Pose2d(new Translation2d(1, 0), new Rotation2d()),
                 new DirectionSE2(1, 0, 0), 1);
         List<WaypointSE2> waypoints = List.of(w0, w1);
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
 
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.01, 0.01, 0.1);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.01, 0.1);
         PathSE2 path = pathFactory.get(splines);
         assertEquals(17, path.length());
         PathSE2Point p = path.getEntry(0).point();
@@ -94,9 +94,9 @@ public class PathFactorySE2Test implements Timeless {
                 new Pose2d(new Translation2d(2, 0), new Rotation2d(1)),
                 new DirectionSE2(1, 0, 0), 1);
         List<WaypointSE2> waypoints = List.of(w0, w1, w2);
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
 
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.01, 0.01, 0.1);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.01, 0.1);
         PathSE2 path = pathFactory.get(splines);
         List<VectorSeries> series = new PathToVectorSeries(0.1).convert(path);
         ChartUtil.plotOverlay(series, 500);
@@ -113,7 +113,7 @@ public class PathFactorySE2Test implements Timeless {
                 new DirectionSE2(1, 5, 0), 1.2);
         SplineSE2 s = new SplineSE2(p1, p2);
 
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.05, 0.05, 0.1);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.05, 0.1);
 
         List<PathSE2Entry> samples = new ArrayList<>();
         samples.add(s.entry(0.0));
@@ -152,7 +152,7 @@ public class PathFactorySE2Test implements Timeless {
                                 Rotation2d.kZero),
                         new DirectionSE2(0, 1, 0), 1));
         List<SplineSE2> splines = List.of(s0);
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.001, 0.001, 0.001);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.001, 0.001);
         PathSE2 motion = pathFactory.get(splines);
         for (int i = 0; i < motion.length(); ++i) {
             PathSE2Point p = motion.getEntry(i).point();
@@ -176,7 +176,7 @@ public class PathFactorySE2Test implements Timeless {
                 new DirectionSE2(1, 0, 0), 1);
         SplineSE2 spline = new SplineSE2(w0, w1);
 
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.02, 0.2, 0.1);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.02, 0.1);
 
         List<PathSE2Entry> poses = new ArrayList<>();
         poses.add(spline.entry(0.0));
@@ -190,7 +190,7 @@ public class PathFactorySE2Test implements Timeless {
     @Test
     void testEmpty() {
         List<SplineSE2> splines = new ArrayList<>();
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.1, 0.1, 0.1);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.1, 0.1);
         PathSE2 path = pathFactory.get(splines);
         assertEquals(0, path.length(), 0.001);
     }
@@ -210,9 +210,9 @@ public class PathFactorySE2Test implements Timeless {
                 new Pose2d(new Translation2d(1, 1), new Rotation2d()),
                 new DirectionSE2(0, 1, 0), 1.2);
         List<WaypointSE2> waypoints = List.of(w0, w1);
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
 
-        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.05, 0.05, 0.2);
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.05, 0.2);
         PathSE2 path = new PathSE2(new ArrayList<>());
         final int iterations = 100;
         long startTimeNs = System.nanoTime();
