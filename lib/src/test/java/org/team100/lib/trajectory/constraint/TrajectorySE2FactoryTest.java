@@ -90,6 +90,7 @@ public class TrajectorySE2FactoryTest {
         ChartUtil.plotOverlay(new TrajectorySE2ToVectorSeries(0.1).convert(trajectory), 200);
         verifyVelocityConstraints(trajectory, constraints);
         verifyAccelConstraints(trajectory, constraints);
+
         verifyDecelConstraints(trajectory, constraints);
         verifyAccel(trajectory);
     }

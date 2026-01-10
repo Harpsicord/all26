@@ -8,6 +8,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
 
+import org.jfree.chart.ChartColor;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -142,7 +143,9 @@ public class ChartUtil {
             VectorSeriesCollection dataSet = getDataSet(series);
             plot.setDataset(i, dataSet);
             XYItemRenderer renderer = new VectorRenderer();
-
+            renderer.setSeriesPaint(0,
+                    ChartColor.createDarkerColorArray(
+                            ChartColor.createDefaultColorArray())[i]);
             plot.setRenderer(i, renderer);
             if (xRange == null) {
                 xRange = xRange(dataSet);

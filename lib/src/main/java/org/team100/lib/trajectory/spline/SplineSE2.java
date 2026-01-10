@@ -20,7 +20,7 @@ import edu.wpi.first.math.numbers.N2;
  * The three dimensions (x, y, heading) of the Pose2d, p, are independent
  * one-dimensional splines, with respect to a parameter s∈[0,1].
  */
-public class SplineSE2 {
+public class SplineSE2 implements ISplineSE2 {
     private static final boolean DEBUG = false;
 
     private final SplineR1 m_x;
@@ -105,6 +105,7 @@ public class SplineSE2 {
         return new WaypointSE2(pose(s), course(s), 1);
     }
 
+    @Override
     public Pose2d pose(double s) {
         return new Pose2d(new Translation2d(x(s), y(s)), heading(s));
     }
@@ -207,7 +208,8 @@ public class SplineSE2 {
      * 
      * see MATH.md
      */
-    Vector<N2> K(double s) {
+    @Override
+    public Vector<N2> K(double s) {
         return SplineUtil.K(rprime(s), rprimeprime(s));
     }
 

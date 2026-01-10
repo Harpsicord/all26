@@ -20,7 +20,7 @@ import edu.wpi.first.math.numbers.N2;
  * * runtime feedback using the toolpoint, not the drivetrain.
  * 
  */
-public class OffsetSE2 {
+public class OffsetSE2 implements ISplineSE2 {
 
     private final SplineSE2 m_toolpoint;
     private final double m_length;
@@ -30,9 +30,18 @@ public class OffsetSE2 {
         m_length = length;
     }
 
+    @Override
     public Pose2d pose(double s) {
         Vector<N2> p = SplineUtil.offsetR(m_toolpoint, m_length, s);
         return new Pose2d(p.get(0), p.get(1), m_toolpoint.pose(s).getRotation());
     }
 
+    @Override
+    public Vector<N2> K(double s) {
+        return SplineUtil.K(
+                m_toolpoint.rprime(s).plus(
+                        SplineUtil.offsetRprime(m_toolpoint, m_length, s)),
+                m_toolpoint.rprimeprime(s).plus(
+                        SplineUtil.offsetRprimeprime(m_toolpoint, m_length, s)));
+    }
 }

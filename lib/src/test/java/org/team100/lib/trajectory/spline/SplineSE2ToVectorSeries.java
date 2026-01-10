@@ -28,10 +28,10 @@ public class SplineSE2ToVectorSeries {
      * 
      * @return (x, y, dx, dy)
      */
-    public List<VectorSeries> convert(List<SplineSE2> splines) {
+    public List<VectorSeries> convert(List<? extends ISplineSE2> splines) {
         List<VectorSeries> result = new ArrayList<>();
         for (int i = 0; i < splines.size(); i++) {
-            SplineSE2 spline = splines.get(i);
+            ISplineSE2 spline = splines.get(i);
             VectorSeries series = new VectorSeries(String.format("%d", i));
             for (double s = 0; s <= 1.001; s += DS) {
                 // Pose2d p = spline.entry(s).point().waypoint().pose();
@@ -49,18 +49,18 @@ public class SplineSE2ToVectorSeries {
     }
 
     /** Show the K vector. */
-    public List<VectorSeries> curvature(List<SplineSE2> splines) {
+    public List<VectorSeries> curvature(List<? extends ISplineSE2> splines) {
         List<VectorSeries> result = new ArrayList<>();
         for (int i = 0; i < splines.size(); i++) {
-            SplineSE2 spline = splines.get(i);
+            ISplineSE2 spline = splines.get(i);
             VectorSeries series = new VectorSeries(String.format("%d", i));
             for (double s = 0; s <= 1.001; s += DS) {
                 Pose2d p = spline.pose(s);
                 double x = p.getX();
                 double y = p.getY();
                 Vector<N2> K = spline.K(s);
-                double dx = m_scale  * K.get(0);
-                double dy = m_scale  * K.get(1);
+                double dx = m_scale * K.get(0);
+                double dy = m_scale * K.get(1);
                 series.add(x, y, dx, dy);
             }
             result.add(series);
