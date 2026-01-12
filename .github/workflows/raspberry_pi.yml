@@ -2,6 +2,7 @@
 name: Raspberry Pi Tests
 
 on: 
+  workflow_dispatch:
   push:
     paths:
       - 'raspberry_pi/**'
