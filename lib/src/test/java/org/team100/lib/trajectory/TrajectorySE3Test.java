@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.DirectionSE3;
 import org.team100.lib.geometry.WaypointSE3;
+import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.constraint.ConstantConstraintSE3;
 import org.team100.lib.trajectory.constraint.TimingConstraintSE3;
 import org.team100.lib.trajectory.path.PathSE3Factory;
@@ -15,7 +16,7 @@ import org.team100.lib.util.ChartUtil3d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 
-public class TrajectorySE3Test {
+public class TrajectorySE3Test implements Timeless {
     private static final double DELTA = 0.001;
     private static final boolean DEBUG = false;
 
@@ -44,7 +45,7 @@ public class TrajectorySE3Test {
         TrajectorySE3Entry sample = trajectory.sample(0);
         assertEquals(0, sample.point().point().waypoint().pose().getTranslation().getX(), DELTA);
         sample = trajectory.sample(1);
-        assertEquals(0.461, sample.point().point().waypoint().pose().getTranslation().getX(), DELTA);
+        assertEquals(0.460, sample.point().point().waypoint().pose().getTranslation().getX(), DELTA);
         sample = trajectory.sample(2);
         assertEquals(1, sample.point().point().waypoint().pose().getTranslation().getX(), DELTA);
     }

@@ -27,12 +27,11 @@ public class TrajectoryUtil {
         PathSE2Point aPoint = a.point().point();
         PathSE2Point bPoint = b.point().point();
         double distanceBetween = aPoint.distanceCartesian(bPoint);
-        double interpolant = pathwiseDistance / distanceBetween;
-        if (Double.isNaN(interpolant)) {
-            interpolant = 1.0;
+        double distanceInterp = pathwiseDistance / distanceBetween;
+        if (Double.isNaN(distanceInterp)) {
+            distanceInterp = 1.0;
         }
 
-        // TODO: pass t interpolant, not just spatial one
         double timeInterp = delta_t / (b.point().time() - a.point().time());
         if (DEBUG)
             System.out.printf("t0 %f t1 %f delta t %f timeInterp %f\n",
@@ -43,7 +42,12 @@ public class TrajectoryUtil {
         PathSE2Entry aEntry = new PathSE2Entry(a.parameter(), aPoint);
         PathSE2Entry bEntry = new PathSE2Entry(b.parameter(), bPoint);
 
-        PathSE2Entry entryLerp = PathUtil.interpolate(aEntry, bEntry, timeInterp);
+        // the parameter is definitely not time, so using time to interpolate
+        // produces strange results, especially at the ends.
+        // PathSE2Entry entryLerp = PathUtil.interpolate(aEntry, bEntry, timeInterp);
+        // The parameter isn't distance either, but at least this looks less wrong.
+        PathSE2Entry entryLerp = PathUtil.interpolate(aEntry, bEntry, distanceInterp);
+        // TODO: scale the interpolant correctly.
         
         return new TrajectorySE2Entry(
                 entryLerp.parameter(),
@@ -62,12 +66,11 @@ public class TrajectoryUtil {
         PathSE3Point aPoint = a.point().point();
         PathSE3Point bPoint = b.point().point();
         double distanceBetween = aPoint.distanceCartesian(bPoint);
-        double interpolant = pathwiseDistance / distanceBetween;
-        if (Double.isNaN(interpolant)) {
-            interpolant = 1.0;
+        double distanceInterp = pathwiseDistance / distanceBetween;
+        if (Double.isNaN(distanceInterp)) {
+            distanceInterp = 1.0;
         }
     
-        // TODO: pass t interpolant, not just spatial one
         double timeInterp = delta_t / (b.point().time() - a.point().time());
         if (TrajectorySE3Entry.DEBUG)
             System.out.printf("t0 %f t1 %f delta t %f s %f\n",
@@ -79,7 +82,8 @@ public class TrajectoryUtil {
         PathSE3Entry aEntry = new PathSE3Entry(a.parameter(), aPoint);
         PathSE3Entry bEntry = new PathSE3Entry(b.parameter(), bPoint);
     
-        PathSE3Entry entryLerp = PathUtil.interpolate(aEntry, bEntry, timeInterp);
+        // PathSE3Entry entryLerp = PathUtil.interpolate(aEntry, bEntry, timeInterp);
+        PathSE3Entry entryLerp = PathUtil.interpolate(aEntry, bEntry, distanceInterp);
     
         return new TrajectorySE3Entry(
                 entryLerp.parameter(),

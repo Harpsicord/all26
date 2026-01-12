@@ -14,7 +14,7 @@ import edu.wpi.first.math.numbers.N2;
 public class SplineSE2ToVectorSeries {
     private static final boolean DEBUG = false;
 
-    private static final double DS = 0.05;
+    private static final double POINTS = 50;
     /** Length of the vector indicating heading */
     private final double m_scale;
 
@@ -33,7 +33,7 @@ public class SplineSE2ToVectorSeries {
         for (int i = 0; i < splines.size(); i++) {
             ISplineSE2 spline = splines.get(i);
             VectorSeries series = new VectorSeries(String.format("%d", i));
-            for (double s = 0; s <= 1.001; s += DS) {
+            for (double s = 0; s <= 1.001; s += 1 / POINTS) {
                 // Pose2d p = spline.entry(s).point().waypoint().pose();
                 Pose2d p = spline.pose(s);
                 double x = p.getX();
@@ -54,7 +54,7 @@ public class SplineSE2ToVectorSeries {
         for (int i = 0; i < splines.size(); i++) {
             ISplineSE2 spline = splines.get(i);
             VectorSeries series = new VectorSeries(String.format("%d", i));
-            for (double s = 0; s <= 1.001; s += DS) {
+            for (double s = 0; s <= 1.001; s += 1 / POINTS) {
                 Pose2d p = spline.pose(s);
                 double x = p.getX();
                 double y = p.getY();
@@ -76,7 +76,7 @@ public class SplineSE2ToVectorSeries {
     public static XYSeries x(String name, List<SplineSE2> splines) {
         XYSeries series = new XYSeries(name);
         for (SplineSE2 spline : splines) {
-            for (double s = 0; s <= 1.001; s += DS) {
+            for (double s = 0; s <= 1.001; s += POINTS) {
                 // double x = spline.entry(s).point().waypoint().pose().getX();
                 double x = spline.pose(s).getX();
                 series.add(s, x);
@@ -93,7 +93,7 @@ public class SplineSE2ToVectorSeries {
     public static XYSeries xPrime(String name, List<SplineSE2> splines) {
         XYSeries series = new XYSeries(name);
         for (SplineSE2 spline : splines) {
-            for (double s = 0; s <= 1.001; s += DS) {
+            for (double s = 0; s <= 1.001; s += POINTS) {
                 double x = spline.dx(s);
                 series.add(s, x);
             }
@@ -109,7 +109,7 @@ public class SplineSE2ToVectorSeries {
     public static XYSeries xPrimePrime(String name, List<SplineSE2> splines) {
         XYSeries series = new XYSeries(name);
         for (SplineSE2 spline : splines) {
-            for (double s = 0; s <= 1.001; s += DS) {
+            for (double s = 0; s <= 1.001; s += POINTS) {
                 double x = spline.ddx(s);
                 series.add(s, x);
             }

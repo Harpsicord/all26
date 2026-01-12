@@ -12,12 +12,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class TrajectorySE2ToVectorSeries {
     private static final boolean DEBUG = false;
 
-    private static final int POINTS = 50;
+    private final int POINTS;
     /** Length of the vector indicating heading */
     private final double m_scale;
 
     public TrajectorySE2ToVectorSeries(double scale) {
+        this(scale, 50);
+    }
+
+    public TrajectorySE2ToVectorSeries(double scale, int points) {
         m_scale = scale;
+        POINTS = points;
     }
 
     /** Maps x to x, y to y */
@@ -63,7 +68,7 @@ public class TrajectorySE2ToVectorSeries {
      * 
      * @return (t, x)
      */
-    public static XYSeries x(String name, TrajectorySE2 trajectory) {
+    XYSeries x(String name, TrajectorySE2 trajectory) {
         XYSeries series = new XYSeries(name);
         double duration = trajectory.duration();
         double dt = duration / POINTS;
@@ -81,7 +86,7 @@ public class TrajectorySE2ToVectorSeries {
      * 
      * @return (t, \dot{x})
      */
-    public static XYSeries xdot(String name, TrajectorySE2 trajectory) {
+    XYSeries xdot(String name, TrajectorySE2 trajectory) {
         XYSeries series = new XYSeries(name);
         double duration = trajectory.duration();
         double dt = duration / POINTS;

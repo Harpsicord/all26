@@ -6,7 +6,7 @@ import java.util.List;
 import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.Metrics;
-import org.team100.lib.trajectory.spline.SplineSE2;
+import org.team100.lib.trajectory.spline.ISplineSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -63,16 +63,16 @@ public class PathSE2Factory {
      * 
      * TODO: explore performance of this part, it could be faster.
      */
-    public PathSE2 get(List<? extends SplineSE2> splines) {
+    public PathSE2 get(List<? extends ISplineSE2> splines) {
         List<PathSE2Entry> result = new ArrayList<>();
         if (splines.isEmpty())
             return new PathSE2(result);
         result.add(splines.get(0).entry(0.0));
         for (int i = 0; i < splines.size(); i++) {
-            SplineSE2 s = splines.get(i);
+            ISplineSE2 spline = splines.get(i);
             if (DEBUG)
-                System.out.printf("SPLINE:\n%d\n%s\n", i, s);
-            addEndpointOrBisect(s, result, 0, 1);
+                System.out.printf("SPLINE:\n%d\n%s\n", i, spline);
+            addEndpointOrBisect(spline, result, 0, 1);
         }
         return new PathSE2(result);
     }
@@ -90,7 +90,7 @@ public class PathSE2Factory {
      * believe that the secant is "close" ... which is wrong. :-)
      */
     void addEndpointOrBisect(
-            SplineSE2 spline,
+            ISplineSE2 spline,
             List<PathSE2Entry> rv,
             double s0,
             double s1) {

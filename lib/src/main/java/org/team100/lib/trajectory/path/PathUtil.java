@@ -1,7 +1,7 @@
 package org.team100.lib.trajectory.path;
 
 import org.team100.lib.geometry.Metrics;
-import org.team100.lib.trajectory.spline.SplineSE2;
+import org.team100.lib.trajectory.spline.ISplineSE2;
 import org.team100.lib.trajectory.spline.SplineSE3;
 import org.team100.lib.util.Math100;
 
@@ -20,7 +20,7 @@ public class PathUtil {
         if (DEBUG)
             System.out.printf("this s %f other s %f\n",
                     a.parameter().s(), b.parameter().s());
-        SplineSE2 spline = null;
+        ISplineSE2 spline = null;
         double s = 0;
         if (a.parameter().spline() == b.parameter().spline()) {
             // ok to interpolate using this spline

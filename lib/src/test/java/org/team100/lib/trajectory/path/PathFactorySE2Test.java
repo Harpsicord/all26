@@ -14,7 +14,6 @@ import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.testing.Timeless;
-import org.team100.lib.trajectory.PathToVectorSeries;
 import org.team100.lib.trajectory.spline.SplineSE2Factory;
 import org.team100.lib.trajectory.spline.SplineSE2;
 import org.team100.lib.util.ChartUtil;
@@ -98,7 +97,7 @@ public class PathFactorySE2Test implements Timeless {
 
         PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.01, 0.1);
         PathSE2 path = pathFactory.get(splines);
-        List<VectorSeries> series = new PathToVectorSeries(0.1).convert(path);
+        List<VectorSeries> series = new PathSE2ToVectorSeries(0.1).convert(path);
         ChartUtil.plotOverlay(series, 500);
         assertEquals(59, path.length(), 0.001);
     }
@@ -117,7 +116,7 @@ public class PathFactorySE2Test implements Timeless {
 
         PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.01, 0.1);
         PathSE2 path = pathFactory.get(splines);
-        List<VectorSeries> series = new PathToVectorSeries(0.1).convert(path);
+        List<VectorSeries> series = new PathSE2ToVectorSeries(0.1).convert(path);
         ChartUtil.plotOverlay(series, 500);
         assertEquals(57, path.length(), 0.001);
     }
@@ -201,7 +200,7 @@ public class PathFactorySE2Test implements Timeless {
         poses.add(spline.entry(0.0));
         pathFactory.addEndpointOrBisect(spline, poses, 0, 1);
 
-        XYSeries sx = PathToVectorSeries.x("spline", poses.stream().map(x -> x.point()).toList());
+        XYSeries sx = PathSE2ToVectorSeries.x("spline", poses.stream().map(x -> x.point()).toList());
         XYDataset dataSet = new XYSeriesCollection(sx);
         ChartUtil.plotStacked(dataSet);
     }

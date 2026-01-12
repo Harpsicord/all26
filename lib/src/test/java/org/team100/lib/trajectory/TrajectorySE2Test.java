@@ -134,9 +134,9 @@ class TrajectorySE2Test implements Timeless {
 
         assertEquals(1.415, trajectory.duration(), DELTA);
         check(trajectory, 0.0, 0.000);
-        check(trajectory, 0.1, 0.025);
-        check(trajectory, 0.2, 0.050);
-        check(trajectory, 0.3, 0.093);
+        check(trajectory, 0.1, 0.010);
+        check(trajectory, 0.2, 0.040);
+        check(trajectory, 0.3, 0.090);
         check(trajectory, 0.4, 0.161);
         check(trajectory, 0.5, 0.250);
         check(trajectory, 0.6, 0.360);
@@ -144,10 +144,10 @@ class TrajectorySE2Test implements Timeless {
         check(trajectory, 0.8, 0.622);
         check(trajectory, 0.9, 0.734);
         check(trajectory, 1.0, 0.827);
-        check(trajectory, 1.1, 0.898);
-        check(trajectory, 1.2, 0.946);
-        check(trajectory, 1.3, 0.971);
-        check(trajectory, 1.4, 0.996);
+        check(trajectory, 1.1, 0.901);
+        check(trajectory, 1.2, 0.954);
+        check(trajectory, 1.3, 0.987);
+        check(trajectory, 1.4, 1.000);
         check(trajectory, 1.5, 1.000);
     }
 

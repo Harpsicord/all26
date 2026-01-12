@@ -10,13 +10,14 @@ import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
+import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.path.PathSE2Point;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-class SwerveDriveDynamicsConstraintTest {
+class SwerveDriveDynamicsConstraintTest implements Timeless {
     private static final double DELTA = 0.001;
     private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
 
@@ -26,27 +27,27 @@ class SwerveDriveDynamicsConstraintTest {
         SwerveDriveDynamicsConstraint c = new SwerveDriveDynamicsConstraint(logger, kinodynamics, 1, 1);
 
         // motionless
-        double m = c.maxV(new PathSE2Point(
+        double maxV = c.maxV(new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0)));
-        assertEquals(5, m, DELTA);
+        assertEquals(5, maxV, DELTA);
 
         // moving in +x, no curvature, no rotation
-        m = c.maxV(new PathSE2Point(
+        maxV = c.maxV(new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
                 VecBuilder.fill(0, 0)));
         // max allowed velocity is full speed
-        assertEquals(5, m, DELTA);
+        assertEquals(5, maxV, DELTA);
 
         // moving in +x, 5 rad/meter
-        m = c.maxV(new PathSE2Point(
+        maxV = c.maxV(new PathSE2Point(
                 new WaypointSE2(new Pose2d(0, 0, new Rotation2d(0)),
                         new DirectionSE2(1, 0, 5), 1.2),
                 VecBuilder.fill(0, 0)));
         // at 5 rad/m with 0.5m sides the fastest you can go is 1.55 m/s.
-        assertEquals(1.925, m, DELTA);
+        assertEquals(1.925, maxV, DELTA);
 
         // max wheel speed 5 m/s
         // wheelsbase/track 0.5 m
@@ -57,11 +58,11 @@ class SwerveDriveDynamicsConstraintTest {
                 new WaypointSE2(new Pose2d(0, 0, new Rotation2d(0)),
                         new DirectionSE2(1, 0, 11.31708), 1.2),
                 VecBuilder.fill(0, 0));
-        m = c.maxV(state);
+        maxV = c.maxV(state);
         // verify corner velocity is full scale
         assertEquals(5, c.maxV());
         // this should be feasible; note it's not exactly 1 due to discretization
-        assertEquals(1.036, m, DELTA);
+        assertEquals(1.036, maxV, DELTA);
 
     }
 

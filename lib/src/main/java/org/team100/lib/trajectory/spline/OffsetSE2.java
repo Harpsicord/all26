@@ -1,7 +1,14 @@
 package org.team100.lib.trajectory.spline;
 
+import org.team100.lib.geometry.DirectionSE2;
+import org.team100.lib.geometry.WaypointSE2;
+import org.team100.lib.trajectory.path.PathSE2Entry;
+import org.team100.lib.trajectory.path.PathSE2Parameter;
+import org.team100.lib.trajectory.path.PathSE2Point;
+
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N2;
 
 /**
@@ -31,17 +38,65 @@ public class OffsetSE2 implements ISplineSE2 {
     }
 
     @Override
+    public WaypointSE2 waypoint(double s) {
+        // TODO: remove the "1" here
+        return new WaypointSE2(pose(s), course(s), 1);
+    }
+
+    @Override
     public Pose2d pose(double s) {
         Vector<N2> p = SplineUtil.offsetR(m_toolpoint, m_length, s);
-        return new Pose2d(p.get(0), p.get(1), m_toolpoint.pose(s).getRotation());
+        double x = p.get(0);
+        double y = p.get(1);
+        Rotation2d heading = heading(s);
+        return new Pose2d(x, y, heading);
+    }
+
+    private Rotation2d heading(double s) {
+        return m_toolpoint.pose(s).getRotation();
     }
 
     @Override
     public Vector<N2> K(double s) {
-        return SplineUtil.K(
-                m_toolpoint.rprime(s).plus(
-                        SplineUtil.offsetRprime(m_toolpoint, m_length, s)),
-                m_toolpoint.rprimeprime(s).plus(
-                        SplineUtil.offsetRprimeprime(m_toolpoint, m_length, s)));
+        return SplineUtil.K(rprime(s), rprimeprime(s));
     }
+
+    @Override
+    public PathSE2Entry entry(double s) {
+        return new PathSE2Entry(parameter(s), point(s));
+    }
+
+    public PathSE2Parameter parameter(double s) {
+        return new PathSE2Parameter(this, s);
+    }
+
+    public PathSE2Point point(double s) {
+        return new PathSE2Point(waypoint(s), K(s));
+    }
+
+    private DirectionSE2 course(double s) {
+        Vector<N2> rprime = rprime(s);
+        double dx = rprime.get(0);
+        double dy = rprime.get(1);
+        double dheading = dheading(s);
+        return new DirectionSE2(dx, dy, dheading);
+    }
+
+    private double dheading(double s) {
+        // offset heading is always the same as the toolpoint
+        return m_toolpoint.dheading(s);
+    }
+
+    /** First derivative of cartesian position wrt the parameter, s. */
+    private Vector<N2> rprime(double s) {
+        return m_toolpoint.rprime(s).plus(
+                SplineUtil.offsetRprime(m_toolpoint, m_length, s));
+    }
+
+    /** Second derivative of cartesian position wrt the parameter, s. */
+    private Vector<N2> rprimeprime(double s) {
+        return m_toolpoint.rprimeprime(s).plus(
+                SplineUtil.offsetRprimeprime(m_toolpoint, m_length, s));
+    }
+
 }

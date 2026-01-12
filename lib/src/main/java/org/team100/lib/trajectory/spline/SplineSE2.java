@@ -100,6 +100,7 @@ public class SplineSE2 implements ISplineSE2 {
         m_heading = SplineR1.get(0.0, delta, dtheta0, dtheta1, ddtheta0, ddtheta1);
     }
 
+    @Override
     public WaypointSE2 waypoint(double s) {
         // TODO: remove the "1" here
         return new WaypointSE2(pose(s), course(s), 1);
@@ -110,6 +111,7 @@ public class SplineSE2 implements ISplineSE2 {
         return new Pose2d(new Translation2d(x(s), y(s)), heading(s));
     }
 
+    @Override
     public PathSE2Entry entry(double s) {
         return new PathSE2Entry(parameter(s), point(s));
     }
