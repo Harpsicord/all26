@@ -23,6 +23,10 @@ public class Score {
         return autoFuel;
     }
 
+    public int total() {
+        return autoFuel + teleopFuel;
+    }
+
     @Override
     public String toString() {
         return String.format("FUEL: auto %d teleop %d", autoFuel, teleopFuel);

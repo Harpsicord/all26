@@ -2,7 +2,7 @@ package org.team100.sim2026;
 
 /** A zone is a floor area that can contain balls. */
 public class Zone implements BallAcceptor, BallContainer, BallSource {
-    final String name;
+    public final String name;
     int count;
 
     public Zone(String name, int initialCount) {

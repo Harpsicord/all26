@@ -1,8 +1,12 @@
 package org.team100.sim2026;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import org.team100.sim2026.robots.ExampleRobot;
+import org.team100.sim2026.robots.Robot;
 
 /** The main simulation loop. */
 public class Sim {
@@ -32,17 +36,17 @@ public class Sim {
             blueScore::auto,
             redScore::auto);
 
-    final Robot red1 = new Robot("r1",
+    final Robot red1 = new ExampleRobot("r1",
             redZone, neutralZone, blueZone, redHub, 8, this::time);
-    final Robot red2 = new Robot("r2",
+    final Robot red2 = new ExampleRobot("r2",
             redZone, neutralZone, blueZone, redHub, 8, this::time);
-    final Robot red3 = new Robot("r3",
+    final Robot red3 = new ExampleRobot("r3",
             redZone, neutralZone, blueZone, redHub, 8, this::time);
-    final Robot blue1 = new Robot("b1",
+    final Robot blue1 = new ExampleRobot("b1",
             blueZone, neutralZone, redZone, blueHub, 8, this::time);
-    final Robot blue2 = new Robot("b2",
+    final Robot blue2 = new ExampleRobot("b2",
             blueZone, neutralZone, redZone, blueHub, 8, this::time);
-    final Robot blue3 = new Robot("b3",
+    final Robot blue3 = new ExampleRobot("b3",
             blueZone, neutralZone, redZone, blueHub, 8, this::time);
 
     final List<BallContainer> containers;
@@ -76,6 +80,8 @@ public class Sim {
             for (Actor actor : actors) {
                 actions.add(actor.step());
             }
+            // evaluate the actions in random order
+            Collections.shuffle(actions);
             for (Runnable runnable : actions) {
                 runnable.run();
             }
@@ -158,29 +164,33 @@ public class Sim {
     /** print the ball location header */
     void header() {
         System.out.print(
-                "             |------ZONE------|  |--HUB--|  |OUTPOST|");
-        System.out.print("  |--ACTIVE--|");
+                "            |---SCORE----|--------ZONE--------|----HUB----|--OUTPOST--");
+        System.out.print("|----ACTIVE----");
         System.out.print(
-                "   |----------RED 1-----------|   |----------RED 2-----------|   |----------RED 3-----------|   |----------BLUE 1----------|   |----------BLUE 2----------|   |----------BLUE 3----------|\n");
+                "|------------RED 1-------------|------------RED 2-------------|------------RED 3-------------");
         System.out.print(
-                "time, total, red, neutral, blue, red, blue, red, blue, ");
-        System.out.print("  red,  blue,  ");
+                "|------------BLUE 1------------|------------BLUE 2------------|------------BLUE 3------------|\n");
         System.out.print(
-                red1.header() + ",  " + red2.header() + ",  " + red3.header() + ",  "
-                        + blue1.header() + ",  " + blue1.header() + ",  " + blue1.header() + "\n");
+                "time, balls |  red, blue | red, neutral, blue | red, blue | red, blue ");
+        System.out.print("|  red,  blue  ");
+        System.out.print(
+                "| " + red1.header() + " | " + red2.header() + " | " + red3.header() + " | "
+                        + blue1.header() + " | " + blue1.header() + " | " + blue1.header() + " |\n");
+        System.out.println(
+                "--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     /** print the states and events */
     void row() {
-        System.out.printf("%4d, %5d, %3d, %7d, %4d, %3d, %4d, %3d, %4d, ",
-                matchTimer, total(),
+        System.out.printf("%4d, %5d | %4d, %4d | %3d, %7d, %4d | %3d, %4d | %3d, %4d ",
+                matchTimer, total(), redScore.total(), blueScore.total(),
                 redZone.count(), neutralZone.count(), blueZone.count(),
                 redHub.count(), blueHub.count(),
                 redOutpost.count(), blueOutpost.count());
-        System.out.printf("%5b, %5b, ",
+        System.out.printf("| %5b, %5b ",
                 redHub.active, blueHub.active);
 
-        System.out.printf(" %s,  %s,  %s,  %s,  %s,  %s\n",
+        System.out.printf("| %s | %s | %s | %s | %s | %s |\n",
                 red1, red2, red3, blue1, blue2, blue3);
 
     }
