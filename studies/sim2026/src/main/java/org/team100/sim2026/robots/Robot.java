@@ -6,8 +6,10 @@ import org.team100.sim2026.Actor;
 import org.team100.sim2026.BallAcceptor;
 import org.team100.sim2026.BallContainer;
 import org.team100.sim2026.Hub;
+import org.team100.sim2026.Tower;
 import org.team100.sim2026.Zone;
 import org.team100.sim2026.actions.Action;
+import org.team100.sim2026.actions.Climb;
 import org.team100.sim2026.actions.Idle;
 import org.team100.sim2026.actions.IntakeAndLob;
 import org.team100.sim2026.actions.IntakeAndScore;
@@ -19,7 +21,7 @@ import org.team100.sim2026.actions.ScoreOnly;
 public abstract class Robot implements Actor, BallContainer {
     private static final int BIN_CAPACITY = 50;
     /** between adjacent zones */
-    private static final int TRAVEL_TIME = 3;
+    public static final int TRAVEL_TIME = 3;
     /** don't hunt for balls when there aren't very many */
     private static final int MIN_ON_FLOOR_TO_INTAKE = 5;
     /** The last few take longer to shoot so don't bother */
@@ -30,6 +32,7 @@ public abstract class Robot implements Actor, BallContainer {
     final Zone neutralZone;
     final Zone otherZone;
     final Hub myHub;
+    final Tower myTower;
     final IntSupplier matchTimer;
     Zone location;
     int count;
@@ -50,6 +53,7 @@ public abstract class Robot implements Actor, BallContainer {
             Zone neutralZone,
             Zone otherZone,
             Hub myHub,
+            Tower myTower,
             int initialCount,
             IntSupplier matchTimer) {
         this.name = name;
@@ -57,6 +61,7 @@ public abstract class Robot implements Actor, BallContainer {
         this.neutralZone = neutralZone;
         this.otherZone = otherZone;
         this.myHub = myHub;
+        this.myTower = myTower;
         this.matchTimer = matchTimer;
         // initial location is my own zone
         this.location = myZone;
@@ -66,6 +71,9 @@ public abstract class Robot implements Actor, BallContainer {
     @Override
     public Runnable step() {
         return () -> {
+            if (stillClimbing()) {
+                return;
+            }
             if (stillMoving()) {
                 return;
             }
@@ -73,6 +81,7 @@ public abstract class Robot implements Actor, BallContainer {
         };
     }
 
+    // TODO: make this use the "action" and work for all actions with duration.
     boolean stillMoving() {
         if (destination != null) {
             // we're going somewhere
@@ -86,6 +95,17 @@ public abstract class Robot implements Actor, BallContainer {
                 location = destination;
                 destination = null;
             }
+        }
+        return false;
+    }
+
+    boolean stillClimbing() {
+        if (action.getClass() == Climb.class) {
+            Climb climb = (Climb) action;
+            // TODO: step() should be called by Sim.
+            // System.out.println(name);
+            climb.step();
+            return !(climb.done());
         }
         return false;
     }

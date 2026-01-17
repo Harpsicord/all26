@@ -10,6 +10,9 @@ import org.team100.sim2026.robots.Robot;
 
 /** The main simulation loop. */
 public class Sim {
+    // note 10 seconds longer this year
+    public static final int MATCH_LENGTH_SEC = 160;
+
     private int matchTimer;
 
     // 504 total
@@ -23,31 +26,24 @@ public class Sim {
     final Score redScore = new Score(this::phase);
     final Score blueScore = new Score(this::phase);
 
-    final Hub redHub = new Hub(
-            redScore,
-            neutralZone,
-            this::time,
-            redScore::auto,
-            blueScore::auto);
-    final Hub blueHub = new Hub(
-            blueScore,
-            neutralZone,
-            this::time,
-            blueScore::auto,
-            redScore::auto);
+    final Hub redHub = new Hub(redScore, neutralZone);
+    final Hub blueHub = new Hub(blueScore, neutralZone);
+
+    final Tower redTower = new Tower(redScore);
+    final Tower blueTower = new Tower(blueScore);
 
     final Robot red1 = new ExampleRobot("r1",
-            redZone, neutralZone, blueZone, redHub, 8, this::time);
+            redZone, neutralZone, blueZone, redHub, redTower, 8, this::time);
     final Robot red2 = new ExampleRobot("r2",
-            redZone, neutralZone, blueZone, redHub, 8, this::time);
+            redZone, neutralZone, blueZone, redHub, redTower, 8, this::time);
     final Robot red3 = new ExampleRobot("r3",
-            redZone, neutralZone, blueZone, redHub, 8, this::time);
+            redZone, neutralZone, blueZone, redHub, redTower, 8, this::time);
     final Robot blue1 = new ExampleRobot("b1",
-            blueZone, neutralZone, redZone, blueHub, 8, this::time);
+            blueZone, neutralZone, redZone, blueHub, blueTower, 8, this::time);
     final Robot blue2 = new ExampleRobot("b2",
-            blueZone, neutralZone, redZone, blueHub, 8, this::time);
+            blueZone, neutralZone, redZone, blueHub, blueTower, 8, this::time);
     final Robot blue3 = new ExampleRobot("b3",
-            blueZone, neutralZone, redZone, blueHub, 8, this::time);
+            blueZone, neutralZone, redZone, blueHub, blueTower, 8, this::time);
 
     final List<BallContainer> containers;
     final List<Actor> actors;
@@ -71,8 +67,6 @@ public class Sim {
     }
 
     public void run() {
-        // note 10 seconds longer this year
-        int MATCH_LENGTH_SEC = 160;
         header();
         for (matchTimer = 0; matchTimer < MATCH_LENGTH_SEC; ++matchTimer) {
             updateActiveHubs();
