@@ -46,7 +46,7 @@ public class VariableVelocityRangeCache implements IVVRange {
     private final NestedInterpolatingTreeMap<Double, FiringSolution> m_map;
 
     public VariableVelocityRangeCache(RangeSolver rangeSolver, double omega) {
-        NestedInterpolatingTreeMap<Double, FiringSolution> map = new NestedInterpolatingTreeMap<>(
+        m_map = new NestedInterpolatingTreeMap<>(
                 InverseInterpolator.forDouble(), new FiringSolutionInterpolator());
         for (double v = MIN_V; v < MAX_V; v += V_STEP) {
             for (double elevation = MIN_ELEVATION; elevation < MAX_ELEVATION; elevation += ELEVATION_STEP) {
@@ -55,10 +55,9 @@ public class VariableVelocityRangeCache implements IVVRange {
                     // no solution
                     continue;
                 }
-                map.put(v, elevation, solution);
+                m_map.put(v, elevation, solution);
             }
         }
-        m_map = map;
     }
 
     /**

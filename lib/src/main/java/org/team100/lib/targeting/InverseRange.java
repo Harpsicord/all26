@@ -1,13 +1,15 @@
 package org.team100.lib.targeting;
 
+import java.util.function.DoubleFunction;
+
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 
 /**
  * Lookup shooting parameters for a given target range
  */
-public class InverseRange {
-    private static final boolean DEBUG = false;
+public class InverseRange implements DoubleFunction<FiringParameters> {
+    private static final boolean DEBUG = true;
 
     /**
      * Precomputation lower bound.
@@ -31,17 +33,8 @@ public class InverseRange {
     private final InterpolatingTreeMap<Double, FiringParameters> m_map;
 
     public InverseRange(Drag d, double targetHeight, double v, double omega) {
-        m_map = init(d, targetHeight, v, omega);
-    }
-
-    public FiringParameters get(double range) {
-        return m_map.get(range);
-    }
-
-    private static InterpolatingTreeMap<Double, FiringParameters> init(
-            Drag d, double targetHeight, double v, double omega) {
         RangeSolver rangeSolver = new RangeSolver(d, targetHeight);
-        InterpolatingTreeMap<Double, FiringParameters> map = new InterpolatingTreeMap<>(
+        m_map = new InterpolatingTreeMap<>(
                 InverseInterpolator.forDouble(), new FiringParametersInterpolator());
         if (DEBUG)
             System.out.println("range, elevation, tof");
@@ -55,9 +48,12 @@ public class InverseRange {
             if (DEBUG)
                 System.out.printf("%6.3f, %6.3f, %6.3f\n",
                         solution.range(), params.elevation(), params.tof());
-            map.put(solution.range(), params);
+            m_map.put(solution.range(), params);
         }
-        return map;
+    }
+
+    public FiringParameters apply(double range) {
+        return m_map.get(range);
     }
 
 }
