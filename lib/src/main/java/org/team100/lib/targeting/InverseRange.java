@@ -30,21 +30,23 @@ public class InverseRange {
     /** key = distance in meters, value = solution */
     private final InterpolatingTreeMap<Double, FiringParameters> m_map;
 
-    public InverseRange(Drag d, double v, double omega) {
-        m_map = init(d, v, omega);
+    public InverseRange(Drag d, double targetHeight, double v, double omega) {
+        m_map = init(d, targetHeight, v, omega);
     }
 
     public FiringParameters get(double range) {
         return m_map.get(range);
     }
 
-    private static InterpolatingTreeMap<Double, FiringParameters> init(Drag d, double v, double omega) {
+    private static InterpolatingTreeMap<Double, FiringParameters> init(
+            Drag d, double targetHeight, double v, double omega) {
+        RangeSolver rangeSolver = new RangeSolver(d, targetHeight);
         InterpolatingTreeMap<Double, FiringParameters> map = new InterpolatingTreeMap<>(
                 InverseInterpolator.forDouble(), new FiringParametersInterpolator());
         if (DEBUG)
             System.out.println("range, elevation, tof");
         for (double elevation = MIN_ELEVATION; elevation <= MAX_ELEVATION; elevation += ELEVATION_STEP) {
-            FiringSolution solution = RangeSolver.getSolution(d, v, omega, elevation);
+            FiringSolution solution = rangeSolver.getSolution(v, omega, elevation);
             if (solution == null) {
                 // no solution
                 continue;
