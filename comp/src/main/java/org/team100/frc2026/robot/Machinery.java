@@ -2,6 +2,7 @@ package org.team100.frc2026.robot;
 
 import java.io.IOException;
 
+import org.team100.frc2026.Intake;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
@@ -51,6 +52,7 @@ public class Machinery {
     final AprilTagRobotLocalizer m_localizer;
     final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
+    final Intake m_intake;
 
     public Machinery() {
 
@@ -63,6 +65,7 @@ public class Machinery {
         //
 
         // Subsystem initializers go here.
+        m_intake = new Intake(driveLog);
 
         ////////////////////////////////////////////////////////////
         //

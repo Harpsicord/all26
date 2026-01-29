@@ -104,6 +104,10 @@ public class Binder {
                         m_machinery.m_swerveKinodynamics,
                         () -> new Translation2d(6, 4),
                         thetaFeedback));
+
+        m_machinery.m_intake.setDefaultCommand(
+                m_machinery.m_intake.stop());
+
         ///////////////////////////
         //
         // DRIVETRAIN
@@ -116,6 +120,12 @@ public class Binder {
         // Reset pose estimator so the current gyro rotation corresponds to 180.
         onTrue(driver::start,
                 new SetRotation(m_machinery.m_drive, Rotation2d.kPi));
+
+        ///////////////////////////////////////////
+        ///
+        /// SUBSYSTEMS
+        ///
+        whileTrue(driver::x, m_machinery.m_intake.intake());
 
         ////////////////////////////////////////////////////////////
         //
