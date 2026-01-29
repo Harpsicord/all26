@@ -126,6 +126,8 @@ public class Binder {
         /// SUBSYSTEMS
         ///
         whileTrue(driver::x, m_machinery.m_intake.intake());
+        whileTrue(driver::x, m_machinery.m_intake.intake());    
+
 
         ////////////////////////////////////////////////////////////
         //
