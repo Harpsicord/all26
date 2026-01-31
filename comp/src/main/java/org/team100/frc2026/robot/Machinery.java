@@ -2,6 +2,7 @@ package org.team100.frc2026.robot;
 
 import java.io.IOException;
 
+import org.team100.frc2026.IntakeExtend;
 import org.team100.frc2026.Intake;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.indicator.Beeper;
@@ -53,6 +54,7 @@ public class Machinery {
     final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
     final Intake m_intake;
+    //final IntakeExtend m_intakeextend;
 
     public Machinery() {
 

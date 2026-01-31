@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IntakeExtend extends SubsystemBase {
     private final BareMotor m_motor;
 
-    public Intake(LoggerFactory parent) {
+    public IntakeExtend(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
         m_motor = new SimulatedBareMotor(log, 600);
     }
