@@ -1,33 +1,20 @@
 package org.team100.frc2026;
 
-import org.team100.lib.logging.LoggerFactory;
-import org.team100.lib.motor.BareMotor;
-import org.team100.lib.motor.sim.SimulatedBareMotor;
-import org.team100.lib.config.Feedforward100;
-import org.team100.lib.config.Identity;
-import org.team100.lib.config.PIDConstants;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
-import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
-import org.team100.lib.motor.ctre.Falcon6Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.profile.r1.IncrementalProfile;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
 import org.team100.lib.reference.r1.IncrementalProfileReferenceR1;
 import org.team100.lib.reference.r1.ProfileReferenceR1;
-import org.team100.lib.sensor.position.absolute.EncoderDrive;
-import org.team100.lib.sensor.position.absolute.RotaryPositionSensor;
 import org.team100.lib.sensor.position.absolute.sim.SimulatedRotaryPositionSensor;
-import org.team100.lib.sensor.position.absolute.wpi.AS5048RotaryPositionSensor;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.servo.AngularPositionServo;
 import org.team100.lib.servo.OnboardAngularPositionServo;
-import org.team100.lib.util.CanId;
-import org.team100.lib.util.RoboRioChannel;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeExtend extends SubsystemBase {
@@ -45,13 +32,11 @@ public class IntakeExtend extends SubsystemBase {
         SimulatedRotaryPositionSensor sensor = new SimulatedRotaryPositionSensor(log, encoder, 1);
 
         RotaryMechanism climberMech = new RotaryMechanism(
-            log, climberMotor, sensor, 1,
-            Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+                log, climberMotor, sensor, 1,
+                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
         m_servo = new OnboardAngularPositionServo(log, climberMech, ref, feedback);
     }
-
-
 
     @Override
     public void periodic() {
@@ -59,9 +44,13 @@ public class IntakeExtend extends SubsystemBase {
     }
 
     public Command goToExtendedPosition() {
-        return startRun(
-                () -> reset(),
-                () -> setAngle(Math.PI / 2));
+        return new FunctionalCommand(
+                () -> reset(),  // onInit
+                () -> setAngle(Math.PI / 2),  //onExecute
+                interrupted -> {  // onEnd
+                },
+                () -> m_servo.atGoal(),  // isFinished
+                this);
     }
 
     public Command goToRetractedPosition() {
@@ -69,7 +58,6 @@ public class IntakeExtend extends SubsystemBase {
                 () -> reset(),
                 () -> setAngle(0));
     }
-
 
     public Command stop() {
         return run(this::stopServo);

@@ -108,8 +108,7 @@ public class Binder {
         m_machinery.m_intake.setDefaultCommand(
                 m_machinery.m_intake.stop());
         m_machinery.m_extender.setDefaultCommand(
-            m_machinery.m_extender.stop());
-        
+                m_machinery.m_extender.stop());
 
         ///////////////////////////
         //
@@ -129,8 +128,11 @@ public class Binder {
         /// SUBSYSTEMS
         ///
         whileTrue(driver::x, m_machinery.m_intake.intake());
-        whileTrue(driver::y, m_machinery.m_extender.goToExtendedPosition());
+        // whileTrue(driver::y, m_machinery.m_extender.goToExtendedPosition());
         whileTrue(driver::a, m_machinery.m_extender.goToRetractedPosition());
+        whileTrue(driver::y,
+                m_machinery.m_extender.goToExtendedPosition()
+                        .andThen(m_machinery.m_intake.intake()));
 
         ////////////////////////////////////////////////////////////
         //
