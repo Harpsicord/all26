@@ -54,7 +54,7 @@ public class Machinery {
     final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
     final Intake m_intake;
-    //final IntakeExtend m_intakeextend;
+    final IntakeExtend m_extender;
 
     public Machinery() {
 
@@ -68,6 +68,7 @@ public class Machinery {
 
         // Subsystem initializers go here.
         m_intake = new Intake(driveLog);
+        m_extender = new IntakeExtend(driveLog);
 
         ////////////////////////////////////////////////////////////
         //
