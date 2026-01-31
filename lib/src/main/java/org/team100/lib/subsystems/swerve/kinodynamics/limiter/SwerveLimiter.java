@@ -84,7 +84,7 @@ public class SwerveLimiter {
         }
 
         // Ignore very small inputs.
-        if (Experiments.instance.enabled(Experiment.SwerveDeadband)) {
+        if (Experiments.instance.enabled(Experiment.SwerveInputDeadband)) {
             result = m_deadband.apply(result);
         }
 

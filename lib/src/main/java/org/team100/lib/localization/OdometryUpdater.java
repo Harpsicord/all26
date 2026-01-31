@@ -5,6 +5,8 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.experiments.Experiment;
+import org.team100.lib.experiments.Experiments;
 import org.team100.lib.geometry.DeltaSE2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.sensor.gyro.Gyro;
@@ -139,14 +141,16 @@ public class OdometryUpdater {
         if (DEBUG) {
             System.out.printf("twist x %.6f y %.6f theta %.6f\n", twist.dx, twist.dy, twist.dtheta);
         }
-        // replace the twist dtheta with one derived from the current
-        // pose angle based on the gyro (which is more accurate)
 
-        Rotation2d angle = gyroAngleRadNWU.plus(m_gyroOffset);
-        if (DEBUG) {
-            System.out.printf("angle %.6f\n", angle.getRadians());
+        if (!Experiments.instance.enabled(Experiment.IgnoreGyroInOdometry)) {
+            // replace the twist dtheta with one derived from the current
+            // pose angle based on the gyro (which is more accurate)
+            Rotation2d angle = gyroAngleRadNWU.plus(m_gyroOffset);
+            if (DEBUG) {
+                System.out.printf("angle %.6f\n", angle.getRadians());
+            }
+            twist.dtheta = angle.minus(previousState.pose().getRotation()).getRadians();
         }
-        twist.dtheta = angle.minus(previousState.pose().getRotation()).getRadians();
 
         Pose2d newPose = previousState.pose().exp(twist);
         if (DEBUG) {

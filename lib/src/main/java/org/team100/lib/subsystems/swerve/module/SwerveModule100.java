@@ -206,10 +206,20 @@ public abstract class SwerveModule100 implements Player {
             nextSpeed = reduceCrossTrackError(measuredAngleRad, nextSpeed, nextWrappedAngle);
 
         }
+
+        if (Experiments.instance.enabled(Experiment.SwerveModuleDeadband)) {
+            if (nextSpeed < 0.001) {
+                nextSpeed = 0;
+                nextWrappedAngle = m_previousDesiredWrappedAngle;
+                nextOmega = 0;
+            }
+        }
+
         m_driveServo.setVelocity(nextSpeed);
 
         if (Experiments.instance.enabled(Experiment.UnprofiledSteering)) {
-            // no profile, just low-level position.  Note the omega here may show up as noise.
+            // no profile, just low-level position. Note the omega here may show up as
+            // noise.
             m_turningServo.setPositionDirect(nextWrappedAngle.getRadians(), nextOmega, 0);
         } else {
             // use the profile

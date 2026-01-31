@@ -42,9 +42,15 @@ public enum Experiment {
      */
     SnapGentle,
     /**
-     * Ignore very small inputs, to reduce jittering.
+     * Ignore very small inputs, to reduce jittering. This operates at the top
+     * level, on the robot velocity input.
      */
-    SwerveDeadband,
+    SwerveInputDeadband,
+    /**
+     * Swerve modules ignore very small velocities, to reduce jittering. This
+     * operates at the module level.
+     */
+    SwerveModuleDeadband,
     /**
      * Help drive motors overcome steering.
      * TODO(: make this the default?
@@ -79,5 +85,11 @@ public enum Experiment {
     /**
      * Use "shooting method" for turret solution
      */
-    TurretShootingMethod
+    TurretShootingMethod,
+    /**
+     * We usually overwrite the odometry-derived rotation update with a value
+     * derived from the gyro. If this experiment is enabled, we don't do that, we
+     * just use the odometry directly.
+     */
+    IgnoreGyroInOdometry
 }
