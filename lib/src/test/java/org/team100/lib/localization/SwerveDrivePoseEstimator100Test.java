@@ -844,19 +844,23 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
                     .toSwerveModuleStates(SwerveKinodynamics.discretize(chassisSpeeds, 0.02));
             SwerveModuleState100[] moduleStatesAll = moduleStates.all();
             SwerveModulePosition100[] positionsAll = positions.all();
+            SwerveModulePosition100[] newPositions = new SwerveModulePosition100[positionsAll.length];
+
             for (int i = 0; i < moduleStatesAll.length; i++) {
-                positionsAll[i].distanceMeters += moduleStatesAll[i].speedMetersPerSecond()
-                        * (1 - rand.nextGaussian() * 0.05)
-                        * 0.02;
+                double distanceMeters = positionsAll[i].distanceMeters()
+                        + moduleStatesAll[i].speedMetersPerSecond()
+                                * (1 - rand.nextGaussian() * 0.05) * 0.02;
+
                 Optional<Rotation2d> angle = moduleStatesAll[i].angle();
-                double noise = rand.nextGaussian() * 0.005;
+                Optional<Rotation2d> newAngle = Optional.empty();
                 if (angle.isPresent()) {
-                    positionsAll[i].unwrappedAngle = Optional.of(
-                            new Rotation2d(angle.get().getRadians() + noise));
-                } else {
-                    positionsAll[i].unwrappedAngle = Optional.empty();
+                    newAngle = Optional.of(
+                            new Rotation2d(angle.get().getRadians() + (rand.nextGaussian() * 0.005)));
                 }
+                newPositions[i] = new SwerveModulePosition100(distanceMeters, newAngle);
             }
+
+            positions = new SwerveModulePositions(newPositions[0], newPositions[1], newPositions[2], newPositions[3]);
 
             ou.update(t);
             ModelSE2 xHat = estimator.apply(t);

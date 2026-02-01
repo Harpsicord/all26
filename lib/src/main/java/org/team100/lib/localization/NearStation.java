@@ -6,8 +6,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 public class NearStation {
     private final Supplier <Pose2d> m_drive;
 
-    public NearStation(Supplier<Pose2d> m_drive) {
-        this.m_drive = m_drive;
+    public NearStation(Supplier<Pose2d> drive) {
+        m_drive = drive;
     }
 
     public boolean closeToStation() {

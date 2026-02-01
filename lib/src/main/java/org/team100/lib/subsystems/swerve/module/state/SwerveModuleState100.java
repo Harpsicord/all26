@@ -102,7 +102,7 @@ public class SwerveModuleState100 implements Comparable<SwerveModuleState100>, S
      */
     @Override
     public int compareTo(SwerveModuleState100 other) {
-        return Double.compare(this.m_speedM_S, other.m_speedM_S);
+        return Double.compare(m_speedM_S, other.m_speedM_S);
     }
 
     @Override
