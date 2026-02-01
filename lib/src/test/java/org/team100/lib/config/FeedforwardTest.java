@@ -18,7 +18,6 @@ class FeedforwardTest implements Timeless {
     private static final double DELTA = 0.001;
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
 
-    @SuppressWarnings("removal")
     @Test
     void testWPI() {
         // current v = 1, want a = 1.

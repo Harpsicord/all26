@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 /**
  * Static methods used to interpret camera input.
  */
-public class PoseEstimationHelper  {
+public class PoseEstimationHelper {
     /**
      * Invert the camera-to-tag, to get tag-to-camera.
      * Compose field-to-tag with tag-to-camera, to get field-to-camera.
@@ -24,7 +24,10 @@ public class PoseEstimationHelper  {
             Transform3d cameraInRobot,
             Pose3d tagInField,
             Transform3d tagInCamera) {
-        return robotInField(cameraInField(tagInField, tagInCamera), cameraInRobot);
+        // Camera in field frame.
+        Pose3d cameraInField = cameraInField(tagInField, tagInCamera);
+        // Robot in field frame.
+        return robotInField(cameraInField, cameraInRobot);
     }
 
     /**

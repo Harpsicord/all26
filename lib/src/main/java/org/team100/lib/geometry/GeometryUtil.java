@@ -93,6 +93,10 @@ public class GeometryUtil {
         return a.getX() * b.x() + a.getY() * b.y();
     }
 
+    public static double dot(Translation3d a, Translation3d b) {
+        return a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ();
+    }
+
     public static Twist2d discretize(ChassisSpeeds continuous, double dt) {
         ChassisSpeeds speeds = ChassisSpeeds.discretize(continuous, dt);
         return new Twist2d(

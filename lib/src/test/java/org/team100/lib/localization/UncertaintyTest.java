@@ -10,9 +10,16 @@ public class UncertaintyTest {
     private static final double DELTA = 0.01;
 
     @Test
+    void testFigure6() {
+        double offAxisAngleRad = Math.PI / 4;
+        double err = Uncertainty.figure6(offAxisAngleRad);
+        assertEquals(0.342, err, DELTA);
+    }
+
+    @Test
     void testVisionStdDevs() {
         double targetRangeM = 1.0;
-        double[] visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM);
+        double[] visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, 0);
         assertEquals(3, visionStdDev.length);
         assertEquals(0.04, visionStdDev[0], DELTA);
         assertEquals(0.04, visionStdDev[1], DELTA);
@@ -36,7 +43,7 @@ public class UncertaintyTest {
         double[] stateStdDev = Uncertainty.TIGHT_STATE_STDDEV;
         double targetRangeM = 1.0;
         // 2 cm stdev, 20x
-        double[] visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM);
+        double[] visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, 0);
         // 10 cm of difference between the vision update and the current pose
         Twist2d twist = new Twist2d(0.1, 0.1, 0);
         Twist2d scaled = Uncertainty.getScaledTwist(stateStdDev, visionStdDev, twist);
@@ -50,7 +57,7 @@ public class UncertaintyTest {
     void testK() {
         double[] stateStdDev = Uncertainty.TIGHT_STATE_STDDEV;
         double targetRangeM = 1.0;
-        double[] visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM);
+        double[] visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, 0);
         double[] k = Uncertainty.getK(stateStdDev, visionStdDev);
         assertEquals(3, k.length);
         assertEquals(0.024, k[0], DELTA);

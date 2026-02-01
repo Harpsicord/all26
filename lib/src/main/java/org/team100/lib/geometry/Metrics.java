@@ -4,7 +4,9 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.geometry.Twist3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,6 +16,19 @@ import edu.wpi.first.math.numbers.N6;
  * Various distance metrics and norms.
  */
 public class Metrics {
+
+    /**
+     * The angle between the tag normal and the camera location.
+     */
+    public static double offAxisAngleRad(Transform3d tagInCameraFrame) {
+        Transform3d cameraInTagFrame = tagInCameraFrame.inverse();
+        Translation3d cameraTranslation = cameraInTagFrame.getTranslation();
+        Translation3d cameraDirection = cameraTranslation.div(cameraTranslation.getNorm());
+        Translation3d tagUnitNormal = new Translation3d(1, 0, 0);
+        double dot = GeometryUtil.dot(cameraDirection, tagUnitNormal);
+        double angle = Math.acos(dot);
+        return angle;
+    }
 
     /**
      * The distance between translational components. Ignores rotation entirely.

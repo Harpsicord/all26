@@ -22,7 +22,6 @@ import org.team100.lib.util.TrailingHistory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -104,13 +103,6 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
      */
     private final DoubleLogger m_log_lag;
 
-    // Remember the previous vision-based pose estimate, so we can measure the
-    // distance between consecutive updates, and ignore too-far updates.
-    private Pose2d m_prevPose;
-
-    /** use tags closer than this; ignore tags further than this. */
-    private double m_heedRadiusM = 3.5;
-
     /**
      * Accumulates all tags we receive in each cycle, whether we use them or not.
      */
@@ -120,6 +112,17 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
      * away.
      */
     private final TrailingHistory<Pose3d> m_usedTags;
+
+    /**
+     * Remember the previous vision-based pose estimate, so we can measure the
+     * distance between consecutive updates, and ignore too-far updates.
+     */
+    private Pose2d m_prevPose;
+
+    /**
+     * Use tags closer than this. Ignore tags further than this.
+     */
+    private double m_heedRadiusM;
 
     /**
      * @param parent        logger
@@ -158,6 +161,9 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
         m_log_pose = log.pose2dLogger(Level.TRACE, "pose");
         m_log_tag_in_camera = log.transform3dLogger(Level.TRACE, "tag in camera");
         m_log_lag = log.doubleLogger(Level.TRACE, "lag");
+
+        // Default heed radius is 3.5 meters.
+        setHeedRadiusM(3.5);
     }
 
     @Override
@@ -189,49 +195,38 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
      */
     public void setHeedRadiusM(double heedRadiusM) {
         m_heedRadiusM = heedRadiusM;
+        m_log_heedRadius.log(() -> m_heedRadiusM);
+
     }
 
     /**
      * Compute the robot pose and put it in the pose estimator.
      * 
-     * @param cameraOffset   Camera pose in robot coordinates
+     * @param cameraOffset   Camera pose in robot coordinates. This is not an
+     *                       estimate, it's configured in the Camera class.
      * @param blips          The targets in the current camera frame
      * @param valueTimestamp Camera frame timestamp
      * @param optAlliance    From the driver station, it's here to make testing
      *                       easier.
      */
     void estimateRobotPose(
-            Transform3d cameraOffset,
+            final Transform3d cameraOffset,
             Blip24[] blips,
             double valueTimestamp,
             Optional<Alliance> optAlliance) {
 
-        // Vasili added this extra delay after some experimentation, but
-        // it breaks simulation, so I set it back to zero.
-        // The effect is to make the received sight
-        // appear as if it were from further in the past than the timestamp says it is,
-        // which would be required if there were delay (a lot of delay) not included
-        // in the timestamp.
-        // TODO: figure out what this does and describe it describe here.
-        // final double IMPORTANT_MAGIC_NUMBER = 0.027;
-        final double IMPORTANT_MAGIC_NUMBER = 0.0;
-        double correctedTimestamp = valueTimestamp - IMPORTANT_MAGIC_NUMBER;
-
-        // this seems to always be 1. ????
-        // TODO: look more closely at this
-        m_log_lag.log(() -> Takt.get() - correctedTimestamp);
-
+        // Fetch the alliance (not available immediately after startup).
         if (!optAlliance.isPresent()) {
-            // this happens on startup
-            if (DEBUG)
-                System.out.println("WARNING: VisionDataProvider24: Alliance is not present!");
             return;
         }
         Alliance alliance = optAlliance.get();
         m_log_alliance.log(() -> alliance);
-        m_log_heedRadius.log(() -> m_heedRadiusM);
 
-        Pose2d historicalPose = historicalPose(correctedTimestamp);
+        // Add the extra delay. TODO: remove this correction.
+        double correctedTimestamp = getCorrectedTimestamp(valueTimestamp);
+
+        // Sample the history.
+        Pose2d samplePose = sample(correctedTimestamp);
 
         for (int i = 0; i < blips.length; ++i) {
             Blip24 blip = blips[i];
@@ -239,29 +234,31 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
             printBlip(blip);
 
             // Look up the pose of the tag in the field frame.
-            Optional<Pose3d> tagInFieldCoordsOptional = m_layout.getTagPose(alliance, blip.getId());
-            if (!tagInFieldCoordsOptional.isPresent()) {
+            Optional<Pose3d> tagInFieldOpt = m_layout.getTagPose(alliance, blip.getId());
+            if (!tagInFieldOpt.isPresent()) {
                 // This shouldn't happen, but it does.
                 System.out.printf("WARNING: VisionDataProvider24: no tag for id %d\n", blip.getId());
                 continue;
             }
 
-            // Field-to-tag, canonical pose from the JSON file
-            Pose3d tagInField = tagInFieldCoordsOptional.get();
+            // Field-to-tag.
+            // This is not an estimate, it's the canonical pose from JSON.
+            final Pose3d tagInField = tagInFieldOpt.get();
 
+            // Camera-to-tag.
             Transform3d tagInCamera = tagInCamera(blip);
 
             printForCalibration(cameraOffset, blip, tagInCamera);
 
-            tagInCamera = maybeOverrideRotation(cameraOffset, historicalPose, tagInField, tagInCamera);
+            // TODO: replace this with mixing?
+            tagInCamera = maybeOverrideRotation(cameraOffset, samplePose, tagInField, tagInCamera);
 
-            Pose3d estimatedTagInField = estimatedTagInField(cameraOffset, historicalPose, tagInCamera);
-
+            // Estimate the tag pose in the field frame.
+            Pose3d estimatedTagInField = estimatedTagInField(cameraOffset, samplePose, tagInCamera);
             m_allTags.add(correctedTimestamp, estimatedTagInField);
-
             logTagError(tagInField, estimatedTagInField);
 
-            Pose2d robotPose2d = robotPose2d(historicalPose, cameraOffset, tagInField, tagInCamera);
+            Pose2d robotPose2d = robotPose2d(samplePose, cameraOffset, tagInField, tagInCamera);
 
             // Clean the used-tags collection in case we don't end up writing to it.
             m_usedTags.cleanup(correctedTimestamp);
@@ -298,29 +295,63 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
             //////////////////////////////////////////////////////////////////
 
             m_usedTags.add(correctedTimestamp, estimatedTagInField);
+            
+            double offAxisAngleRad = Metrics.offAxisAngleRad(tagInCamera);
+            
             m_visionUpdater.put(
                     correctedTimestamp,
                     robotPose2d,
                     Uncertainty.stateStdDevs(),
-                    Uncertainty.visionMeasurementStdDevs(distanceM));
+                    Uncertainty.visionMeasurementStdDevs(distanceM, offAxisAngleRad));
             m_prevPose = robotPose2d;
         }
     }
 
     /**
+     * Vasili added this extra delay after some experimentation, but
+     * it breaks simulation, so I set it back to zero.
+     * 
+     * The effect is to make the received sight appear as if it were from further in
+     * the past than the timestamp says it is, which would be required if there were
+     * delay (a lot of delay) not included in the timestamp.
+     * 
+     * TODO: figure out what this does and describe it describe here.
+     * TODO: remove this correction
+     */
+    private double getCorrectedTimestamp(double valueTimestamp) {
+
+        // final double IMPORTANT_MAGIC_NUMBER = 0.027;
+        final double IMPORTANT_MAGIC_NUMBER = 0.0;
+        double correctedTimestamp = valueTimestamp - IMPORTANT_MAGIC_NUMBER;
+
+        // this seems to always be 1. ????
+        // TODO: look more closely at this
+        m_log_lag.log(() -> Takt.get() - correctedTimestamp);
+        return correctedTimestamp;
+    }
+
+    /**
      * Project the 3d pose into a Pose2d, but use the historical pose rotation
      * (which is the gyro rotation from that timestamp)
+     * 
+     * @param historicalPose sampled from history.
+     * @param cameraInRobot  camera offset, from Camera.java.
+     * @param tagInField     tag pose from JSON.
+     * @param tagInCamera    tag transform in camera frame.
      */
     private Pose2d robotPose2d(
             Pose2d historicalPose,
             Transform3d cameraInRobot,
             Pose3d tagInField,
             Transform3d tagInCamera) {
+        // Robot in field frame, just using the camera.
         Pose3d robotPose3d = PoseEstimationHelper.robotInField(
                 cameraInRobot, tagInField, tagInCamera);
-        Pose2d robotPose2d = new Pose2d(
-                robotPose3d.getTranslation().toTranslation2d(),
-                historicalPose.getRotation());
+        Pose2d robotPose2d = robotPose3d.toPose2d();
+        // we used to override the rotation
+        // Pose2d robotPose2d = new Pose2d(
+        // robotPose3d.getTranslation().toTranslation2d(),
+        // historicalPose.getRotation());
         m_log_pose.log(() -> robotPose2d);
         m_pub_pose.set(robotPose2d);
         return robotPose2d;
@@ -349,20 +380,19 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
     }
 
     /**
-     * Returns the pose from the frame timestamp.
-     * 
-     * Note this pulls from the *old history*, not the *odometry-updated history*,
-     * because we don't care about the latest odometry update.
-     * 
-     * Because the camera delay is much more than the odometry delay, we're always
-     * trying to write history from several cycles ago (followed by replay). It's ok
-     * for new odometry to be the last thing.
+     * Sample the history at the frame timestamp.
      */
-    private Pose2d historicalPose(double correctedTimestamp) {
-        Pose2d historicalPose = m_history.apply(correctedTimestamp).pose();
-        Rotation2d gyroRotation = historicalPose.getRotation();
+    private Pose2d sample(double timestamp) {
+        // Note this pulls from the *old history*, not the *odometry-updated history*,
+        // because we don't care about the latest odometry update.
+        //
+        // Because the camera delay is much more than the odometry delay, we're always
+        // trying to write history from several cycles ago (followed by replay). It's ok
+        // for new odometry to be the last thing.
+        Pose2d historicalPose = m_history.apply(timestamp).pose();
         if (DEBUG) {
-            System.out.printf("historical gyro rotation %f\n", gyroRotation.getRadians());
+            System.out.printf("historical pose rotation %f\n",
+                    historicalPose.getRotation().getRadians());
         }
         return historicalPose;
     }
@@ -390,7 +420,10 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
                 tagInRobot.getRotation().getY(), tagInRobot.getRotation().getZ());
     }
 
-    /** The estimated tag position, for visualization of vision error. */
+    /**
+     * Use the pose sample, camera offset, and tag-in-camera transform to estimate
+     * the tag pose in the field frame.
+     */
     private Pose3d estimatedTagInField(
             Transform3d cameraOffset, Pose2d historicalPose, Transform3d tagInCamera) {
         // Field-to-robot

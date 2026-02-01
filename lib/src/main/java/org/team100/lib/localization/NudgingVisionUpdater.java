@@ -1,7 +1,9 @@
 package org.team100.lib.localization;
 
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.state.ModelSE2;
+import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,13 +24,14 @@ public class NudgingVisionUpdater implements VisionUpdater {
     /** For replay. */
     private final OdometryUpdater m_odometryUpdater;
     /** To measure time since last update, for indicator. */
-    private double m_latestTimeS = 0;
+    private double m_latestTimeS;
 
     public NudgingVisionUpdater(
             SwerveHistory history,
             OdometryUpdater odometryUpdater) {
         m_history = history;
         m_odometryUpdater = odometryUpdater;
+        m_latestTimeS = 0;
     }
 
     /**
@@ -37,30 +40,38 @@ public class NudgingVisionUpdater implements VisionUpdater {
      */
     @Override
     public void put(
-            double timestampS,
+            double timestamp,
             Pose2d measurement,
             double[] stateSigma,
             double[] visionSigma) {
 
         // Skip too-old measurement
-        if (m_history.tooOld(timestampS)) {
+        if (m_history.tooOld(timestamp)) {
             return;
         }
 
         // Sample the history at the measurement time.
-        SwerveState sample = m_history.getRecord(timestampS);
+        SwerveState sample = m_history.getRecord(timestamp);
 
-        // If there is a sample, nudge it towards the measurement.
-        Pose2d nudged = nudge(
-                sample.state().pose(), measurement, stateSigma, visionSigma);
-        // For now, just use the sample yaw. Is this right?
+        // Nudge the sample pose towards the measurement.
+        Pose2d samplePose = sample.state().pose();
+        Pose2d nudged = nudge(samplePose, measurement, stateSigma, visionSigma);
+
+        // Use the interpolated gyro yaw, unmodified.
         Rotation2d gyroYaw = sample.gyroYaw();
-        m_history.put(
-                timestampS,
-                new ModelSE2(nudged, sample.state().velocity()),
-                sample.positions(),
-                gyroYaw);
-        m_odometryUpdater.replay(timestampS);
+        // Use the interpolated velocity, unmodified
+        VelocitySE2 sampleVelocity = sample.state().velocity();
+
+        ModelSE2 model = new ModelSE2(nudged, sampleVelocity);
+        SwerveModulePositions positions = sample.positions();
+
+        // Remember the result.
+        m_history.put(timestamp, model, positions, gyroYaw);
+
+        // Replay everything after the sample.
+        m_odometryUpdater.replay(timestamp);
+
+        // Remember the 
         m_latestTimeS = Takt.get();
     }
 
@@ -69,8 +80,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
      * The caller could use this to, say, indicate tag visibility.
      */
     public double getPoseAgeSec() {
-        double now = Takt.get();
-        return now - m_latestTimeS;
+        return Takt.get() - m_latestTimeS;
     }
 
     /////////////////////////////////////////
@@ -83,9 +93,9 @@ public class NudgingVisionUpdater implements VisionUpdater {
             Pose2d measurement,
             double[] stateSigma,
             double[] visionSigma) {
-        // Step 2: Measure the twist between the odometry pose and the vision pose.
+        // Measure the twist between the odometry pose and the vision pose.
         Twist2d twist = sample.log(measurement);
-        // Step 4: Discount the twist based on the sigmas relative to each other
+        // Discount the twist based on the sigmas relative to each other.
         Twist2d scaledTwist = Uncertainty.getScaledTwist(stateSigma, visionSigma, twist);
         return sample.exp(scaledTwist);
     }

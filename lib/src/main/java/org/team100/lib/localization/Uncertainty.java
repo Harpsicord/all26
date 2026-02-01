@@ -7,6 +7,9 @@ import edu.wpi.first.math.geometry.Twist2d;
 
 /**
  * Methods governing vision update uncertainties.
+ * 
+ * https://april.eecs.umich.edu/media/media/pdfs/wang2016iros.pdf
+ * https://docs.google.com/spreadsheets/d/1StMbOyksydpzFmpHbZBL7ICMQtHnOBubrOMeYSx0M6E
  */
 public class Uncertainty {
     /** this is the default value which, in hindsight, seems ridiculously high. */
@@ -24,30 +27,35 @@ public class Uncertainty {
             0.001,
             0.1 };
 
-    /** This is an educated guess. */
-    static double[] visionMeasurementStdDevs(double distanceM) {
-        if (Experiments.instance.enabled(Experiment.AvoidVisionJitter)) {
-            /*
-             * NEW (3/12/25), 2 cm std dev seems kinda realistic for 1 m.
-             * 
-             * If it still jitters, try 0.03 or 0.05, but watch out for slow convergence.
-             */
-            final double K = 0.03;
-            return new double[] {
-                    (K * distanceM) + 0.01,
-                    (K * distanceM) + 0.01,
-                    Double.MAX_VALUE };
-        }
-        /*
-         * Standard deviation of pose estimate, as a fraction of target range.
-         * This is a guess based on figure 5 in the Apriltag2 paper:
-         * https://april.eecs.umich.edu/media/media/pdfs/wang2016iros.pdf
-         */
-        final double K = 0.03;
+    static double[] visionMeasurementStdDevs(double distanceM, double offAxisAngleRad) {
+        // these extra 0.01 values are total guesses
+        // TODO: remove them?
         return new double[] {
-                K * distanceM,
-                K * distanceM,
-                Double.MAX_VALUE };
+                figure5(distanceM) + 0.01,
+                figure5(distanceM) + 0.01,
+                figure6(offAxisAngleRad) + 0.01 };
+    }
+
+    /**
+     * Figure 5 in the Wang paper (below 15 m) indicates a linear relationship
+     * between cartesian error and tag distance.
+     */
+    static double figure5(double distanceM) {
+        return 0.03 * distanceM;
+    }
+
+    /**
+     * Figure 6 in the Wang paper indicates a U-shaped relationship between the "off
+     * axis" angle and the error. Note the very large error at zero.
+     */
+    static double figure6(double offAxisAngleRad) {
+        if (offAxisAngleRad < 0)
+            throw new IllegalArgumentException("angle must be non-negative");
+        // This uses degrees because figure 6 uses degrees.
+        double offAxisDegrees = Math.toDegrees(offAxisAngleRad);
+        if (offAxisDegrees < 3)
+            return Double.MAX_VALUE;
+        return 10 / offAxisDegrees + 10 / Math.pow(85 - offAxisDegrees, 1.2);
     }
 
     static double[] stateStdDevs() {
