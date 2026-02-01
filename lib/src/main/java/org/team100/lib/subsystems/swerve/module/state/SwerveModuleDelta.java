@@ -28,8 +28,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * we here, so we use the ending angle for the whole path.
  */
 public class SwerveModuleDelta {
+    public static final SwerveModuleDeltaStruct struct = new SwerveModuleDeltaStruct();
+
     /** Straight line distance from start to end. */
-    public double distanceMeters;
+    private final double m_distanceMeters;
 
     /**
      * Angle of the straight line path. It can be empty, in cases where the angle is
@@ -39,19 +41,18 @@ public class SwerveModuleDelta {
      * Note this is the field-relative wrapped angle, i.e. it's just dy/dx for the
      * delta.
      */
-    public Optional<Rotation2d> wrappedAngle = Optional.empty();
-
-    public static final SwerveModuleDeltaStruct struct = new SwerveModuleDeltaStruct();
+    private final Optional<Rotation2d> m_wrappedAngle;
 
     /** Zero distance, empty angle. */
     public SwerveModuleDelta() {
-        //
+        m_distanceMeters = 0;
+        m_wrappedAngle = Optional.empty();
     }
 
     public SwerveModuleDelta(double distanceMeters, Optional<Rotation2d> angle) {
-        this.distanceMeters = distanceMeters;
+        this.m_distanceMeters = distanceMeters;
         // force the angle value to be wrapped
-        this.wrappedAngle = angle.map((x) -> new Rotation2d(x.getCos(), x.getSin()));
+        this.m_wrappedAngle = angle.map((x) -> new Rotation2d(x.getCos(), x.getSin()));
     }
 
     /**
@@ -61,11 +62,11 @@ public class SwerveModuleDelta {
     public SwerveModuleDelta(double dx, double dy) {
         if (Math.abs(dx) < 1e-6 && Math.abs(dy) < 1e-6) {
             // avoid the garbage rotation.
-            this.distanceMeters = 0.0;
-            this.wrappedAngle = Optional.empty();
+            this.m_distanceMeters = 0.0;
+            this.m_wrappedAngle = Optional.empty();
         } else {
-            this.distanceMeters = Math.hypot(dx, dy);
-            this.wrappedAngle = Optional.of(new Rotation2d(dx, dy));
+            this.m_distanceMeters = Math.hypot(dx, dy);
+            this.m_wrappedAngle = Optional.of(new Rotation2d(dx, dy));
         }
     }
 
@@ -84,9 +85,17 @@ public class SwerveModuleDelta {
         return new SwerveModuleDelta(0, Optional.empty());
     }
 
+    public double distanceMeters() {
+        return m_distanceMeters;
+    }
+
+    public Optional<Rotation2d> wrappedAngle() {
+        return m_wrappedAngle;
+    }
+
     @Override
     public String toString() {
-        return "SwerveModuleDelta [distanceMeters=" + distanceMeters + ", angle=" + wrappedAngle + "]";
+        return "SwerveModuleDelta [distanceMeters=" + m_distanceMeters + ", angle=" + m_wrappedAngle + "]";
     }
 
 }

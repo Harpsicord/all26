@@ -13,10 +13,10 @@ public class SwerveModuleDeltaStruct implements Struct<SwerveModuleDelta> {
         return SwerveModuleDelta.class;
     }
 
-	@Override
-	public String getTypeName() {
-		return "SwerveModuleDelta";
-	}
+    @Override
+    public String getTypeName() {
+        return "SwerveModuleDelta";
+    }
 
     @Override
     public int getSize() {
@@ -42,7 +42,7 @@ public class SwerveModuleDeltaStruct implements Struct<SwerveModuleDelta> {
 
     @Override
     public void pack(ByteBuffer bb, SwerveModuleDelta value) {
-        bb.putDouble(value.distanceMeters);
-        OptionalRotation2d.struct.pack(bb, new OptionalRotation2d(value.wrappedAngle));
+        bb.putDouble(value.distanceMeters());
+        OptionalRotation2d.struct.pack(bb, new OptionalRotation2d(value.wrappedAngle()));
     }
 }

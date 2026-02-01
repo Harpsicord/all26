@@ -21,8 +21,8 @@ public class SwerveModuleDeltaTest {
             SwerveModulePosition100 end = new SwerveModulePosition100(
                     0, Optional.of(Rotation2d.kZero));
             SwerveModuleDelta delta = SwerveModuleDelta.delta(start, end);
-            assertEquals(0, delta.distanceMeters, DELTA);
-            assertEquals(0, delta.wrappedAngle.get().getRadians(), DELTA);
+            assertEquals(0, delta.distanceMeters(), DELTA);
+            assertEquals(0, delta.wrappedAngle().get().getRadians(), DELTA);
         }
         {
             SwerveModulePosition100 start = new SwerveModulePosition100(
@@ -30,8 +30,8 @@ public class SwerveModuleDeltaTest {
             SwerveModulePosition100 end = new SwerveModulePosition100(
                     1, Optional.of(Rotation2d.kZero));
             SwerveModuleDelta delta = SwerveModuleDelta.delta(start, end);
-            assertEquals(1, delta.distanceMeters, DELTA);
-            assertEquals(0, delta.wrappedAngle.get().getRadians(), DELTA);
+            assertEquals(1, delta.distanceMeters(), DELTA);
+            assertEquals(0, delta.wrappedAngle().get().getRadians(), DELTA);
         }
         {
             // this ignores the initial zero rotation, and acts as if
@@ -41,8 +41,8 @@ public class SwerveModuleDeltaTest {
             SwerveModulePosition100 end = new SwerveModulePosition100(
                     1, Optional.of(Rotation2d.kCCW_Pi_2));
             SwerveModuleDelta delta = SwerveModuleDelta.delta(start, end);
-            assertEquals(1, delta.distanceMeters, DELTA);
-            assertEquals(1.571, delta.wrappedAngle.get().getRadians(), DELTA);
+            assertEquals(1, delta.distanceMeters(), DELTA);
+            assertEquals(1.571, delta.wrappedAngle().get().getRadians(), DELTA);
         }
     }
 }

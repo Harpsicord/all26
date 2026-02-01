@@ -28,7 +28,7 @@ public class SwerveModulePosition100
     public static final SwerveModulePosition100Struct struct = new SwerveModulePosition100Struct();
 
     /** Distance measured by the wheel of the module. */
-    private double m_distanceMeters;
+    private final double m_distanceMeters;
 
     /**
      * Angle of the module. It can be empty, in cases where the angle is
@@ -36,10 +36,12 @@ public class SwerveModulePosition100
      * 
      * This is "unwrapped": its domain is infinite, not periodic within +/- pi.
      */
-    private Optional<Rotation2d> m_unwrappedAngle = Optional.empty();
+    private final Optional<Rotation2d> m_unwrappedAngle;
 
     /** Zero distance and empty angle. */
     public SwerveModulePosition100() {
+        m_distanceMeters = 0;
+        m_unwrappedAngle = Optional.empty();
     }
 
     public SwerveModulePosition100(double distanceMeters, Optional<Rotation2d> unwrappedAngle) {
@@ -138,19 +140,20 @@ public class SwerveModulePosition100
      * the difference between start and end angles is large.
      */
     public SwerveModulePosition100 plus(SwerveModuleDelta delta) {
-        double posM = m_distanceMeters + delta.distanceMeters;
-        if (delta.wrappedAngle.isPresent()) {
+        double posM = m_distanceMeters + delta.distanceMeters();
+        if (delta.wrappedAngle().isPresent()) {
             if (DEBUG) {
                 if (m_unwrappedAngle.isPresent()) {
                     // note wrapping here
-                    Rotation2d angleDiff = delta.wrappedAngle.get().minus(m_unwrappedAngle.get());
+                    Rotation2d angleDiff = delta.wrappedAngle().get().minus(m_unwrappedAngle.get());
                     if (Math.abs(angleDiff.getRadians()) > 0.2) {
                         System.out.printf("very fast steering start: %f end: %f\n",
-                                m_unwrappedAngle.get().getRadians(), delta.wrappedAngle.get().getRadians());
+                                m_unwrappedAngle.get().getRadians(),
+                                delta.wrappedAngle().get().getRadians());
                     }
                 }
             }
-            return new SwerveModulePosition100(posM, delta.wrappedAngle);
+            return new SwerveModulePosition100(posM, delta.wrappedAngle());
         }
         // if there's no delta angle, we're not going anywhere.
         if (DEBUG)
