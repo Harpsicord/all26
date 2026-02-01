@@ -55,7 +55,7 @@ public class SimulatedDrivingTest implements Timeless {
         swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(logger);
         collection = SwerveModuleCollection.forTest(
                 logger, swerveKinodynamics);
-        gyro = new SimulatedGyro(logger, swerveKinodynamics, collection);
+        gyro = new SimulatedGyro(logger, swerveKinodynamics, collection, 0);
         swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
         history = new SwerveHistory(
                 logger,

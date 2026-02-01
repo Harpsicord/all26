@@ -18,36 +18,46 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
  * A simulated gyro that uses drivetrain odometry.
  */
 public class SimulatedGyro implements Gyro {
-    private double m_heading = 0;
     private final Rotation2dLogger m_log_yaw;
     private final DoubleLogger m_log_yaw_rate;
     private final SwerveKinodynamics m_kinodynamics;
     private final SwerveModuleCollection m_moduleCollection;
-
+    private final double m_driftRateRad_S;
     private final DoubleCache m_headingCache;
 
-    private double m_time = Takt.get();
+    /** Actual heading, from odometry, plus drift. */
+    private double m_heading;
+    /** Time of most-recent sample, to compute dt. */
+    private double m_time;
 
     public SimulatedGyro(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
-            SwerveModuleCollection collection) {
+            SwerveModuleCollection collection,
+            double driftRateRad_S) {
         LoggerFactory log = parent.type(this);
         m_log_yaw = log.rotation2dLogger(Level.TRACE, "Yaw NWU (rad)");
         m_log_yaw_rate = log.doubleLogger(Level.TRACE, "Yaw Rate NWU (rad_s)");
+        m_heading = 0;
+        m_time = Takt.get();
+
         m_kinodynamics = kinodynamics;
         m_moduleCollection = collection;
-        m_headingCache = Cache.ofDouble(() -> {
-            double dt = dt();
-            if (dt > 0.04) {
-                // clock is unreliable, ignore it
-                dt = 0;
-            }
-            SwerveModuleStates states = m_moduleCollection.states();
-            ChassisSpeeds speeds = m_kinodynamics.toChassisSpeedsWithDiscretization(states, 0.02);
-            m_heading += speeds.omegaRadiansPerSecond * dt;
-            return m_heading;
-        });
+        m_driftRateRad_S = driftRateRad_S;
+
+        m_headingCache = Cache.ofDouble(this::update);
+    }
+
+    double update() {
+        double dt = dt();
+        if (dt > 0.04) {
+            // clock is unreliable, ignore it
+            dt = 0;
+        }
+        SwerveModuleStates states = m_moduleCollection.states();
+        ChassisSpeeds speeds = m_kinodynamics.toChassisSpeedsWithDiscretization(states, 0.02);
+        m_heading += (speeds.omegaRadiansPerSecond + m_driftRateRad_S) * dt;
+        return m_heading;
     }
 
     double dt() {

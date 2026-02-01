@@ -49,7 +49,7 @@ public class RealisticFixture {
         fieldLogger = new TestLoggerFactory(new TestPrimitiveLogger());
         swerveKinodynamics = SwerveKinodynamicsFactory.forRealisticTest(logger);
         collection = SwerveModuleCollection.get(logger, 10, 20, swerveKinodynamics);
-        gyro = new SimulatedGyro(logger, swerveKinodynamics, collection);
+        gyro = new SimulatedGyro(logger, swerveKinodynamics, collection, 0);
         swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
         history = new SwerveHistory(
                 logger,

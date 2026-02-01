@@ -21,7 +21,7 @@ public class GyroFactory {
                 return new ReduxGyro(parent, new CanId(60));
             default:
                 // for simulation
-                return new SimulatedGyro(parent, kinodynamics, collection);
+                return new SimulatedGyro(parent, kinodynamics, collection, 0.01);
         }
     }
 
