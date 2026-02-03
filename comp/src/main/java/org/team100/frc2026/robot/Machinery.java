@@ -48,9 +48,9 @@ public class Machinery {
     private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
 
     private final Runnable m_robotViz;
-    private final Runnable m_groundTruthViz;
+    // private final Runnable m_groundTruthViz;
     private final SwerveModuleCollection m_modules;
-    private final Runnable m_simulatedTagDetector;
+    // private final Runnable m_simulatedTagDetector;
 
     final SwerveKinodynamics m_swerveKinodynamics;
     final AprilTagRobotLocalizer m_localizer;
@@ -58,7 +58,7 @@ public class Machinery {
     final Beeper m_beeper;
     final Intake m_intake;
     final IntakeExtend m_extender;
-    final OdometryUpdater m_groundTruthUpdater;
+    // final OdometryUpdater m_groundTruthUpdater;
 
     public Machinery() {
 
@@ -130,21 +130,21 @@ public class Machinery {
         /// the simulated measurements (which include drift).
 
         // This gyro does not drift
-        SimulatedGyro groundTruthGyro = new SimulatedGyro(driveLog, m_swerveKinodynamics, m_modules, 0);
+        // SimulatedGyro groundTruthGyro = new SimulatedGyro(driveLog, m_swerveKinodynamics, m_modules, 0);
         // Separate history of ground-truth poses based only on odometry.
-        SwerveHistory groundTruthHistory = new SwerveHistory(
-                driveLog,
-                m_swerveKinodynamics,
-                groundTruthGyro.getYawNWU(),
-                m_modules.positions(),
-                Pose2d.kZero,
-                Takt.get());
+        // SwerveHistory groundTruthHistory = new SwerveHistory(
+        //         driveLog,
+        //         m_swerveKinodynamics,
+        //         groundTruthGyro.getYawNWU(),
+        //         m_modules.positions(),
+        //         Pose2d.kZero,
+        //         Takt.get());
         // read positions and ground truth gyro (which are perfectly consistent) and
         // maintain the ground truth history.
-        m_groundTruthUpdater = new OdometryUpdater(
-                m_swerveKinodynamics, groundTruthGyro, groundTruthHistory, m_modules::positions);
-        m_groundTruthUpdater.reset(Pose2d.kZero);
-        GroundTruthCache groundTruthCache = new GroundTruthCache(m_groundTruthUpdater, groundTruthHistory);
+        // m_groundTruthUpdater = new OdometryUpdater(
+        //         m_swerveKinodynamics, groundTruthGyro, groundTruthHistory, m_modules::positions);
+        // m_groundTruthUpdater.reset(Pose2d.kZero);
+        // GroundTruthCache groundTruthCache = new GroundTruthCache(m_groundTruthUpdater, groundTruthHistory);
 
         ////////////////////////////////////////////////////////////
         //
@@ -153,7 +153,7 @@ public class Machinery {
 
         // This uses the ground truth because the cameras are not aware of the pose
         // estiamte.
-        m_simulatedTagDetector = SimulatedTagDetector.get(layout, groundTruthHistory);
+        // m_simulatedTagDetector = SimulatedTagDetector.get(layout, groundTruthHistory);
 
         ////////////////////////////////////////////////////////////
         //
@@ -172,14 +172,14 @@ public class Machinery {
         Pose2d initialPose = new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d(Math.PI));
         // Initialize both ground truth and observations.
         m_drive.resetPose(initialPose);
-        m_groundTruthUpdater.reset(initialPose);
+        // m_groundTruthUpdater.reset(initialPose);
 
         // Visualization of the robot pose estimate
         m_robotViz = new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState().pose(), "robot");
         // Visualization of the simulated "ground truth" of the robot pose.
-        m_groundTruthViz = new RobotPoseVisualization(
-                fieldLogger, () -> groundTruthCache.apply(Takt.get()).pose(), "ground truth");
+        // m_groundTruthViz = new RobotPoseVisualization(
+        //         fieldLogger, () -> groundTruthCache.apply(Takt.get()).pose(), "ground truth");
 
         ////////////////////////////////////////////////////////////
         //
@@ -194,11 +194,11 @@ public class Machinery {
 
     public void periodic() {
         // publish the simulated tag sightings.
-        m_simulatedTagDetector.run();
+        // m_simulatedTagDetector.run();
         // publish pose estimate
         m_robotViz.run();
         // publish ground truth pose
-        m_groundTruthViz.run();
+        // m_groundTruthViz.run();
     }
 
     public void close() {

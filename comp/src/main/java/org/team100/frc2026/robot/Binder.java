@@ -127,30 +127,31 @@ public class Binder {
         // Reset pose estimator so the current gyro rotation corresponds to zero.
         // For the moment, we also reset the ground truth
         // TODO: find another way to do it.
-        onTrue(driver::back,
-                new SetRotation(m_machinery.m_drive, Rotation2d.kZero)
-                        .andThen(new InstantCommand(
-                                () -> m_machinery.m_groundTruthUpdater.reset(
-                                        new Pose2d(m_machinery.m_drive.getPose().getTranslation(), Rotation2d.kZero)),
-                                m_machinery.m_drive)));
+        // onTrue(driver::back,
+        //         new SetRotation(m_machinery.m_drive, Rotation2d.kZero)
+        //                 .andThen(new InstantCommand(
+        //                         () -> m_machinery.m_groundTruthUpdater.reset(
+        //                                 new Pose2d(m_machinery.m_drive.getPose().getTranslation(), Rotation2d.kZero)),
+        //                         m_machinery.m_drive)));
 
         // Reset pose estimator so the current gyro rotation corresponds to 180.
         // For the moment, we also reset the ground truth
         // TODO: find another way to do it.
-        onTrue(driver::start,
-                new SetRotation(m_machinery.m_drive, Rotation2d.kPi)
-                        .andThen(new InstantCommand(
-                                () -> m_machinery.m_groundTruthUpdater.reset(
-                                        new Pose2d(m_machinery.m_drive.getPose().getTranslation(), Rotation2d.kPi)),
-                                m_machinery.m_drive)));
-
+        // onTrue(driver::start,
+        //         new SetRotation(m_machinery.m_drive, Rotation2d.kPi)
+        //                 .andThen(new InstantCommand(
+        //                         () -> m_machinery.m_groundTruthUpdater.reset(
+        //                                 new Pose2d(m_machinery.m_drive.getPose().getTranslation(), Rotation2d.kPi)),
+        //                         m_machinery.m_drive)));
+        // onTrue(driver::start,
+        // new SetRotation(m_machinery.m_drive, Rotation2d.kPi));
         // This is for testing pose estimation accuracy and drivetrain positioning
         // accuracy.
         onTrue(driver::a,
                 new DriveToPoseWithProfile(
                         log, m_machinery.m_drive, holonomicController, HolonomicProfileFactory.get(
                                 coralSequence, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2),
-                        () -> new Pose2d(15.366, 5.227, new Rotation2d(0))));
+                        () -> new Pose2d(15.387, 3.501, new Rotation2d(0))));
         ///////////////////////////////////////////
         ///
         /// SUBSYSTEMS
