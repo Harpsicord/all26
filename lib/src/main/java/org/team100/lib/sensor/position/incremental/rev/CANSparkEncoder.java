@@ -51,9 +51,7 @@ public class CANSparkEncoder implements IncrementalBareEncoder {
      */
     @Override
     public double getVelocityRad_S() {
-        // raw velocity is in RPM
-        // this is fast so we don't need to cache it
-        return m_motor.getRateRPM() * 2 * Math.PI / 60;
+        return m_motor.getVelocityRad_S();
     }
 
     @Override

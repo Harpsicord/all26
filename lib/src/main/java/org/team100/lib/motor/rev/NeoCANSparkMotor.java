@@ -55,7 +55,8 @@ public class NeoCANSparkMotor extends CANSparkMotor {
 
     public static Feedforward100 ff(LoggerFactory log) {
         // TODO: friction
-        return new Feedforward100(log, 5676, 0.050, 0.050,
+        // TODO: verify kA
+        return new Feedforward100(log, 5676, 0.01, 0.01,
                 new Friction(log, 0.5, 0.5, 0.0, 0.5));
     }
 }

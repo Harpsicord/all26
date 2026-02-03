@@ -47,29 +47,39 @@ public abstract class CANSparkMotor implements BareMotor {
     protected final SparkLimitSwitch m_revLimitSwitch;
     protected final RelativeEncoder m_encoder;
     protected final SparkClosedLoopController m_pidController;
+
     // CACHES
-    private final DoubleCache m_encoder_position;
-    private final DoubleCache m_encoder_velocity;
-    private final DoubleCache m_current;
+
+    /** radians */
+    private final DoubleCache m_position;
+    /** radians per second */
+    private final DoubleCache m_velocity;
+    /** amps */
+    private final DoubleCache m_statorCurrent;
+    /** volts */
     private final DoubleCache m_supplyVoltage;
+    /** duty cycle */
     private final DoubleCache m_output;
-    // private final DoubleCache m_temp;
+
     // LOGGERS
+    /** rad */
     private final DoubleLogger m_log_desired_position;
+    /** rad/s */
     private final DoubleLogger m_log_desired_speed;
+    /** rad/s^2 */
     private final DoubleLogger m_log_desired_accel;
     private final DoubleLogger m_log_friction_FF;
     private final DoubleLogger m_log_velocity_FF;
     private final DoubleLogger m_log_accel_FF;
     private final DoubleLogger m_log_torque_FF;
-    private final DoubleLogger m_log_duty;
+    /** duty cycle */
+    private final DoubleLogger m_log_output;
+    /** rad */
     private final DoubleLogger m_log_position;
+    /** rad/s */
     private final DoubleLogger m_log_velocity;
-    private final DoubleLogger m_log_rpm;
-    private final DoubleLogger m_log_current;
+    private final DoubleLogger m_log_stator_current;
     private final DoubleLogger m_log_supplyVoltage;
-    // private final DoubleLogger m_log_torque;
-    // private final DoubleLogger m_log_temp;
 
     protected CANSparkMotor(
             LoggerFactory parent,
@@ -105,36 +115,32 @@ public abstract class CANSparkMotor implements BareMotor {
         m_revLimitSwitch = m_motor.getReverseLimitSwitch();
 
         // CACHES
-        m_encoder_position = Cache.ofDouble(m_encoder::getPosition);
-        m_encoder_velocity = Cache.ofDouble(m_encoder::getVelocity);
-        m_current = Cache.ofDouble(m_motor::getOutputCurrent);
+        m_position = Cache.ofDouble(() -> m_encoder.getPosition() * 2 * Math.PI);
+        m_velocity = Cache.ofDouble(() -> m_encoder.getVelocity() * 2 * Math.PI / 60);
+        m_statorCurrent = Cache.ofDouble(m_motor::getOutputCurrent);
         m_supplyVoltage = Cache.ofDouble(m_motor::getBusVoltage);
         m_output = Cache.ofDouble(m_motor::getAppliedOutput);
-        // m_temp = Memo.ofDouble(m_motor::getMotorTemperature);
+
         // LOGGERS
-        m_log.intLogger(Level.TRACE, "Device ID").log(m_motor::getDeviceId);
-        m_log_desired_position = m_log.doubleLogger(Level.DEBUG, "desired position (rev)");
-        m_log_desired_speed = m_log.doubleLogger(Level.DEBUG, "desired speed (rev_s)");
-        m_log_desired_accel = m_log.doubleLogger(Level.TRACE, "desired accel (rev_s2)");
-        m_log_friction_FF = m_log.doubleLogger(Level.TRACE, "friction feedforward (v)");
-        m_log_velocity_FF = m_log.doubleLogger(Level.TRACE, "velocity feedforward (v)");
-        m_log_accel_FF = m_log.doubleLogger(Level.TRACE, "accel feedforward (v)");
-        m_log_torque_FF = m_log.doubleLogger(Level.TRACE, "torque feedforward (v)");
-        m_log_duty = m_log.doubleLogger(Level.DEBUG, "Duty Cycle");
-        m_log_position = m_log.doubleLogger(Level.DEBUG, "position (rev)");
-        m_log_velocity = m_log.doubleLogger(Level.DEBUG, "velocity (rev_s)");
-        m_log_rpm = m_log.doubleLogger(Level.TRACE, "velocity (RPM)");
-        m_log_current = m_log.doubleLogger(Level.DEBUG, "current (A)");
+        m_log_desired_position = m_log.doubleLogger(Level.DEBUG, "desired position (rad)");
+        m_log_desired_speed = m_log.doubleLogger(Level.DEBUG, "desired speed (rad_s)");
+        m_log_desired_accel = m_log.doubleLogger(Level.TRACE, "desired accel (rad_s2)");
+        m_log_friction_FF = m_log.doubleLogger(Level.TRACE, "friction feedforward (V)");
+        m_log_velocity_FF = m_log.doubleLogger(Level.TRACE, "velocity feedforward (V)");
+        m_log_accel_FF = m_log.doubleLogger(Level.TRACE, "accel feedforward (V)");
+        m_log_torque_FF = m_log.doubleLogger(Level.TRACE, "torque feedforward (V)");
+        m_log_output = m_log.doubleLogger(Level.DEBUG, "output [-1,1]");
+        m_log_position = m_log.doubleLogger(Level.DEBUG, "position (rad)");
+        m_log_velocity = m_log.doubleLogger(Level.DEBUG, "velocity (rad_s)");
+        m_log_stator_current = m_log.doubleLogger(Level.DEBUG, "stator current (A)");
         m_log_supplyVoltage = m_log.doubleLogger(Level.DEBUG, "voltage (V)");
-        // m_log_torque = m_log.doubleLogger(Level.TRACE, "torque (Nm)");
-        // m_log_temp = m_log.doubleLogger(Level.TRACE, "temperature (C)");
+        m_log.intLogger(Level.TRACE, "Device ID").log(m_motor::getDeviceId);
     }
 
     @Override
     public void setDutyCycle(double output) {
         m_motor.set(output);
-        m_log_duty.log(() -> output);
-        log();
+        m_log_output.log(() -> output);
     }
 
     public boolean getForwardLimitSwitch() {
@@ -156,80 +162,78 @@ public abstract class CANSparkMotor implements BareMotor {
      * acceleration, and torque feedforwards.
      */
     @Override
-    public void setVelocity(double motorRad_S, double motorRad_S2, double motorTorqueNm) {
-        final double motorRev_S = motorRad_S / (2 * Math.PI);
-        final double motorRev_S2 = motorRad_S2 / (2 * Math.PI);
+    public void setVelocity(double motorRad_S, double motorRad_S2, double torqueNm) {
+        double frictionFFVolts = m_ff.frictionFFVolts(motorRad_S);
+        double velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
+        double accelFFVolts = m_ff.accelFFVolts(motorRad_S, motorRad_S2);
+        double torqueFFVolts = getTorqueFFVolts(torqueNm);
+        double FFVolts = frictionFFVolts + velocityFFVolts + accelFFVolts + torqueFFVolts;
 
-        final double frictionFFVolts = m_ff.frictionFFVolts(motorRad_S);
-        final double velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
-        final double accelFFVolts = m_ff.accelFFVolts(motorRev_S, motorRev_S2);
-        final double torqueFFVolts = getTorqueFFVolts(motorTorqueNm);
-
-        final double FF = frictionFFVolts + velocityFFVolts + accelFFVolts + torqueFFVolts;
-
-        final double motorRev_M = motorRev_S * 60;
+        // REV control unit is RPM
         warn(() -> m_pidController.setSetpoint(
-                motorRev_M, ControlType.kVelocity, ClosedLoopSlot.kSlot1, FF, ArbFFUnits.kVoltage));
+                60 * motorRad_S / (2 * Math.PI),
+                ControlType.kVelocity,
+                ClosedLoopSlot.kSlot1,
+                FFVolts,
+                ArbFFUnits.kVoltage));
 
-        m_log_desired_speed.log(() -> motorRev_S);
-        m_log_desired_accel.log(() -> motorRev_S2);
+        m_log_desired_speed.log(() -> motorRad_S);
+        m_log_desired_accel.log(() -> motorRad_S2);
         m_log_friction_FF.log(() -> frictionFFVolts);
         m_log_velocity_FF.log(() -> velocityFFVolts);
         m_log_accel_FF.log(() -> accelFFVolts);
         m_log_torque_FF.log(() -> torqueFFVolts);
-        log();
     }
 
     /**
      * Use outboard PID control to hold the given position, with velocity and torque
      * feedforwards.
      * 
-     * Motor revolutions wind up, so setting 0 revs and 1 rev are different.
+     * Motor revolutions wind up, so setting 0 rad and 2pi rad are different.
      */
     @Override
     public void setUnwrappedPosition(
             double motorRad,
             double motorRad_S,
             double motorRad_S2,
-            double motorTorqueNm) {
-        final double motorRev = motorRad / (2 * Math.PI);
-        final double motorRev_S = motorRad_S / (2 * Math.PI);
-        final double motorRev_S2 = motorRad_S2 / (2 * Math.PI);
+            double torqueNm) {
+        double frictionFFVolts = m_ff.frictionFFVolts(motorRad_S);
+        double velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
+        double accelFFVolts = m_ff.accelFFVolts(motorRad_S, motorRad_S2);
+        double torqueFFVolts = getTorqueFFVolts(torqueNm);
+        double FFVolts = frictionFFVolts + velocityFFVolts + accelFFVolts + torqueFFVolts;
 
-        final double frictionFFVolts = m_ff.frictionFFVolts(motorRad_S);
-        final double velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
-        final double accelFFVolts = m_ff.accelFFVolts(motorRev_S, motorRev_S2);
-        final double torqueFFVolts = getTorqueFFVolts(motorTorqueNm);
-
-        final double FF = frictionFFVolts + velocityFFVolts + accelFFVolts + torqueFFVolts;
-
+        // REV control unit is revolutions
         warn(() -> m_pidController.setSetpoint(
-                motorRev, ControlType.kPosition, ClosedLoopSlot.kSlot0, FF, ArbFFUnits.kVoltage));
+                motorRad / (2 * Math.PI),
+                ControlType.kPosition,
+                ClosedLoopSlot.kSlot0,
+                FFVolts,
+                ArbFFUnits.kVoltage));
 
-        m_log_desired_position.log(() -> motorRev);
-        m_log_desired_speed.log(() -> motorRev_S);
-        m_log_desired_accel.log(() -> motorRev_S2);
+        m_log_desired_position.log(() -> motorRad);
+        m_log_desired_speed.log(() -> motorRad_S);
+        m_log_desired_accel.log(() -> motorRad_S2);
         m_log_friction_FF.log(() -> frictionFFVolts);
         m_log_velocity_FF.log(() -> velocityFFVolts);
         m_log_accel_FF.log(() -> accelFFVolts);
         m_log_torque_FF.log(() -> torqueFFVolts);
-        log();
     }
 
     /** Value is updated in Robot.robotPeriodic(). */
     @Override
     public double getVelocityRad_S() {
-        return getRateRPM() * 2 * Math.PI / 60;
+        return m_velocity.getAsDouble();
     }
 
     @Override
     public double getCurrent() {
-        return m_current.getAsDouble();
+        return m_statorCurrent.getAsDouble();
     }
 
     @Override
     public void setUnwrappedEncoderPositionRad(double positionRad) {
-        setEncoderPosition(positionRad / (2 * Math.PI));
+        warn(() -> m_encoder.setPosition(positionRad / (2.0 * Math.PI)));
     }
 
     @Override
@@ -244,8 +248,8 @@ public abstract class CANSparkMotor implements BareMotor {
 
     @Override
     public void reset() {
-        m_encoder_position.reset();
-        m_encoder_velocity.reset();
+        m_position.reset();
+        m_velocity.reset();
     }
 
     @Override
@@ -253,38 +257,9 @@ public abstract class CANSparkMotor implements BareMotor {
         m_motor.close();
     }
 
-    /**
-     * Value is updated in Robot.robotPeriodic().
-     * 
-     * @return torque in Nm
-     */
-    // public double getMotorTorque() {
-    // return m_current.getAsDouble() * kTNm_amp();
-    // }
-
-    /**
-     * Value is updated in Robot.robotPeriodic().
-     * 
-     * @return integrated sensor position in rotations.
-     */
-    public double getPositionRot() {
-        return m_encoder_position.getAsDouble();
-    }
-
     @Override
     public double getUnwrappedPositionRad() {
-        double motorPositionRev = getPositionRot();
-        double positionRad = motorPositionRev * 2 * Math.PI;
-        return positionRad;
-    }
-
-    /**
-     * Value is updated in Robot.robotPeriodic().
-     * 
-     * @return integrated sensor velocity in RPM
-     */
-    public double getRateRPM() {
-        return m_encoder_velocity.getAsDouble();
+        return m_position.getAsDouble();
     }
 
     /**
@@ -292,26 +267,8 @@ public abstract class CANSparkMotor implements BareMotor {
      */
     public void resetEncoderPosition() {
         warn(() -> m_encoder.setPosition(0));
-        m_encoder_position.reset();
-        m_encoder_velocity.reset();
-    }
-
-    /**
-     * Set integrated sensor position in rotations.
-     */
-    public void setEncoderPosition(double motorPositionRev) {
-        warn(() -> m_encoder.setPosition(motorPositionRev));
-    }
-
-    protected void log() {
-        m_log_position.log(m_encoder_position);
-        m_log_velocity.log(() -> m_encoder_velocity.getAsDouble() / 60);
-        m_log_rpm.log(m_encoder_velocity);
-        m_log_current.log(m_current);
-        m_log_supplyVoltage.log(m_supplyVoltage);
-        m_log_duty.log(m_output);
-        // m_log_torque.log(this::getMotorTorque);
-        // m_log_temp.log(m_temp);
+        m_position.reset();
+        m_velocity.reset();
     }
 
     @Override
@@ -321,6 +278,16 @@ public abstract class CANSparkMotor implements BareMotor {
 
     @Override
     public void play(double freq) {
+    }
+
+    /////////////////////////////////////////////
+
+    private void log() {
+        m_log_position.log(m_position);
+        m_log_velocity.log(m_velocity);
+        m_log_stator_current.log(m_statorCurrent);
+        m_log_supplyVoltage.log(m_supplyVoltage);
+        m_log_output.log(m_output);
     }
 
     private static void warn(Supplier<REVLibError> s) {

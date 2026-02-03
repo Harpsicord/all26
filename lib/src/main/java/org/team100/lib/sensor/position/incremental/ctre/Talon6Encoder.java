@@ -25,7 +25,7 @@ public class Talon6Encoder implements IncrementalBareEncoder {
      */
     @Override
     public double getVelocityRad_S() {
-        return m_motor.getVelocityRev_S() * 2.0 * Math.PI;
+        return m_motor.getVelocityRad_S();
     }
 
     /**

@@ -24,7 +24,9 @@ public class Feedforward100 {
      * https://en.wikipedia.org/wiki/Motor_constants#Motor_velocity_constant,_back_EMF_constant
      */
     private final double kE;
+    /** volt-sec^2/rad */
     private final Mutable kA;
+    /** volt-sec^2/rad */
     private final Mutable kD;
     private final Friction friction;
 
@@ -33,7 +35,7 @@ public class Feedforward100 {
      *                     or experiment.
      * @param kA           Acceleration. Voltage to produce acceleration of the
      *                     motor shaft. V = kA * alpha, so kA units are
-     *                     volt-sec^2/rev. This reflects the motor torque and
+     *                     volt-sec^2/rad. This reflects the motor torque and
      *                     mechanism inertia. Torque is proportional to current,
      *                     which is proportional to (net) voltage. The value will
      *                     depend on the inertia of the mechanism.
@@ -67,7 +69,7 @@ public class Feedforward100 {
     /**
      * Voltage to maintain the specified velocity.
      * 
-     * @param motorRev_S setpoint speed
+     * @param motorRad_S setpoint speed
      */
     public double velocityFFVolts(double motorRad_S) {
         return kE * motorRad_S;
@@ -79,27 +81,27 @@ public class Feedforward100 {
      * Uses kA when speed and accel are in the same direction.
      * Uses kD when speed and accel are opposite.
      * 
-     * @param motorRev_S   setpoint speed
-     * @param motorRev_S_S setpoint acceleration
+     * @param motorRad_S   setpoint speed, rad/s
+     * @param motorRad_S_S setpoint acceleration, rad/s^2
      */
-    public double accelFFVolts(double motorRev_S, double motorRev_S_S) {
-        if (motorRev_S >= 0) {
+    public double accelFFVolts(double motorRad_S, double motorRad_S_S) {
+        if (motorRad_S >= 0) {
             // moving forward
-            if (motorRev_S_S >= 0) {
+            if (motorRad_S_S >= 0) {
                 // faster
-                return kA.getAsDouble() * motorRev_S_S;
+                return kA.getAsDouble() * motorRad_S_S;
             } else {
                 // slower
-                return kD.getAsDouble() * motorRev_S_S;
+                return kD.getAsDouble() * motorRad_S_S;
             }
         } else {
             // moving backward
-            if (motorRev_S_S < 0) {
+            if (motorRad_S_S < 0) {
                 // faster
-                return kA.getAsDouble() * motorRev_S_S;
+                return kA.getAsDouble() * motorRad_S_S;
             } else {
                 // slower
-                return kD.getAsDouble() * motorRev_S_S;
+                return kD.getAsDouble() * motorRad_S_S;
             }
         }
     }
@@ -116,11 +118,11 @@ public class Feedforward100 {
 
     public static Feedforward100 zero(LoggerFactory log) {
         return new Feedforward100(log, 0, 0, 0,
-                new Friction(log, 0, 0, 0.0, 0));
+                new Friction(log, 0, 0, 0, 0));
     }
 
     public static Feedforward100 test(LoggerFactory log) {
-        return new Feedforward100(log, 0.100, 0.100, 0.100,
+        return new Feedforward100(log, 6000, 0.100, 0.100,
                 new Friction(log, 0.100, 0.100, 0.0, 0.1));
     }
 }
