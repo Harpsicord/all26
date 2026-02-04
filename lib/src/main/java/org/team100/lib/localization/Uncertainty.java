@@ -17,14 +17,14 @@ public class Uncertainty {
      * this is the default value which, in hindsight, seems ridiculously high.
      * TODO: do some calibration of this
      */
-    private static final IsotropicSigmaSE2 DEFAULT_STATE_STDDEV = new IsotropicSigmaSE2(0.1, 0.1);
+    private static final IsotropicNoiseSE2 DEFAULT_STATE_STDDEV = new IsotropicNoiseSE2(0.1, 0.1);
 
     /**
      * This value is tuned so that errors scale at 0.2x per second. See
      * SwerveDrivePoseEstimator100Test::testFirmerNudge.
      * TODO: get rid of this
      */
-    static final IsotropicSigmaSE2 TIGHT_STATE_STDDEV = new IsotropicSigmaSE2(0.001, 0.1);
+    static final IsotropicNoiseSE2 TIGHT_STATE_STDDEV = new IsotropicNoiseSE2(0.001, 0.1);
 
     /**
      * Standard deviation of vision updates in SE(2).
@@ -40,7 +40,7 @@ public class Uncertainty {
      * Note: due to the uncertainty singularity on the tag axis, when we are
      * directly in front of the tag, we can't use it at all.
      */
-    static IsotropicSigmaSE2 visionMeasurementStdDevs(double distanceM, double offAxisAngleRad) {
+    static IsotropicNoiseSE2 visionMeasurementStdDevs(double distanceM, double offAxisAngleRad) {
         if (distanceM < 0)
             throw new IllegalArgumentException();
         if (offAxisAngleRad < 0)
@@ -51,7 +51,7 @@ public class Uncertainty {
         double rotationErrorRad = figure6(offAxisAngleRad) + 0.01;
         double rotationEffectM = distanceM * rotationErrorRad;
         double maxCartesian = Math.max(cartesianErrorM, rotationEffectM);
-        return new IsotropicSigmaSE2(maxCartesian, rotationErrorRad);
+        return new IsotropicNoiseSE2(maxCartesian, rotationErrorRad);
     }
 
     /**
@@ -90,11 +90,30 @@ public class Uncertainty {
      * error could be extended along a diagonal), but it would be more complicated
      * for little benefit.
      */
-    static IsotropicSigmaSE2 stateStdDevs() {
+    static IsotropicNoiseSE2 stateStdDevs() {
         if (Experiments.instance.enabled(Experiment.AvoidVisionJitter)) {
-            return Uncertainty.TIGHT_STATE_STDDEV;
+            return TIGHT_STATE_STDDEV;
         }
-        return Uncertainty.DEFAULT_STATE_STDDEV;
+        return DEFAULT_STATE_STDDEV;
+    }
+
+    /**
+     * The error in odometry is superlinear in speed. Since the odometry samples
+     * happen regularly, we can use the sample distance as a measure of speed.
+     * 
+     * I completely made this up
+     * https://docs.google.com/spreadsheets/d/1DmHL1UDd6vngmr-5_9fNHg2xLC4TEVWTN2nHZBOnje0/edit?gid=995645441#gid=995645441
+     */
+    static IsotropicNoiseSE2 odometryStdDevs(double distanceM, double rotationRad) {
+        // We kinda measured 5% error in the best (slow) case.
+        double lowSpeedError = 0.05;
+        // This is just a guess
+        double superError = 0.5;
+        double cartesian = lowSpeedError * distanceM + superError * distanceM * distanceM;
+        // We haven't measured this, so just guess it's the same???
+        double rotation = lowSpeedError * rotationRad + superError * rotationRad * rotationRad;
+        return new IsotropicNoiseSE2(cartesian, rotation);
+
     }
 
     /**
@@ -104,11 +123,11 @@ public class Uncertainty {
      *                    the sample.
      */
     static Twist2d getScaledTwist(
-            IsotropicSigmaSE2 stateSigma,
-            IsotropicSigmaSE2 visionSigma,
+            IsotropicNoiseSE2 stateSigma,
+            IsotropicNoiseSE2 visionSigma,
             Twist2d twist) {
-        double cartesianWeight = Uncertainty.cartesianWeight(stateSigma, visionSigma);
-        double rotationWeight = Uncertainty.rotationWeight(stateSigma, visionSigma);
+        double cartesianWeight = cartesianWeight(stateSigma, visionSigma);
+        double rotationWeight = rotationWeight(stateSigma, visionSigma);
         return new Twist2d(
                 cartesianWeight * twist.dx,
                 cartesianWeight * twist.dy,
@@ -121,11 +140,11 @@ public class Uncertainty {
      * @param delta       from sample to measurement, in (extrinsic) field frame.
      */
     static DeltaSE2 getScaledDelta(
-            IsotropicSigmaSE2 stateSigma,
-            IsotropicSigmaSE2 visionSigma,
+            IsotropicNoiseSE2 stateSigma,
+            IsotropicNoiseSE2 visionSigma,
             DeltaSE2 delta) {
-        double cartesianWeight = Uncertainty.cartesianWeight(stateSigma, visionSigma);
-        double rotationWeight = Uncertainty.rotationWeight(stateSigma, visionSigma);
+        double cartesianWeight = cartesianWeight(stateSigma, visionSigma);
+        double rotationWeight = rotationWeight(stateSigma, visionSigma);
         return new DeltaSE2(
                 delta.getTranslation().times(cartesianWeight),
                 delta.getRotation().times(rotationWeight));
@@ -141,11 +160,11 @@ public class Uncertainty {
      * @return update weight for cartesian dimensions
      */
     static double cartesianWeight(
-            IsotropicSigmaSE2 stateSigma,
-            IsotropicSigmaSE2 visionSigma) {
-        return inverseVarianceWeighting(
-                Math.pow(stateSigma.cartesian(), 2),
-                Math.pow(visionSigma.cartesian(), 2));
+            IsotropicNoiseSE2 stateSigma,
+            IsotropicNoiseSE2 visionSigma) {
+        return weight(
+                stateSigma.cartesianVariance(),
+                visionSigma.cartesianVariance());
     }
 
     /**
@@ -158,15 +177,15 @@ public class Uncertainty {
      * @return update weight for rotation
      */
     static double rotationWeight(
-            IsotropicSigmaSE2 stateSigma,
-            IsotropicSigmaSE2 visionSigma) {
-        return inverseVarianceWeighting(
-                Math.pow(stateSigma.rotation(), 2),
-                Math.pow(visionSigma.rotation(), 2));
+            IsotropicNoiseSE2 stateSigma,
+            IsotropicNoiseSE2 visionSigma) {
+        return weight(
+                stateSigma.rotationVariance(),
+                visionSigma.rotationVariance());
     }
 
     /**
-     * Simple weighting by inverse variance.
+     * Weight by inverse variance, for use in a weighted sum of means.
      * 
      * Inverse-variance weighting is the "optimal" (i.e. maximum-likelihood) thing
      * to do if the variables are independent and normal. They are neither, but we
@@ -178,15 +197,30 @@ public class Uncertainty {
      * https://en.wikipedia.org/wiki/Weighted_arithmetic_mean
      * https://www.nist.gov/system/files/documents/2017/05/09/combine-1.pdf
      * 
-     * @param q     state variance
-     * @param r     vision variance
+     * @param var1  state variance
+     * @param var2  update variance
      * @param state weight of the update, in the range [0, 1]
      */
-    static double inverseVarianceWeighting(double q, double r) {
-        if (q < 1e-6)
+    static double weight(double var1, double var2) {
+        if (var1 < 1e-6)
             return 0;
-        if (r < 1e-6)
+        if (var2 < 1e-6)
             return 1;
-        return (1 / r) / (1 / q + 1 / r);
+        return (1 / var2) / (1 / var1 + 1 / var2);
+    }
+
+    /**
+     * Variance of the weighted mean.
+     * 
+     * This is simply the reciprocal of the sum of the reciprocals.
+     * 
+     * https://en.wikipedia.org/wiki/Inverse-variance_weighting
+     * 
+     * @param var1 state variance
+     * @param var2 update variance
+     * @return variance of the weighted mean.
+     */
+    static double variance(double var1, double var2) {
+        return 1 / (1 / var1 + 1 / var2);
     }
 }

@@ -12,7 +12,7 @@ public interface VisionUpdater {
     void put(
             double timestampS,
             Pose2d measurement,
-            IsotropicSigmaSE2 stateSigma,
-            IsotropicSigmaSE2 visionSigma);
+            IsotropicNoiseSE2 stateSigma,
+            IsotropicNoiseSE2 visionSigma);
 
 }

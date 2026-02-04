@@ -47,8 +47,8 @@ public class NudgingVisionUpdater implements VisionUpdater {
     public void put(
             double timestamp,
             Pose2d measurement,
-            IsotropicSigmaSE2 stateSigma,
-            IsotropicSigmaSE2 visionSigma) {
+            IsotropicNoiseSE2 stateSigma,
+            IsotropicNoiseSE2 visionSigma) {
 
         // Skip too-old measurement
         if (m_history.tooOld(timestamp)) {
@@ -105,8 +105,8 @@ public class NudgingVisionUpdater implements VisionUpdater {
     static Pose2d nudge(
             Pose2d sample,
             Pose2d measurement,
-            IsotropicSigmaSE2 stateSigma,
-            IsotropicSigmaSE2 visionSigma) {
+            IsotropicNoiseSE2 stateSigma,
+            IsotropicNoiseSE2 visionSigma) {
         // The difference between the odometry pose and the vision pose.
         DeltaSE2 delta = DeltaSE2.delta(sample, measurement);
         // Twist2d twist = sample.log(measurement);

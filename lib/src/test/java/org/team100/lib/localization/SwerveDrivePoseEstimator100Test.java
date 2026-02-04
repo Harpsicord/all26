@@ -160,8 +160,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         verifyVelocity(5.000, history.apply(0.02));
 
         // big vision update
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.1, 0.1);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(0.5, Double.MAX_VALUE);
         vu.put(0.00, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         // position slides over there
         verify(0.038, history.apply(0.00));
@@ -177,8 +177,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.1, 0.1);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(0.5, Double.MAX_VALUE);
         SwerveHistory history = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -222,8 +222,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.1, 0.1);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(0.5, Double.MAX_VALUE);
         SwerveHistory history = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -272,8 +272,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.1, 0.1);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(0.5, Double.MAX_VALUE);
         positions = positionZero;
         SwerveHistory history = new SwerveHistory(
                 logger,
@@ -392,8 +392,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.1, 0.1);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(0.5, Double.MAX_VALUE);
         SwerveHistory history = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -513,8 +513,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.1, 0.1);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(0.5, Double.MAX_VALUE);
         positions = positionZero;
         SwerveHistory history = new SwerveHistory(
                 logger,
@@ -572,8 +572,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(1.0, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.1, 0.1);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(1.0, Double.MAX_VALUE);
         positions = positionZero;
         SwerveHistory history = new SwerveHistory(
                 logger,
@@ -630,8 +630,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.05, 0.05);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.05, 0.05);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(0.5, Double.MAX_VALUE);
         positions = positionZero;
         SwerveHistory history = new SwerveHistory(
                 logger,
@@ -690,8 +690,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.01, 0.01);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.1, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.01, 0.01);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(0.1, Double.MAX_VALUE);
         SwerveHistory history = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -790,8 +790,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         var bl = new SwerveModulePosition100();
         var br = new SwerveModulePosition100();
 
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, 0.5);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.1, 0.1);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(0.5, 0.5);
         var estimator = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -949,8 +949,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         final SwerveModulePosition100 bl = new SwerveModulePosition100();
         final SwerveModulePosition100 br = new SwerveModulePosition100();
 
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.9, 0.9);
+        IsotropicNoiseSE2 stateStdDevs = new IsotropicNoiseSE2(0.1, 0.1);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = new IsotropicNoiseSE2(0.9, 0.9);
         var estimator = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -1027,8 +1027,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         vu.put(
                 1,
                 new Pose2d(new Translation2d(10, 10), new Rotation2d(0.1)),
-                new IsotropicSigmaSE2(0.1, 0.1),
-                new IsotropicSigmaSE2(0.1, 0.1));
+                new IsotropicNoiseSE2(0.1, 0.1),
+                new IsotropicNoiseSE2(0.1, 0.1));
 
         Pose2d visionPose = estimator.apply(time).pose();
 
