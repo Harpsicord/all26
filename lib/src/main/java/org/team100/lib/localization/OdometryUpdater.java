@@ -64,11 +64,7 @@ public class OdometryUpdater {
 
     /** For testing. */
     void update(double timestamp) {
-        put(
-                timestamp,
-                m_gyro.getYawNWU(),
-                m_gyro.getYawRateNWU(),
-                m_positions.get());
+        put(timestamp, m_gyro.getYawNWU(), m_positions.get());
     }
 
     /**
@@ -79,7 +75,7 @@ public class OdometryUpdater {
      * translation and a rotation of zero (or 180 for the other button).
      */
     public void reset(Pose2d pose, IsotropicNoiseSE2 noise) {
-        reset(m_gyro.getYawNWU(), pose, noise, Takt.get());
+        reset(pose, noise, Takt.get());
     }
 
     /** For testing. */
@@ -115,7 +111,6 @@ public class OdometryUpdater {
     private void put(
             double currentTimeS,
             Rotation2d gyroYaw,
-            double gyroRate,
             SwerveModulePositions positions) {
 
         // the entry right before this one, the basis for integration.
@@ -131,7 +126,7 @@ public class OdometryUpdater {
 
         double dt = currentTimeS - lowerEntry.getKey();
         SwerveState previousState = lowerEntry.getValue();
-        
+
         ModelSE2 previousModel = previousState.state();
         IsotropicNoiseSE2 previousNoise = previousState.noise();
 
@@ -160,13 +155,9 @@ public class OdometryUpdater {
             System.out.printf("new pose x %.6f y %.6f\n", newPose.getX(), newPose.getY());
         }
 
-        // this is the backward finite difference velocity from odometry
-        // TODO: don't use delta to represent velocity
-        DeltaSE2 odoVelo = DeltaSE2.delta(
-                previousModel.pose(), newPose)
-                .div(dt);
-
-        VelocitySE2 velocity = mix(odoVelo, gyroRate);
+        // Backward finite difference velocity.
+        VelocitySE2 velocity = VelocitySE2.velocity(
+                previousModel.pose(), newPose, dt);
 
         ModelSE2 model = new ModelSE2(newPose, velocity);
 
@@ -204,33 +195,15 @@ public class OdometryUpdater {
                 odoFraction * twist.dtheta + gyroFraction * gyroDTheta);
     }
 
-    /**
-     * Same as above, for velocity.
-     * TODO: combine these, since there's really just one "delta" here.
-     */
-    static VelocitySE2 mix(DeltaSE2 odoVelo, double gyroRateRad_S) {
-        double velocity = odoVelo.l2Norm();
-        double width = 1.0;
-        double odoFraction = Math.exp(-width * velocity * velocity);
-        double gyroFraction = 1 - odoFraction;
-        return new VelocitySE2(
-                odoVelo.getX(),
-                odoVelo.getY(),
-                odoFraction * odoVelo.getRadians() + gyroFraction * gyroRateRad_S);
-    }
-
     /** Replay odometry after the sample time. */
     void replay(double sampleTime) {
         // Note the exclusive tailmap: we don't see the entry at timestamp.
         for (Map.Entry<Double, SwerveState> entry : m_history.exclusiveTailMap(sampleTime).entrySet()) {
             double timestamp = entry.getKey();
             SwerveState value = entry.getValue();
-
             Rotation2d gyroYaw = value.gyroYaw();
-            double gyroRate = value.state().theta().v();
             SwerveModulePositions positions = value.positions();
-
-            put(timestamp, gyroYaw, gyroRate, positions);
+            put(timestamp, gyroYaw, positions);
         }
     }
 

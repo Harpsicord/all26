@@ -83,22 +83,6 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
     }
 
     @Test
-    void testVeloMix() {
-        // all zero, nothing happens
-        assertEquals(0, OdometryUpdater.mix(
-                new DeltaSE2(new Translation2d(0, 0), new Rotation2d(0)), 0).theta(), DELTA);
-        // at rest, gyro ignored
-        assertEquals(0, OdometryUpdater.mix(
-                new DeltaSE2(new Translation2d(0, 0), new Rotation2d(0)), 1).theta(), DELTA);
-        // moving fast, gyro preferred
-        assertEquals(1, OdometryUpdater.mix(
-                new DeltaSE2(new Translation2d(10, 0), new Rotation2d(0)), 1).theta(), DELTA);
-        // moving slowly, mixture.
-        assertEquals(0.5, OdometryUpdater.mix(
-                new DeltaSE2(new Translation2d(0.833, 0), new Rotation2d(0)), 1).theta(), DELTA);
-    }
-
-    @Test
     void testGyroOffset() {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
