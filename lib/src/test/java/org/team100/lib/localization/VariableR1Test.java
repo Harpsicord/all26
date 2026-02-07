@@ -2,9 +2,12 @@ package org.team100.lib.localization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Random;
+
 import org.junit.jupiter.api.Test;
 
 public class VariableR1Test {
+    private static final boolean DEBUG = true;
     private static final double DELTA = 0.001;
 
     @Test
@@ -169,6 +172,30 @@ public class VariableR1Test {
         assertEquals(0.909, c.mean(), DELTA);
         // Minimum applies.
         assertEquals(0.2, c.variance(), DELTA);
+    }
+
+    @Test
+    void testFuse3e() {
+        // initial state
+        Random random = new Random();
+        VariableR1 state = new VariableR1(0, 10);
+        double cameraStdDev = 0.03; // typical camera stddev
+        double cameraVariance = cameraStdDev * cameraStdDev;
+        if (DEBUG)
+            System.out.println("t, camera, state, state variance");
+        for (double t = 0; t < 10; t += 0.02) {
+            double cameraEstimate;
+            if (t < 3)
+                cameraEstimate = 0.0;
+            else if (t < 6)
+                cameraEstimate = 0.3;
+            else
+                cameraEstimate = 0.0;
+            VariableR1 camera = new VariableR1(random.nextGaussian() * cameraStdDev + cameraEstimate, cameraVariance);
+            state = VariableR1.fuse1(state, camera);
+            if (DEBUG)
+                System.out.printf("%f, %f, %f, %f\n", t, camera.mean(), state.mean(), state.variance());
+        }
     }
 
     // BAYESIAN

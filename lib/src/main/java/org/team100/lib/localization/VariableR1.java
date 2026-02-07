@@ -65,10 +65,15 @@ public class VariableR1 {
     }
 
     /**
-     * Joel's hack
+     * Covariance Inflation
      * 
-     * Combines the mean dispersion term of the first method with the variance
-     * minimization of the second method.
+     * Covariance is based on inverse variance weighting, with two terms for covariance inflation:
+     * 
+     * * mean dispersion weight: reduce the influence of mean dispersion, but not to zero.
+     * * minimum state variance: avoid state variance collapse.
+     * 
+     * I tuned these terms by eye, in this sheet:
+     * https://docs.google.com/spreadsheets/d/1DmHL1UDd6vngmr-5_9fNHg2xLC4TEVWTN2nHZBOnje0
      */
     public static VariableR1 fuse3(VariableR1 a, VariableR1 b) {
         // TODO: handle zero
@@ -80,10 +85,12 @@ public class VariableR1 {
         // Inverse variance weight
         double variance = 1 / totalWeight;
         // Add mean dispersion
-        variance += wA * Math.pow(a.mean - mean, 2) / totalWeight
-                + wB * Math.pow(b.mean - mean, 2) / totalWeight;
-        // add noise
-        variance = Math.max(variance, 0.2);
+        double DISPERSION_WEIGHT = 0.02;
+        variance += DISPERSION_WEIGHT * wA * Math.pow(a.mean - mean, 2) / totalWeight
+                + DISPERSION_WEIGHT * wB * Math.pow(b.mean - mean, 2) / totalWeight;
+        // Prevent variance collapse
+        double MIN_VARIANCE = 0.2;
+        variance = Math.max(variance, MIN_VARIANCE);
         return new VariableR1(mean, variance);
     }
 
