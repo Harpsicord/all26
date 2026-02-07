@@ -132,7 +132,7 @@ public class Binder {
                 new DriveToPoseWithProfile(
                         log, m_machinery.m_drive, holonomicController, profile,
                         () -> new Pose2d(15.387, 3.501, new Rotation2d(0))));
-        ///////////////////////////////////////////
+        /////////////////////////////////////////////////////////
         ///
         /// SUBSYSTEMS
         ///
@@ -140,12 +140,12 @@ public class Binder {
         
         whileTrue(driver::x, m_machinery.m_intake.intake());
         // whileTrue(driver::y, m_machinery.m_extender.goToExtendedPosition());
-        whileTrue(driver::a, m_machinery.m_extender.goToRetractedPosition());
-        whileTrue(driver::y,
+        whileTrue(driver::leftBumper, m_machinery.m_extender.goToRetractedPosition());
+        whileTrue(driver::leftTrigger,
                 m_machinery.m_extender.goToExtendedPosition()
                         .andThen(m_machinery.m_intake.intake()));
 
-        ////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////
         //
         // TEST
         //
