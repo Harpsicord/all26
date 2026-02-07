@@ -100,6 +100,18 @@ So a combination of approaches might be good: added noise to keep the state
 from becoming unresponsive to small innovation, and mean dispersion to adapt to
 large innovation.
 
+### Gyro model
+
+The gyro can be modeled with two random variables:
+
+* **Drift rate**, radians/sec.  This is a slow random walk, informed by odometry: the drift
+rate is the difference between the gyro dtheta and the odometry dtheta for each
+update.  Sometimes the odometry isn't very accurate (e.g. when driving fast), and
+so has essentially no influence on the drift rate.  When the odometry is very
+accurate (e.g. when stopped), it has very firm control over the drift rate.
+* **Noise**, radians.  This is gaussian noise with a fixed width.
+
+
 
 ### Mixture model
 
