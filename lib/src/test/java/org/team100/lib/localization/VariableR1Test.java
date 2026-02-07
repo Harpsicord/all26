@@ -174,15 +174,21 @@ public class VariableR1Test {
         assertEquals(0.2, c.variance(), DELTA);
     }
 
+    /**
+     * Output is plotted here
+     * https://docs.google.com/spreadsheets/d/1DmHL1UDd6vngmr-5_9fNHg2xLC4TEVWTN2nHZBOnje0/edit?gid=1604242948#gid=1604242948
+     */
     @Test
     void testFuse3e() {
-        // initial state
         Random random = new Random();
-        VariableR1 state = new VariableR1(0, 10);
+        // note non-zero initial mean
+        // note not-huge initial variance (1 cm stddev)
+        // which might be
+        VariableR1 state = new VariableR1(0.3, 0.0001);
         double cameraStdDev = 0.03; // typical camera stddev
         double cameraVariance = cameraStdDev * cameraStdDev;
         if (DEBUG)
-            System.out.println("t, camera, state, state variance");
+            System.out.println("t, camera, state, state stddev");
         for (double t = 0; t < 10; t += 0.02) {
             double cameraEstimate;
             if (t < 3)
@@ -192,9 +198,12 @@ public class VariableR1Test {
             else
                 cameraEstimate = 0.0;
             VariableR1 camera = new VariableR1(random.nextGaussian() * cameraStdDev + cameraEstimate, cameraVariance);
-            state = VariableR1.fuse1(state, camera);
+            // state prior to update
             if (DEBUG)
-                System.out.printf("%f, %f, %f, %f\n", t, camera.mean(), state.mean(), state.variance());
+                System.out.printf("%f, %f, %f, %f\n",
+                        t, camera.mean(), state.mean(), Math.sqrt(state.variance()));
+            // do the update
+            state = VariableR1.fuse3(state, camera);
         }
     }
 
