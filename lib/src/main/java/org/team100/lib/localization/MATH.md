@@ -100,6 +100,10 @@ So a combination of approaches might be good: added noise to keep the state
 from becoming unresponsive to small innovation, and mean dispersion to adapt to
 large innovation.
 
+This combination, using a minimum noise constraint and a small weight on the mean
+dispersion of updates, is what is implemented in the `Covariance Inflation` method in
+`VariableR1`.
+
 ### Gyro model
 
 The gyro can be modeled with two random variables:
@@ -135,6 +139,20 @@ bias += bias_stddev * random.nextGaussian()
 
 measurement = ground_truth + bias + noise
 ```
+
+We use several steps to ingest the gyro measurement:
+
+* Find the gyro increment: the difference between the gyro measurement at the current instant
+and the previous step.  The variance in this measurement is a constant.
+* Find the odometry rotation increment.  The variance in this measurement depends on drive speed.
+* Subtract the odometry increment from the gyro increment, noting that the variances add.
+This is an estimate for drift.
+* Fuse this drift estimate with the state drift estimate (and its variance).
+This fusion should use the same covariance inflation method mentioned above.
+* Subtract this new state drift estimate from the gyro increment to find the corrected gyro
+increment.  Note, the variances add.
+* Fuse the corrected gyro increment with the odometry rotation increment, again using the covariance
+inflation method.
 
 
 ### Mixture model
