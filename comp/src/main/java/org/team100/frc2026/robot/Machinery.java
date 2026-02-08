@@ -75,8 +75,8 @@ public class Machinery {
 
         // Subsystem initializers go here.
         m_shooter = new Shooter(driveLog);
-        m_intake = new Intake(driveLog, new CanId(20));
-        m_extender = new IntakeExtend(driveLog, new CanId(21));
+        m_intake = new Intake(driveLog, new CanId(14));
+        m_extender = new IntakeExtend(driveLog, new CanId(19));
 
         ////////////////////////////////////////////////////////////
         //

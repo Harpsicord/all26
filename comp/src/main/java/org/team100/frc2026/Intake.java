@@ -20,15 +20,16 @@ public class Intake extends SubsystemBase {
         LoggerFactory log = parent.type(this);
 
         switch (Identity.instance) {
-            case COMP_BOT -> {
+            case TEST_BOARD_B0, COMP_BOT -> {
+                PIDConstants PID = PIDConstants.makeVelocityPID(log, 1);
                 m_motor = new Kraken6Motor(
                         log,    //LoggerFactory parent,
                         canID,  // CanId canId,
                         NeutralMode100.COAST, //NeutralMode neutral,
                         MotorPhase.REVERSE, //MotorPhase motorPhase,
-                        20, // og 50 //double supplyLimit,
-                        20, // og 2 //double statorLimit,
-                        PIDConstants.zero(log),  //PIDConstants pid,
+                        2, // og 50 //double supplyLimit,
+                        4, // og 2 //double statorLimit,
+                        PID,  //PIDConstants pid,
                         Kraken6Motor.highFrictionFF(log)//Feedforward100 ff
                 );
             }

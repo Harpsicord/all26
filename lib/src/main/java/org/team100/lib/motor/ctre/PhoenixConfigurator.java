@@ -157,6 +157,7 @@ public class PhoenixConfigurator {
         slot1Configs.kP = 2 * Math.PI * m_pid.getVelocityPVS_Rad();
         slot1Configs.kI = 2 * Math.PI * m_pid.getVelocityIVolt_Rad();
         slot1Configs.kD = 2 * Math.PI * m_pid.getVelocityDVS2_Rad();
+        System.out.printf("==== P VALUE %f\n", slot0Configs.kP);
         crash(() -> m_motor.getConfigurator().apply(slot0Configs, TIMEOUT_SEC));
         crash(() -> m_motor.getConfigurator().apply(slot1Configs, TIMEOUT_SEC));
     }

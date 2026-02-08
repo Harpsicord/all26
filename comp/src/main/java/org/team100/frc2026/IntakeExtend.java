@@ -38,16 +38,17 @@ public class IntakeExtend extends SubsystemBase {
 
         switch (Identity.instance) {
 
-        case COMP_BOT -> {
+        case TEST_BOARD_B0 -> {
             float gearRatio = 10;
+            PIDConstants PID = PIDConstants.makePositionPID(log, 1);
             Kraken6Motor m_motor = new Kraken6Motor(
-                log,    //LoggerFactory parent,
+                log,    //LoggerFactor y parent,
                 canID,  // CanId canId,
                 NeutralMode100.COAST, //NeutralMode neutral,
-                MotorPhase.REVERSE, //MotorPhase motorPhase,
-                20, // og 50 //double supplyLimit,
-                20, // og 2 //double statorLimit,
-                PIDConstants.zero(log),  //PIDConstants pid,
+                MotorPhase.REVERSE, //MotorPhase motorPhase,    
+                4, // og 50 //double supplyLimit,
+                4, // og 2 //double statorLimit,
+                PID,  //PIDConstants pid,
                 Kraken6Motor.highFrictionFF(log)//Feedforward100 ff
             );
             Talon6Encoder encoder = m_motor.encoder();
@@ -60,7 +61,7 @@ public class IntakeExtend extends SubsystemBase {
                     log, m_motor, sensor, 1,
                     Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
             m_servo = new OutboardAngularPositionServo(parent, climberMech, ref);
-            
+
         }
 
         default -> {
