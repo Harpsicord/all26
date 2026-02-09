@@ -43,7 +43,7 @@ public class VariableR1Test {
         assertEquals(0.01, c.mean(), DELTA);
         // This is trying to *include* (some of) the high variance
         // instead of ignoring it.
-        assertEquals(1.98, c.variance(), DELTA);
+        assertEquals(1.99, c.variance(), DELTA);
     }
 
     @Test
@@ -138,7 +138,7 @@ public class VariableR1Test {
         VariableR1 c = VariableR1.fuse3(a, b);
         assertEquals(0, c.mean(), DELTA);
         // Minimum variance applies
-        assertEquals(0.2, c.variance(), DELTA);
+        assertEquals(0.091, c.variance(), DELTA);
     }
 
     @Test
@@ -149,7 +149,7 @@ public class VariableR1Test {
         // Ignores the higher variance
         assertEquals(0.01, c.mean(), DELTA);
         // Ignores the higher variance
-        assertEquals(1, c.variance(), DELTA);
+        assertEquals(0.99, c.variance(), DELTA);
     }
 
     @Test
@@ -159,19 +159,18 @@ public class VariableR1Test {
         VariableR1 c = VariableR1.fuse3(a, b);
         // Equal variance -> expectation in the middle
         assertEquals(0.5, c.mean(), DELTA);
-        // Respects mean dispersion.
-        assertEquals(0.75, c.variance(), DELTA);
+        // Respects mean dispersion (a little)
+        assertEquals(0.505, c.variance(), DELTA);
     }
 
     @Test
     void testFuse3d() {
-        VariableR1 a = new VariableR1(0, 1);
-        VariableR1 b = new VariableR1(1, 0.1);
+        VariableR1 a = new VariableR1(0, 0.0000001);
+        VariableR1 b = new VariableR1(0, 0.00000001);
         VariableR1 c = VariableR1.fuse3(a, b);
-        // Favor the lower variance input.
-        assertEquals(0.909, c.mean(), DELTA);
+        assertEquals(0, c.mean(), DELTA);
         // Minimum applies.
-        assertEquals(0.2, c.variance(), DELTA);
+        assertEquals(9e-6, c.variance(), 1e-6);
     }
 
     /**

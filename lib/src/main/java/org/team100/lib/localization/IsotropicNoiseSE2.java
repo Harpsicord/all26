@@ -59,12 +59,12 @@ public class IsotropicNoiseSE2 {
                 MathUtil.interpolate(m_rotationVariance, end.m_rotationVariance, t));
     }
 
-    /** For testing only. */
+    /** Standard Deviation, for testing only. */
     double cartesian() {
         return Math.sqrt(m_cartesianVariance);
     }
 
-    /** For testing only. */
+    /** Standard Deviation, for testing only. */
     double rotation() {
         return Math.sqrt(m_rotationVariance);
     }
