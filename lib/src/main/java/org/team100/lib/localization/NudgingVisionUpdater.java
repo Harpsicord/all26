@@ -155,7 +155,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
         Translation2d deltaTranslation = measurement.getTranslation().minus(sample.getTranslation());
         // the variance of the delta is the sum of the two variances
         double deltaNorm = deltaTranslation.getNorm();
-        double deltaVariance = measurementSigma.cartesianVariance() + stateSigma.cartesianVariance();
+        double deltaVariance = measurementSigma.cartesianVariance();
         VariableR1 measurementV = VariableR1.fromVariance(deltaNorm, deltaVariance);
 
         VariableR1 cartesian = m_cartesianFusor.fuse(sampleV, measurementV);
