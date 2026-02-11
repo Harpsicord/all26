@@ -11,8 +11,8 @@ public class VariableR1Test {
 
     @Test
     void testAdd0() {
-        VariableR1 a = new VariableR1(0, 1);
-        VariableR1 b = new VariableR1(1, 1);
+        VariableR1 a = VariableR1.fromVariance(0, 1);
+        VariableR1 b = VariableR1.fromVariance(1, 1);
         VariableR1 c = VariableR1.add(a, b);
         assertEquals(1, c.mean(), DELTA);
         assertEquals(2, c.variance(), DELTA);

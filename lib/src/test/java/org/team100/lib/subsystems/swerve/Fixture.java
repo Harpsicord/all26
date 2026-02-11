@@ -60,17 +60,19 @@ public class Fixture {
                 swerveKinodynamics,
                 0.2,
                 Rotation2d.kZero,
-                new VariableR1(0, 1),
+                VariableR1.fromVariance(0, 1),
                 SwerveModulePositions.kZero(),
                 Pose2d.kZero,
                 IsotropicNoiseSE2.high(),
                 0); // initial time is zero here for testing
         // history.reset(gyro.getYawNWU(), collection.positions(), Pose2d.kZero, 0);
 
-        odometryUpdater = new OdometryUpdater(logger, swerveKinodynamics, gyro, history, collection::positions);
+        odometryUpdater = new OdometryUpdater(
+                logger, swerveKinodynamics, gyro, history, collection::positions);
         odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
 
-        final NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(history, odometryUpdater);
+        final NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(
+                logger, history, odometryUpdater);
 
         final AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 

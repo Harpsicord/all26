@@ -18,6 +18,7 @@ import org.team100.lib.logging.LoggerFactory.Pose2dLogger;
 import org.team100.lib.logging.LoggerFactory.Transform3dLogger;
 import org.team100.lib.network.CameraReader;
 import org.team100.lib.state.ModelSE2;
+import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.Uncertainty;
 import org.team100.lib.util.TrailingHistory;
 
@@ -297,13 +298,14 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
             //////////////////////////////////////////////////////////////////
 
             m_usedTags.add(correctedTimestamp, estimatedTagInField);
-            
+
             double offAxisAngleRad = Metrics.offAxisAngleRad(tagInCamera);
-            
-            m_visionUpdater.put(
-                    correctedTimestamp,
+
+            NoisyPose2d noisyMeasurement = new NoisyPose2d(
                     robotPose2d,
                     Uncertainty.visionMeasurementStdDevs(distanceM, offAxisAngleRad));
+
+            m_visionUpdater.put(correctedTimestamp, noisyMeasurement);
             m_prevPose = robotPose2d;
         }
     }

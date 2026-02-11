@@ -24,16 +24,17 @@ import org.team100.lib.uncertainty.VariableR1;
  * https://stats.stackexchange.com/questions/16608/what-is-the-variance-of-the-weighted-mixture-of-two-gaussians
  * https://stats.stackexchange.com/questions/309622/calculate-moments-of-a-weighted-mixture-of-normal-distributions
  */
-public class GaussianMixture {
+public class GaussianMixture implements Fusor {
 
-    public static VariableR1 fuse(VariableR1 a, VariableR1 b) {
+    @Override
+    public VariableR1 fuse(VariableR1 a, VariableR1 b) {
         if (a.variance() < 1e-9 && b.variance() < 1e-9)
-            return new VariableR1((a.mean() + b.mean()) / 2, 0);
+            return VariableR1.fromVariance((a.mean() + b.mean()) / 2, 0);
         if (a.variance() < 1e-9)
-            return new VariableR1(a.mean(), 0);
+            return VariableR1.fromVariance(a.mean(), 0);
         if (b.variance() < 1e-9)
-            return new VariableR1(b.mean(), 0);
-        
+            return VariableR1.fromVariance(b.mean(), 0);
+
         double wA = 1 / a.variance();
         double wB = 1 / b.variance();
         double totalWeight = wA + wB;
@@ -41,7 +42,7 @@ public class GaussianMixture {
         double variance = 2 / totalWeight
                 + wA * Math.pow(a.mean() - mean, 2) / totalWeight
                 + wB * Math.pow(b.mean() - mean, 2) / totalWeight;
-        return new VariableR1(mean, variance);
+        return VariableR1.fromVariance(mean, variance);
     }
 
 }

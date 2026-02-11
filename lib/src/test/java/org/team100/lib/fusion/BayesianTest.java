@@ -10,9 +10,9 @@ public class BayesianTest {
 
     @Test
     void testCrisp() {
-        VariableR1 a = new VariableR1(0, 0);
-        VariableR1 b = new VariableR1(1, 1);
-        VariableR1 c = Bayesian.fuse(a, b);
+        VariableR1 a = VariableR1.fromVariance(0, 0);
+        VariableR1 b = VariableR1.fromVariance(1, 1);
+        VariableR1 c = new Bayesian().fuse(a, b);
         // Crisp variable wins
         assertEquals(0, c.mean(), DELTA);
         assertEquals(0, c.variance(), DELTA);
@@ -20,9 +20,9 @@ public class BayesianTest {
 
     @Test
     void testSelf() {
-        VariableR1 a = new VariableR1(0, 1);
-        VariableR1 b = new VariableR1(0, 1);
-        VariableR1 c = Bayesian.fuse(a, b);
+        VariableR1 a = VariableR1.fromVariance(0, 1);
+        VariableR1 b = VariableR1.fromVariance(0, 1);
+        VariableR1 c = new Bayesian().fuse(a, b);
         assertEquals(0, c.mean(), DELTA);
         // Overconfident.
         assertEquals(0.5, c.variance(), DELTA);
@@ -30,9 +30,9 @@ public class BayesianTest {
 
     @Test
     void testHighVariance() {
-        VariableR1 a = new VariableR1(0, 1);
-        VariableR1 b = new VariableR1(1, 100);
-        VariableR1 c = Bayesian.fuse(a, b);
+        VariableR1 a = VariableR1.fromVariance(0, 1);
+        VariableR1 b = VariableR1.fromVariance(1, 100);
+        VariableR1 c = new Bayesian().fuse(a, b);
         assertEquals(0.01, c.mean(), DELTA);
         // Adopts the lower variance.
         assertEquals(0.99, c.variance(), DELTA);
@@ -40,9 +40,9 @@ public class BayesianTest {
 
     @Test
     void testEqualVariance() {
-        VariableR1 a = new VariableR1(0, 1);
-        VariableR1 b = new VariableR1(1, 1);
-        VariableR1 c = Bayesian.fuse(a, b);
+        VariableR1 a = VariableR1.fromVariance(0, 1);
+        VariableR1 b = VariableR1.fromVariance(1, 1);
+        VariableR1 c = new Bayesian().fuse(a, b);
         assertEquals(0.5, c.mean(), DELTA);
         // Ignores mean dispersion :-(
         assertEquals(0.5, c.variance(), DELTA);

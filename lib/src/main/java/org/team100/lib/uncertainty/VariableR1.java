@@ -7,13 +7,17 @@ public class VariableR1 {
     private final double mean;
     private final double variance;
 
-    public VariableR1(double mean, double variance) {
+    private VariableR1(double mean, double variance) {
         this.mean = mean;
         this.variance = variance;
     }
 
     public static VariableR1 fromStdDev(double mean, double sigma) {
         return new VariableR1(mean, sigma * sigma);
+    }
+
+    public static VariableR1 fromVariance(double mean, double variance) {
+        return new VariableR1(mean, variance);
     }
 
     /**
@@ -29,7 +33,7 @@ public class VariableR1 {
      * which means the variance is the same as the operand variance.
      */
     public VariableR1 interpolate(VariableR1 other, double t) {
-        return new VariableR1(
+        return VariableR1.fromVariance(
                 MathUtil.interpolate(mean, other.mean, t),
                 MathUtil.interpolate(variance, other.variance, t));
     }
@@ -38,12 +42,12 @@ public class VariableR1 {
      * Operands are independent, so means and variances simply add.
      */
     public static VariableR1 add(VariableR1 a, VariableR1 b) {
-        return new VariableR1(a.mean + b.mean, a.variance + b.variance);
+        return VariableR1.fromVariance(a.mean + b.mean, a.variance + b.variance);
     }
 
     /** Return a-b with additive variance. */
     public static VariableR1 subtract(VariableR1 a, VariableR1 b) {
-        return new VariableR1(a.mean - b.mean, a.variance + b.variance);
+        return VariableR1.fromVariance(a.mean - b.mean, a.variance + b.variance);
     }
 
     public double mean() {
@@ -62,9 +66,8 @@ public class VariableR1 {
     @Override
     public String toString() {
         return String.format(
-            "VariableR1 [mean=%8.5f sigma=%8.5f]",
-            mean(), sigma());
+                "VariableR1 [mean=%8.5f sigma=%8.5f]",
+                mean(), sigma());
     }
-    
 
 }

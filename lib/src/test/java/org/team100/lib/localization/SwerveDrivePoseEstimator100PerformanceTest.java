@@ -14,6 +14,7 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.NoisyPose2d;
 import org.team100.lib.uncertainty.VariableR1;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -66,7 +67,7 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
                 kinodynamics,
                 0.2,
                 Rotation2d.kZero,
-                new VariableR1(0, 1),
+                VariableR1.fromVariance(0, 1),
                 SwerveModulePositions.kZero(),
                 Pose2d.kZero,
                 IsotropicNoiseSE2.high(),
@@ -74,7 +75,7 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
         positions = p(0);
         OdometryUpdater ou = new OdometryUpdater(logger, kinodynamics, gyro, history, () -> positions);
         ou.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
-        NudgingVisionUpdater vu = new NudgingVisionUpdater(history, ou);
+        NudgingVisionUpdater vu = new NudgingVisionUpdater(logger, history, ou);
 
         // fill the buffer with odometry
         double t = 0.0;
@@ -91,7 +92,7 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
         int iterations = 100000;
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < iterations; ++i) {
-            vu.put(0.00, visionRobotPoseMeters, visionMeasurementStdDevs);
+            vu.put(0.00, new NoisyPose2d(visionRobotPoseMeters, visionMeasurementStdDevs));
         }
         long finishTime = System.currentTimeMillis();
         if (DEBUG) {
@@ -105,7 +106,7 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
         iterations = 1000000;
         startTime = System.currentTimeMillis();
         for (int i = 0; i < iterations; ++i) {
-            vu.put(duration - 0.1, visionRobotPoseMeters, visionMeasurementStdDevs);
+            vu.put(duration - 0.1, new NoisyPose2d(visionRobotPoseMeters, visionMeasurementStdDevs));
         }
         finishTime = System.currentTimeMillis();
         if (DEBUG) {

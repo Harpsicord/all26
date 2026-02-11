@@ -19,22 +19,23 @@ import org.team100.lib.uncertainty.VariableR1;
  * https://en.wikipedia.org/wiki/Weighted_arithmetic_mean
  * https://www.nist.gov/system/files/documents/2017/05/09/combine-1.pdf
  */
-public class InverseVarianceWeighting {
+public class InverseVarianceWeighting implements Fusor {
 
-    public static VariableR1 fuse(VariableR1 a, VariableR1 b) {
+    @Override
+    public VariableR1 fuse(VariableR1 a, VariableR1 b) {
         if (a.variance() < 1e-9 && b.variance() < 1e-9)
-            return new VariableR1((a.mean() + b.mean()) / 2, 0);
+            return VariableR1.fromVariance((a.mean() + b.mean()) / 2, 0);
         if (a.variance() < 1e-9)
-            return new VariableR1(a.mean(), 0);
+            return VariableR1.fromVariance(a.mean(), 0);
         if (b.variance() < 1e-9)
-            return new VariableR1(b.mean(), 0);
+            return VariableR1.fromVariance(b.mean(), 0);
 
         double wA = 1 / a.variance();
         double wB = 1 / b.variance();
         double totalWeight = wA + wB;
         double mean = (wA * a.mean() + wB * b.mean()) / totalWeight;
         double variance = 1 / totalWeight;
-        return new VariableR1(mean, variance);
+        return VariableR1.fromVariance(mean, variance);
     }
 
 }

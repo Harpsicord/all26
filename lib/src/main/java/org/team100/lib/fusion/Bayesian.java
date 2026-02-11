@@ -16,15 +16,16 @@ import org.team100.lib.uncertainty.VariableR1;
  * it weighs the more confident update more highly
  * it ignores mean dispersion
  */
-public class Bayesian {
+public class Bayesian implements Fusor {
 
-    public static VariableR1 fuse(VariableR1 a, VariableR1 b) {
+    @Override
+    public VariableR1 fuse(VariableR1 a, VariableR1 b) {
         if (a.variance() < 1e-9 && b.variance() < 1e-9)
-            return new VariableR1((a.mean() + b.mean()) / 2, 0);
+            return VariableR1.fromVariance((a.mean() + b.mean()) / 2, 0);
         if (a.variance() < 1e-9)
-            return new VariableR1(a.mean(), 0);
+            return VariableR1.fromVariance(a.mean(), 0);
         if (b.variance() < 1e-9)
-            return new VariableR1(b.mean(), 0);
+            return VariableR1.fromVariance(b.mean(), 0);
 
         // Bayes "precisions".
         double ap = 1 / a.variance();
@@ -32,7 +33,7 @@ public class Bayesian {
         double mean = (ap * a.mean() + bp * b.mean()) / (ap + bp);
         double p = ap + bp;
         double variance = 1 / p;
-        return new VariableR1(mean, variance);
+        return VariableR1.fromVariance(mean, variance);
     }
 
 }

@@ -107,7 +107,7 @@ public class Machinery {
                 m_swerveKinodynamics,
                 0.2,
                 gyro.getYawNWU(),
-                new VariableR1(0, 1),
+                VariableR1.fromStdDev(0, 1),
                 m_modules.positions(),
                 Pose2d.kZero,
                 IsotropicNoiseSE2.high(),
@@ -116,7 +116,7 @@ public class Machinery {
                 driveLog, m_swerveKinodynamics, gyro, history, m_modules::positions);
         odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high());
         final NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(
-                history, odometryUpdater);
+                driveLog, history, odometryUpdater);
 
         ////////////////////////////////////////////////////////////
         //
@@ -184,7 +184,7 @@ public class Machinery {
                     m_swerveKinodynamics,
                     0.2,
                     groundTruthGyro.getYawNWU(),
-                    new VariableR1(0, 1),
+                    VariableR1.fromStdDev(0, 1),
                     m_modules.positions(),
                     Pose2d.kZero,
                     IsotropicNoiseSE2.high(),

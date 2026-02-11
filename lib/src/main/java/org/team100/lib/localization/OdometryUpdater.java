@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.fusion.CovarianceInflation;
+import org.team100.lib.fusion.Fusor;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.logging.Level;
@@ -40,6 +41,9 @@ public class OdometryUpdater {
     private final Gyro m_gyro;
     private final SwerveHistory m_history;
     private final Supplier<SwerveModulePositions> m_positions;
+    private final Fusor m_gyroBiasFusor;
+    private final Fusor m_rotationFusor;
+
     private final SwerveStateLogger m_logState;
 
     public OdometryUpdater(
@@ -53,6 +57,10 @@ public class OdometryUpdater {
         m_gyro = gyro;
         m_history = estimator;
         m_positions = positions;
+        // gyro bias has a very low minimum variance
+        // TODO: use gyro bias noise for that
+        m_gyroBiasFusor = new CovarianceInflation();
+        m_rotationFusor = new CovarianceInflation();
         m_logState = log.swerveStateLogger(Level.TRACE, "state");
     }
 
@@ -106,7 +114,7 @@ public class OdometryUpdater {
             IsotropicNoiseSE2 noise,
             double timestampSeconds) {
         // No idea what the gyro bias is.
-        VariableR1 gyroBias = new VariableR1(0, 1);
+        VariableR1 gyroBias = VariableR1.fromVariance(0, 1);
         m_history.reset(
                 m_positions.get(),
                 pose,
@@ -119,7 +127,10 @@ public class OdometryUpdater {
     ////////////////////////////////////////////////////
 
     /**
-     * @param currentTimeS takt
+     * Add a SwerveState to the buffer at the specified time, based on the measured
+     * yaw and positions.
+     * 
+     * @param currentTimeS takt time, seconds
      * @param gyroYaw      verbatim gyro measurement
      * @param positions    verbatim drive measurement
      */
@@ -142,6 +153,21 @@ public class OdometryUpdater {
 
         double dt = currentTimeS - lowerEntry.getKey();
         SwerveState previousState = lowerEntry.getValue();
+
+        SwerveState newState = newState(previousState, dt, gyroYaw, positions);
+
+        m_history.put(currentTimeS, newState);
+        return newState;
+    }
+
+    /**
+     * Compute the new state, based on the previous state.
+     */
+    SwerveState newState(
+            SwerveState previousState,
+            double dt,
+            Rotation2d gyroYaw,
+            SwerveModulePositions positions) {
 
         ModelSE2 previousModel = previousState.state();
 
@@ -172,12 +198,11 @@ public class OdometryUpdater {
 
         // Gyro increment in this step
         double gyroDTheta = gyroYaw.minus(previousGyroYaw).getRadians();
-        // System.out.printf("gyroDTheta %f\n", gyroDTheta);
+
         // Noise in the increment is the noise parameter times the sample time.
         double gyroDThetaStdDev = m_gyro.white_noise() * Math.sqrt(dt);
         VariableR1 gyroMeasurement = VariableR1.fromStdDev(
                 gyroDTheta, gyroDThetaStdDev);
-        // System.out.printf("gyroMeasurement %s\n", gyroMeasurement);
 
         // Cartesian distance in this step
         double distanceM = Metrics.translationalNorm(twist);
@@ -197,28 +222,19 @@ public class OdometryUpdater {
         // noise.
         VariableR1 gyroBiasMeasurement = VariableR1.subtract(
                 gyroMeasurement, odoRotationMeasurement);
-        // System.out.printf("gyroBiasMeasurement %s\n", gyroBiasMeasurement);
 
-        // TODO: use covariance inflation
-        // VariableR1 newGyroBiasEstimate = InverseVarianceWeighting.fuse(
-        // previousGyroBias, gyroBiasMeasurement);
-        VariableR1 newGyroBiasEstimate = CovarianceInflation.fuse(
+        // gyro bias has a very low minimum variance
+        VariableR1 newGyroBiasEstimate = m_gyroBiasFusor.fuse(
                 previousGyroBias, gyroBiasMeasurement);
-        // System.out.printf("newGyroBiasEstimate %s\n", newGyroBiasEstimate);
 
         // Gyro increment without the drift.
         VariableR1 correctedGyroMeasurement = VariableR1.subtract(
                 gyroMeasurement, newGyroBiasEstimate);
 
-        // TODO: use covariance inflation
-        // VariableR1 fusedRotationMeasurement = InverseVarianceWeighting.fuse(
-        // odoRotationMeasurement, correctedGyroMeasurement);
-        VariableR1 fusedRotationMeasurement = CovarianceInflation.fuse(
+        // Fuse the odometry and gyro rotations
+        VariableR1 fusedRotationMeasurement = m_rotationFusor.fuse(
                 odoRotationMeasurement, correctedGyroMeasurement);
-        // if (DEBUG)
-        // System.out.printf("fusedRotationMeasurement %s\n", fusedRotationMeasurement);
 
-        // twist = mix(twist, gyroDTheta, dt);
         // use the fused rotation as the step estimate
         twist = new Twist2d(twist.dx, twist.dy, fusedRotationMeasurement.mean());
 
@@ -235,30 +251,23 @@ public class OdometryUpdater {
         ModelSE2 model = new ModelSE2(newPose, velocity);
 
         // Noise in this update.
-        // IsotropicNoiseSE2 n0 = Uncertainty.odometryStdDevs(distanceM, rotationRad);
+        double cartesianNoise = Uncertainty.odometryCartesianStdDev(distanceM);
         IsotropicNoiseSE2 n0 = IsotropicNoiseSE2.fromStdDev(
-                Uncertainty.odometryCartesianStdDev(distanceM),
-                fusedRotationMeasurement.sigma());
-        // System.out.printf("n0 %s\n", n0);
+                cartesianNoise, fusedRotationMeasurement.sigma());
 
         // The variance of the sum of (independent) variables is
         // just the sum of their variances. So if you drive around for
         // awhile without seeing any tags, the variance will grow
         // without bound.
         IsotropicNoiseSE2 noise = previousNoise.plus(n0);
-        // System.out.printf("noise %s\n", noise);
 
-        // TODO: compute gyro bias
-        // VariableR1 gyroBias = new VariableR1(0, 1);
-
+        // gyro and position measurements are verbatim
         SwerveState swerveState = new SwerveState(
-                m_kinodynamics.getKinematics(),
                 model,
                 noise,
                 positions,
                 gyroYaw,
                 newGyroBiasEstimate);
-        m_history.put(currentTimeS, swerveState);
         return swerveState;
     }
 

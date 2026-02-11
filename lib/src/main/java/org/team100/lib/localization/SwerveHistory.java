@@ -42,13 +42,12 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
     // private static final double BUFFER_DURATION = 0.2;
 
     private final DoubleLogger m_log_timestamp;
-    private final SwerveKinodynamics m_kinodynamics;
     private final TimeInterpolatableBuffer100<SwerveState> m_poseBuffer;
 
     public SwerveHistory(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
-            double BUFFER_DURATION,
+            double bufferDuration,
             Rotation2d gyroAngle,
             VariableR1 gyroBias,
             SwerveModulePositions modulePositions,
@@ -56,17 +55,13 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
             IsotropicNoiseSE2 noise,
             double timestampSeconds) {
         m_log_timestamp = parent.type(this).doubleLogger(Level.TRACE, "sample timestamp");
-        m_kinodynamics = kinodynamics;
+        SwerveStateInterpolator interpolator = new SwerveStateInterpolator(
+                kinodynamics.getKinematics());
         ModelSE2 state = new ModelSE2(initialPoseMeters, new VelocitySE2(0, 0, 0));
         SwerveState initialState = new SwerveState(
-                m_kinodynamics.getKinematics(),
-                state,
-                noise,
-                modulePositions,
-                gyroAngle,
-                gyroBias);
+                state, noise, modulePositions, gyroAngle, gyroBias);
         m_poseBuffer = new TimeInterpolatableBuffer100<>(
-                BUFFER_DURATION, timestampSeconds, initialState);
+                interpolator, bufferDuration, timestampSeconds, initialState);
     }
 
     /**
@@ -88,7 +83,6 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
             VariableR1 gyroBias) {
         ModelSE2 model = new ModelSE2(pose, new VelocitySE2(0, 0, 0));
         SwerveState state = new SwerveState(
-                m_kinodynamics.getKinematics(),
                 model,
                 noise,
                 modulePositions,
@@ -114,7 +108,6 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
         m_poseBuffer.put(
                 timestamp,
                 new SwerveState(
-                        m_kinodynamics.getKinematics(),
                         model,
                         noise,
                         positions,
