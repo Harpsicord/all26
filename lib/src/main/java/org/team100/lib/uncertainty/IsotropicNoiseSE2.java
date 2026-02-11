@@ -1,4 +1,4 @@
-package org.team100.lib.localization;
+package org.team100.lib.uncertainty;
 
 import edu.wpi.first.math.MathUtil;
 
@@ -21,10 +21,14 @@ public class IsotropicNoiseSE2 {
      * @param cartesianStdDev Standard deviation of cartesian dimensions.
      * @param rotationStdDev  Standard deviation of rotation.
      */
-    static IsotropicNoiseSE2 fromStdDev(double cartesianStdDev, double rotationStdDev) {
+    public static IsotropicNoiseSE2 fromStdDev(double cartesianStdDev, double rotationStdDev) {
         return new IsotropicNoiseSE2(
                 Math.pow(cartesianStdDev, 2),
                 Math.pow(rotationStdDev, 2));
+    }
+
+    public static IsotropicNoiseSE2 fromVariance(double cartesian, double rotation) {
+        return new IsotropicNoiseSE2(cartesian, rotation);
     }
 
     /** Effectively infinite uncertainty. */
@@ -60,13 +64,20 @@ public class IsotropicNoiseSE2 {
     }
 
     /** Standard Deviation, for testing only. */
-    double cartesian() {
+    public double cartesian() {
         return Math.sqrt(m_cartesianVariance);
     }
 
     /** Standard Deviation, for testing only. */
-    double rotation() {
+    public double rotation() {
         return Math.sqrt(m_rotationVariance);
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "IsotropicNoiseSE2 [cartesian=%8.5f, rotation=%8.5f]",
+                cartesian(), rotation());
     }
 
 }

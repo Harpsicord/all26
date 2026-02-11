@@ -22,8 +22,9 @@ import edu.wpi.first.math.interpolation.Interpolatable;
 public class TimeInterpolatableBuffer100<T extends Interpolatable<T>> {
     private static final boolean DEBUG = false;
 
+    /** Length of the buffer in seconds */
     private final double m_historyS;
-    /** key is timestamp in seconds */
+    /** Key is timestamp in seconds */
     private final NavigableMap<Double, T> m_pastSnapshots = new ConcurrentSkipListMap<>();
 
     /**

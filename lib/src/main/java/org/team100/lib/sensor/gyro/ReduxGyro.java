@@ -59,6 +59,18 @@ public class ReduxGyro implements Gyro {
         m_log_roll = log.rotation2dLogger(Level.TRACE, "Roll NWU (rad)");
     }
 
+    @Override
+    public double white_noise() {
+        // TODO: verify this
+        return 4e-4;
+    }
+
+    @Override
+    public double bias_noise() {
+        // TODO: verify this
+        return 1e-5;
+    }
+
     /** This is latency-compensated to the current Takt time. */
     @Override
     public Rotation2d getYawNWU() {

@@ -11,6 +11,8 @@ import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.util.TimeInterpolatableBuffer100;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -37,7 +39,7 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
      * code with about 75-100 ms latency. There will never be a vision update
      * older than about 200 ms.
      */
-    private static final double BUFFER_DURATION = 0.2;
+    // private static final double BUFFER_DURATION = 0.2;
 
     private final DoubleLogger m_log_timestamp;
     private final SwerveKinodynamics m_kinodynamics;
@@ -46,6 +48,7 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
     public SwerveHistory(
             LoggerFactory parent,
             SwerveKinodynamics kinodynamics,
+            double BUFFER_DURATION,
             Rotation2d gyroAngle,
             VariableR1 gyroBias,
             SwerveModulePositions modulePositions,
@@ -83,7 +86,6 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
             double timestampSeconds,
             Rotation2d gyroYaw,
             VariableR1 gyroBias) {
-        // empty the buffer and add the current pose
         ModelSE2 model = new ModelSE2(pose, new VelocitySE2(0, 0, 0));
         SwerveState state = new SwerveState(
                 m_kinodynamics.getKinematics(),
@@ -108,6 +110,7 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
             SwerveModulePositions positions,
             Rotation2d gyroYaw,
             VariableR1 gyroBias) {
+        // System.out.printf("history put noise %s\n", noise);
         m_poseBuffer.put(
                 timestamp,
                 new SwerveState(
@@ -117,6 +120,10 @@ public class SwerveHistory implements DoubleFunction<ModelSE2> {
                         positions,
                         gyroYaw,
                         gyroBias));
+    }
+
+    void put(double timestamp, SwerveState state) {
+        m_poseBuffer.put(timestamp, state);
     }
 
     Entry<Double, SwerveState> lowerEntry(double timestamp) {

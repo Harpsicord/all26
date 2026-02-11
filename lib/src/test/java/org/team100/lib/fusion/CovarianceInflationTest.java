@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.localization.VariableR1;
+import org.team100.lib.uncertainty.VariableR1;
 
 public class CovarianceInflationTest {
     private static final boolean DEBUG = true;

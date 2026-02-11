@@ -1,7 +1,7 @@
 package org.team100.lib.subsystems.swerve.commands;
 
-import org.team100.lib.localization.IsotropicNoiseSE2;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

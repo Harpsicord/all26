@@ -1,10 +1,7 @@
-package org.team100.lib.localization;
+package org.team100.lib.uncertainty;
 
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
-import org.team100.lib.geometry.DeltaSE2;
-
-import edu.wpi.first.math.geometry.Twist2d;
 
 /**
  * Methods governing vision update uncertainties.
@@ -40,7 +37,7 @@ public class Uncertainty {
      * Note: due to the uncertainty singularity on the tag axis, when we are
      * directly in front of the tag, we can't use it at all.
      */
-    static IsotropicNoiseSE2 visionMeasurementStdDevs(double distanceM, double offAxisAngleRad) {
+    public static IsotropicNoiseSE2 visionMeasurementStdDevs(double distanceM, double offAxisAngleRad) {
         if (distanceM < 0)
             throw new IllegalArgumentException();
         if (offAxisAngleRad < 0)
@@ -101,75 +98,52 @@ public class Uncertainty {
      * The error in odometry is superlinear in speed. Since the odometry samples
      * happen regularly, we can use the sample distance as a measure of speed.
      * 
+     * This yields zero when the robot isn't moving, which is what you'd expect.
+     * 
      * I completely made this up
      * https://docs.google.com/spreadsheets/d/1DmHL1UDd6vngmr-5_9fNHg2xLC4TEVWTN2nHZBOnje0/edit?gid=995645441#gid=995645441
      */
-    static IsotropicNoiseSE2 odometryStdDevs(double distanceM, double rotationRad) {
+    public static IsotropicNoiseSE2 odometryStdDevs(double distanceM, double rotationRad) {
+        return IsotropicNoiseSE2.fromStdDev(
+                odometryCartesianStdDev(distanceM),
+                odometryRotationStdDev(distanceM, rotationRad));
+    }
+
+    /**
+     * The error in odometry is superlinear in speed. Since the odometry samples
+     * happen regularly, we can use the sample distance as a measure of speed.
+     * 
+     * This yields zero when the robot isn't moving, which is what you'd expect.
+     * 
+     * I completely made this up
+     * https://docs.google.com/spreadsheets/d/1DmHL1UDd6vngmr-5_9fNHg2xLC4TEVWTN2nHZBOnje0/edit?gid=995645441#gid=995645441
+     */
+    public static double odometryCartesianStdDev(double distanceM) {
+        double norm = Math.abs(distanceM);
+        // We kinda measured 5% error in the best (slow) case, in 2024.
+        double lowSpeedError = 0.05;
+        // This is just a guess
+        double superError = 0.5;
+        return lowSpeedError * norm + superError * norm * norm;
+    }
+
+    /**
+     * How does rotation error scale with speed? Driving in a straight line
+     * definitely produces rotational drift, so this isn't just proportional to the
+     * odometry rotation term alone.
+     * 
+     * Maybe just add them, 1 meter == 1 radian.
+     * 
+     * TODO: measure this for real.
+     */
+    public static double odometryRotationStdDev(double distanceM, double rotationRad) {
+        double norm = Math.abs(distanceM) + Math.abs(rotationRad);
         // We kinda measured 5% error in the best (slow) case.
         double lowSpeedError = 0.05;
         // This is just a guess
         double superError = 0.5;
-        double cartesian = lowSpeedError * distanceM + superError * distanceM * distanceM;
         // We haven't measured this, so just guess it's the same???
-        double rotation = lowSpeedError * rotationRad + superError * rotationRad * rotationRad;
-        return IsotropicNoiseSE2.fromStdDev(cartesian, rotation);
-
-    }
-
- 
-    /**
-     * Weights for the vision update, using inverse-variance weighting.
-     * 
-     * @param stateNoise  state noise in SE(2)
-     * @param visionNoise vision update noise in SE(2)
-     * @return update weight for cartesian dimensions
-     */
-    static double cartesianWeight(
-            IsotropicNoiseSE2 stateNoise,
-            IsotropicNoiseSE2 visionNoise) {
-        return weight(
-                stateNoise.cartesianVariance(),
-                visionNoise.cartesianVariance());
-    }
-
-    /**
-     * Weights for the vision update, using inverse-variance weighting.
-     * 
-     * @param stateNoise  state noise in SE(2)
-     * @param visionNoise vision update noise in SE(2)
-     * @return update weight for rotation
-     */
-    static double rotationWeight(
-            IsotropicNoiseSE2 stateNoise,
-            IsotropicNoiseSE2 visionNoise) {
-        return weight(
-                stateNoise.rotationVariance(),
-                visionNoise.rotationVariance());
-    }
-
-    /**
-     * Weight by inverse variance, for use in a weighted sum of means.
-     * 
-     * Inverse-variance weighting is the "optimal" (i.e. maximum-likelihood) thing
-     * to do if the variables are independent and normal. They are neither, but we
-     * use this anyway.
-     * 
-     * The previous mixer weighted by standard deviation, which was just wrong.
-     * 
-     * https://en.wikipedia.org/wiki/Inverse-variance_weighting
-     * https://en.wikipedia.org/wiki/Weighted_arithmetic_mean
-     * https://www.nist.gov/system/files/documents/2017/05/09/combine-1.pdf
-     * 
-     * @param var1  state variance
-     * @param var2  update variance
-     * @param state weight of the update, in the range [0, 1]
-     */
-    static double weight(double var1, double var2) {
-        if (var1 < 1e-6)
-            return 0;
-        if (var2 < 1e-6)
-            return 1;
-        return (1 / var2) / (1 / var1 + 1 / var2);
+        return lowSpeedError * norm + superError * norm * norm;
     }
 
     /**

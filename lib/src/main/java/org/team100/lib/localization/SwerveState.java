@@ -7,13 +7,15 @@ import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.VariableR1;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.Interpolatable;
 
-class SwerveState implements Interpolatable<SwerveState> {
+public class SwerveState implements Interpolatable<SwerveState> {
     /** For interpolation. */
     private final SwerveDriveKinematics100 m_kinematics;
     /** Estimate for position and velocity. */

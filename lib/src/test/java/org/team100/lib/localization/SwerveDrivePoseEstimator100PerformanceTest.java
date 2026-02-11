@@ -13,6 +13,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.VariableR1;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -62,6 +64,7 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
         SwerveHistory history = new SwerveHistory(
                 logger,
                 kinodynamics,
+                0.2,
                 Rotation2d.kZero,
                 new VariableR1(0, 1),
                 SwerveModulePositions.kZero(),
@@ -69,7 +72,7 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
                 IsotropicNoiseSE2.high(),
                 0);
         positions = p(0);
-        OdometryUpdater ou = new OdometryUpdater(kinodynamics, gyro, history, () -> positions);
+        OdometryUpdater ou = new OdometryUpdater(logger, kinodynamics, gyro, history, () -> positions);
         ou.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
         NudgingVisionUpdater vu = new NudgingVisionUpdater(history, ou);
 

@@ -1,6 +1,6 @@
 package org.team100.lib.fusion;
 
-import org.team100.lib.localization.VariableR1;
+import org.team100.lib.uncertainty.VariableR1;
 
 /**
  * Gaussian mixture method.

@@ -48,6 +48,16 @@ public class SimulatedGyro implements Gyro {
         m_headingCache = Cache.ofDouble(this::update);
     }
 
+    @Override
+    public double white_noise() {
+        return 4e-4;
+    }
+
+    @Override
+    public double bias_noise() {
+        return 1e-5;
+    }
+
     double update() {
         double dt = dt();
         if (dt > 0.04) {

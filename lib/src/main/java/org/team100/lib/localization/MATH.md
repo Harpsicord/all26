@@ -127,7 +127,7 @@ As an example, the Kalibr docs mention the ADIS16448 (a MEMS device similar to t
 gyro we use) with these noise parameters:
 
 ```
-white_noise = 0.0004 // rad/sqrt(hz)s
+white_noise = 0.0004 // rad/sqrt(hz)s, or, equivalently, rad/sqrt(s)
 bias_noise = 0.000004 // rad*sqrt(hz)/s
 ```
 
@@ -136,12 +136,12 @@ bias_noise = 0.000004 // rad*sqrt(hz)/s
 These parameters scale with the sensor bandwidth, i.e. sample rate:
 
 ```
-sample_rate = 50 // hz
+dt = 0.02 // sec
 
-noise_stddev = white_noise * sqrt(sample_rate)
+noise_stddev = white_noise / sqrt(dt)
 noise = noise_stddev * random.nextGaussian()
 
-bias_stddev = bias_noise / sqrt(sample_rate)
+bias_stddev = bias_noise * sqrt(dt)
 bias += bias_stddev * random.nextGaussian()
 
 measurement = ground_truth + bias + noise
@@ -150,7 +150,7 @@ measurement = ground_truth + bias + noise
 We use several steps to ingest the gyro measurement:
 
 1. Find the gyro increment: the difference between the gyro measurement at the current instant
-and the previous step.  The variance in this measurement is a constant.
+and the previous step.  The variance in this measurement is a constant, determined by the gyro white noise.
 2. Find the odometry rotation increment.  The variance in this measurement depends on drive speed.
 3. Subtract the odometry increment from the gyro increment, noting that the variances add.
 This is the drift measurement.
@@ -161,6 +161,14 @@ increment.  Note, the variances add.
 6. Fuse the corrected gyro increment with the odometry rotation increment, again using the covariance
 inflation method.
 
+The way that GTSAM handles the bias is
+[different](https://github.com/borglab/gtsam/blob/develop/examples/ImuFactorsExample.cpp) ...
+each time-step uses a fixed noise model, instead of allowing the bias noise
+to float, as above.  I think we'll do much the same thing with the covariance
+inflation idea, keeping the bias variance from getting too low.
+
+Simple GTSAM examples just uses a *constant* bias term, I guess for short-duration
+cases?
 
 ### Mixture model
 
@@ -210,4 +218,6 @@ References:
 * [Bayesian update](https://stats.stackexchange.com/questions/237037/bayesian-updating-with-new-data)
 * Some slides about [Covariance inflation](https://web.cels.anl.gov/~aattia/Files/Slides/SIAM_MPE_18/mpe18_adaptive.pdf)
 * [Gyro model discussion](https://github.com/ethz-asl/kalibr/issues/354#issuecomment-979934812) in the context of the [ETH Kalibr camera/IMU calibration toolkit](https://github.com/ethz-asl/kalibr/wiki).  See also [python example](https://github.com/Team100/all24/blob/main/studies/factor_graph/kalibr_gyro.py) of the gyro model, and a more [complete simulation](https://github.com/Team100/all24/blob/main/studies/factor_graph/gyro_sim.py) from the 2024 GTSAM effort. (Note these contain errors.)
-* [Kalibr IMU noise model](https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model)
+* [Kalibr IMU noise model](https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model).  Note the sentence, "From our experience, for lowest-cost sensors, increasing the noise model parameters by a factor of 10x or more may be necessary."
+* [more about IMU specs](https://stechschulte.net/2023/10/11/imu-specs.html)
+* [example IMU calibration](https://github.com/rpng/ar_table_dataset/blob/master/calibration/kalibr_color_0_imu/d455_calib_02-imu.yaml) with noise = 0.008 (high!) and bias = 1e-5.  More examples can be found on Github by searching for Kalibr configuration YAML files, with the keys gyroscope_noise_density and gyroscope_random_walk.

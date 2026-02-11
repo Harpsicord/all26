@@ -3,7 +3,7 @@ package org.team100.lib.fusion;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.localization.VariableR1;
+import org.team100.lib.uncertainty.VariableR1;
 
 public class BayesianTest {
     private static final double DELTA = 0.001;

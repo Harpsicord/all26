@@ -1,9 +1,9 @@
 package org.team100.lib.fusion;
 
-import org.team100.lib.localization.VariableR1;
+import org.team100.lib.uncertainty.VariableR1;
 
 /**
- * Inverse-variance weighting is the maximum-likelihood estimator.  Repeated
+ * Inverse-variance weighting is the maximum-likelihood estimator. Repeated
  * fusions of the same input represent additional "evidence" and so the result
  * becomes progressively more confident.
  * 
@@ -14,6 +14,10 @@ import org.team100.lib.localization.VariableR1;
  * returns a confident result even when the operand means are very different.
  * The result is that the fusion can easily become very confident about the
  * wrong value.
+ * 
+ * https://en.wikipedia.org/wiki/Inverse-variance_weighting
+ * https://en.wikipedia.org/wiki/Weighted_arithmetic_mean
+ * https://www.nist.gov/system/files/documents/2017/05/09/combine-1.pdf
  */
 public class InverseVarianceWeighting {
 

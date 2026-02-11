@@ -7,11 +7,9 @@ import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagRobotLocalizer;
 import org.team100.lib.localization.FreshSwerveEstimate;
-import org.team100.lib.localization.IsotropicNoiseSE2;
 import org.team100.lib.localization.NudgingVisionUpdater;
 import org.team100.lib.localization.OdometryUpdater;
 import org.team100.lib.localization.SwerveHistory;
-import org.team100.lib.localization.VariableR1;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -23,6 +21,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.limiter.SwerveLimiter;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.testing.Timeless;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.VariableR1;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -56,13 +56,14 @@ public class RealisticFixture {
         history = new SwerveHistory(
                 logger,
                 swerveKinodynamics,
+                0.2,
                 Rotation2d.kZero,
                 new VariableR1(0, 1),
                 SwerveModulePositions.kZero(),
                 Pose2d.kZero,
                 IsotropicNoiseSE2.high(),
                 0);
-        OdometryUpdater odometryUpdater = new OdometryUpdater(swerveKinodynamics, gyro, history, collection::positions);
+        OdometryUpdater odometryUpdater = new OdometryUpdater(logger, swerveKinodynamics, gyro, history, collection::positions);
         odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
 
         final NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(history, odometryUpdater);

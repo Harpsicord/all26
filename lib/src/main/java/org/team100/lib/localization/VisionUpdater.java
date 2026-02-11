@@ -1,5 +1,7 @@
 package org.team100.lib.localization;
 
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+
 import edu.wpi.first.math.geometry.Pose2d;
 
 /** For testing. */

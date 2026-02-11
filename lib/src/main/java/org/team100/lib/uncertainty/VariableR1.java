@@ -1,4 +1,4 @@
-package org.team100.lib.localization;
+package org.team100.lib.uncertainty;
 
 import edu.wpi.first.math.MathUtil;
 
@@ -10,6 +10,10 @@ public class VariableR1 {
     public VariableR1(double mean, double variance) {
         this.mean = mean;
         this.variance = variance;
+    }
+
+    public static VariableR1 fromStdDev(double mean, double sigma) {
+        return new VariableR1(mean, sigma * sigma);
     }
 
     /**
@@ -37,6 +41,11 @@ public class VariableR1 {
         return new VariableR1(a.mean + b.mean, a.variance + b.variance);
     }
 
+    /** Return a-b with additive variance. */
+    public static VariableR1 subtract(VariableR1 a, VariableR1 b) {
+        return new VariableR1(a.mean - b.mean, a.variance + b.variance);
+    }
+
     public double mean() {
         return mean;
     }
@@ -49,5 +58,13 @@ public class VariableR1 {
     public double sigma() {
         return Math.sqrt(variance);
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "VariableR1 [mean=%8.5f sigma=%8.5f]",
+            mean(), sigma());
+    }
+    
 
 }

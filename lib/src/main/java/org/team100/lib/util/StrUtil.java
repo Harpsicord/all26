@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.geometry.Twist3d;
 
 public class StrUtil {
@@ -21,6 +22,11 @@ public class StrUtil {
         return String.format("%.8e, %.8e, %.8e, %.8e, %.8e, %.8e",
                 p.getX(), p.getY(), p.getZ(),
                 p.getRotation().getX(), p.getRotation().getY(), p.getRotation().getZ());
+    }
+
+    public static String twistStr(Twist2d t) {
+        return String.format("Twist2d: [%.8e %.8e %.8e]",
+                t.dx, t.dy, t.dtheta);
     }
 
     public static String twistStr(Twist3d t) {
@@ -38,7 +44,7 @@ public class StrUtil {
                 r.getX(), r.getY(), r.getZ());
     }
 
-     public static String transStr(Translation2d t) {
+    public static String transStr(Translation2d t) {
         return String.format("%12.8f, %12.8f",
                 t.getX(), t.getY());
     }

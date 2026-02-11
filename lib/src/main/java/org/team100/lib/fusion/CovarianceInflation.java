@@ -1,6 +1,6 @@
 package org.team100.lib.fusion;
 
-import org.team100.lib.localization.VariableR1;
+import org.team100.lib.uncertainty.VariableR1;
 
 /**
  * Covariance Inflation
@@ -16,7 +16,9 @@ import org.team100.lib.localization.VariableR1;
  * https://docs.google.com/spreadsheets/d/1DmHL1UDd6vngmr-5_9fNHg2xLC4TEVWTN2nHZBOnje0/edit?gid=1604242948#gid=1604242948
  */
 public class CovarianceInflation {
+    // TODO: make this adjustable?
     private static final double DISPERSION_WEIGHT = 0.02;
+    // TODO: make this adjustable?
     private static final double MIN_VARIANCE = 0.000009;
 
     public static VariableR1 fuse(VariableR1 a, VariableR1 b) {

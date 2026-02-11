@@ -1,9 +1,13 @@
 package org.team100.lib.localization;
 
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.fusion.CovarianceInflation;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.NoisyPose2d;
+import org.team100.lib.uncertainty.VariableR1;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -47,6 +51,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
             double timestamp,
             Pose2d measurement,
             IsotropicNoiseSE2 visionNoise) {
+        // System.out.printf("vision updater visionNoise %s\n", visionNoise);
 
         // Skip too-old measurement
         if (m_history.tooOld(timestamp)) {
@@ -58,26 +63,26 @@ public class NudgingVisionUpdater implements VisionUpdater {
 
         // Nudge the sample pose towards the measurement.
         ModelSE2 sampleModel = sample.state();
+        Pose2d samplePose = sampleModel.pose();
+        // Vision updates to not affect the velocity estimate.
+        VelocitySE2 sampleVelocity = sampleModel.velocity();
         IsotropicNoiseSE2 sampleNoise = sample.noise();
         SwerveModulePositions samplePositions = sample.positions();
-
-        Pose2d samplePose = sampleModel.pose();
-
-        Pose2d nudged = nudge(samplePose, measurement, sampleNoise, visionNoise);
-
         // Vision updates do not affect the gyro measurement.
         Rotation2d sampleGyroYaw = sample.gyroYaw();
-
         // Vision updates do not affect the gyro bias estimate.
         VariableR1 sampleGyroBias = sample.gyroBias();
 
-        // Vision updates to not affect the velocity estimate.
-        VelocitySE2 sampleVelocity = sampleModel.velocity();
+        NoisyPose2d nudged = nudge(
+                new NoisyPose2d(samplePose, sampleNoise),
+                new NoisyPose2d(measurement, visionNoise));
 
-        ModelSE2 model = new ModelSE2(nudged, sampleVelocity);
+        ModelSE2 model = new ModelSE2(nudged.pose(), sampleVelocity);
 
         IsotropicNoiseSE2 noise = IsotropicNoiseSE2.inverseVarianceWeightedAverage(
                 sampleNoise, visionNoise);
+
+        // System.out.printf("vision put noise %s\n", noise);
 
         // Remember the result.
         m_history.put(timestamp, model, noise, samplePositions, sampleGyroYaw, sampleGyroBias);
@@ -103,40 +108,70 @@ public class NudgingVisionUpdater implements VisionUpdater {
      * Compute the weighted average of sample and measurement, using
      * inverse-variance weighting.
      * 
-     * TODO: make an uncertain-pose type
+     * The variance of the cartesian part is assumed to be isotropic.
      * 
      * @param sample      historical pose
-     * @param measurement new input
-     * @param stateSigma  standard deviation of the sample
-     * @param visionSigma standard deviation of the measurement
+     * @param measurement new (vision) input
      */
-    static Pose2d nudge(
-            Pose2d sample,
-            Pose2d measurement,
-            IsotropicNoiseSE2 stateSigma,
-            IsotropicNoiseSE2 visionSigma) {
-        // The difference between the odometry pose and the vision pose.
+    static NoisyPose2d nudge(
+            NoisyPose2d noisySample,
+            NoisyPose2d noisyMeasurement) {
+
+        Pose2d sample = noisySample.pose();
+        Pose2d measurement = noisyMeasurement.pose();
+        IsotropicNoiseSE2 stateSigma = noisySample.noise();
+        IsotropicNoiseSE2 visionSigma = noisyMeasurement.noise();
+
+        // translation
+        // the result is on the line segment between sample and measurement, so we just
+        // look at the length of that segment.
+        //
+        // this is the start of that segment.
+        VariableR1 sampleV = new VariableR1(
+                0,
+                stateSigma.cartesianVariance());
+        // this is the end.
+        VariableR1 measurementV = new VariableR1(
+                measurement.getTranslation().getDistance(sample.getTranslation()),
+                visionSigma.cartesianVariance());
+
+        // for now this uses the same weighting as before.
+        // TODO: use covariance inflation
+        // VariableR1 cartesian = InverseVarianceWeighting.fuse(sampleV, measurementV);
+        VariableR1 cartesian = CovarianceInflation.fuse(sampleV, measurementV);
 
         Translation2d deltaTranslation = measurement.getTranslation().minus(sample.getTranslation());
-        Rotation2d deltaRotation = measurement.getRotation().minus(sample.getRotation());
-
-        double cartesianWeight = Uncertainty.cartesianWeight(stateSigma, visionSigma);
-        double rotationWeight = Uncertainty.rotationWeight(stateSigma, visionSigma);
-
-        // Scale the delta based on the noise.
-        double deltaTranslationDistance = deltaTranslation.getNorm();
         Rotation2d deltaTranslationDirection = deltaTranslation.getAngle();
 
-        double scaledTranslationDistance = deltaTranslationDistance * cartesianWeight;
-
-        Translation2d scaledTranslation = new Translation2d(scaledTranslationDistance, deltaTranslationDirection);
-        Rotation2d scaledRotation = deltaRotation.times(rotationWeight);
-
+        Translation2d scaledTranslation = new Translation2d(cartesian.mean(),
+                deltaTranslationDirection);
         Translation2d newTranslation = sample.getTranslation().plus(scaledTranslation);
+
+        // rotation
+
+        Rotation2d deltaRotation = measurement.getRotation().minus(sample.getRotation());
+
+        VariableR1 sampleRV = new VariableR1(
+                0,
+                stateSigma.rotationVariance());
+        VariableR1 measurementRV = new VariableR1(
+                deltaRotation.getRadians(), visionSigma.rotationVariance());
+        // TODO: use covariance inflation
+
+        // VariableR1 rotation = InverseVarianceWeighting.fuse(sampleRV, measurementRV);
+        VariableR1 rotation = CovarianceInflation.fuse(sampleRV, measurementRV);
+
+        Rotation2d scaledRotation = new Rotation2d(rotation.mean());
+
         Rotation2d newRotation = sample.getRotation().plus(scaledRotation);
 
         Pose2d result = new Pose2d(newTranslation, newRotation);
-        return result;
+
+        IsotropicNoiseSE2 noise = IsotropicNoiseSE2.fromVariance(
+                cartesian.variance(),
+                rotation.variance());
+
+        return new NoisyPose2d(result, noise);
     }
 
 }
