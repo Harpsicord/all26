@@ -66,7 +66,7 @@ public class VariableR1 {
     @Override
     public String toString() {
         return String.format(
-                "VariableR1 [mean=%8.5f sigma=%8.5f]",
+                "[mean=%14.9e sigma=%14.9e]",
                 mean(), sigma());
     }
 
