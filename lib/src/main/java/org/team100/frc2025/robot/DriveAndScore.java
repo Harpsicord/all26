@@ -5,11 +5,11 @@ import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
+import org.team100.frc2025.field.FieldConstants2025;
+import org.team100.frc2025.field.FieldConstants2025.ReefPoint;
 import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 import org.team100.lib.controller.se2.FullStateControllerSE2;
-import org.team100.lib.field.FieldConstants;
-import org.team100.lib.field.FieldConstants.ReefPoint;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.se2.commands.DriveToPoseWithProfile;
@@ -44,7 +44,7 @@ public class DriveAndScore {
         MoveAndHold toReef = new DriveToPoseWithProfile(
                 m_logger, m_machinery.m_drive,
                 m_autoController, m_autoProfile,
-                () -> FieldConstants.makeGoal(level, point));
+                () -> FieldConstants2025.makeGoal(level, point));
         MoveAndHold toL4 = m_machinery.m_mech.homeToL4();
         Command eject = m_machinery.m_manipulator.centerEject().withTimeout(0.5);
         return sequence(

@@ -1,7 +1,7 @@
-package org.team100.lib.field;
+package org.team100.frc2025.field;
 
+import org.team100.frc2025.field.FieldConstants2025.ReefPoint;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
-import org.team100.lib.field.FieldConstants.ReefPoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,7 +22,6 @@ public class FieldConstantsLuke {
     }
 
     private static final Translation2d REEF_CENTER = new Translation2d(4.489, 4.026);
-
 
     static Translation2d getScoringDestination(ReefPoint point, double radius) {
         Rotation2d sectorAngle = point.angle();
@@ -51,7 +50,7 @@ public class FieldConstantsLuke {
     }
 
     public static Pose2d makeGoal(ScoringLevel level, ReefPoint point) {
-        double radius = FieldConstants.getRadius(point, level);
+        double radius = FieldConstants2025.getRadius(point, level);
         Translation2d destination = getScoringDestination(point, radius);
         Rotation2d heading = point.angle();
         return new Pose2d(destination, heading);

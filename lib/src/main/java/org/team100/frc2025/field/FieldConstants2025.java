@@ -1,4 +1,4 @@
-package org.team100.lib.field;
+package org.team100.frc2025.field;
 
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 
@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 /**
  * Positions on the field used as waypoints.
  */
-public class FieldConstants {
+public class FieldConstants2025 {
     /** Staged coral ("lollipop") locations. */
     public enum CoralMark {
         LEFT(new Translation2d(1.219, 5.855)),
@@ -33,7 +33,7 @@ public class FieldConstants {
         A, B, C, D, E, F, G, H, I, J, K, L, AB, CD, EF, GH, IJ, KL, NONE;
 
         /** Direction away from each reef face. */
-        Rotation2d angle() {
+        public Rotation2d angle() {
             return switch (this) {
                 case A, B, AB -> Rotation2d.fromDegrees(180);
                 case C, D, CD -> Rotation2d.fromDegrees(-120);
@@ -86,7 +86,7 @@ public class FieldConstants {
 
     ///////////////////////////
 
-    static Translation2d getScoringDestination(ReefPoint point, double radius) {
+    public static Translation2d getScoringDestination(ReefPoint point, double radius) {
         Rotation2d sectorAngle = point.angle();
         Translation2d spoke = new Translation2d(radius, sectorAngle);
         // center of the face of the reef

@@ -2,8 +2,8 @@ package org.team100.frc2025.Swerve;
 
 import java.util.function.Supplier;
 
+import org.team100.frc2025.field.FieldConstants2025;
 import org.team100.lib.controller.r1.FeedbackR1;
-import org.team100.lib.field.FieldConstants;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.hid.Velocity;
@@ -127,7 +127,7 @@ public class ManualWithProfiledReefLock implements FieldRelativeDriver {
         // take the short path
         Rotation2d m_goal = Math100.getMinDistance(
                 yawMeasurement,
-                FieldConstants.angleToReefCenter(m_robotLocation.get()));
+                FieldConstants2025.angleToReefCenter(m_robotLocation.get()));
 
         // use the modulus closest to the measurement
         m_thetaSetpoint = new ControlR1(

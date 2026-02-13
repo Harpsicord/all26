@@ -1,6 +1,7 @@
 package org.team100.frc2026.robot;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 import org.team100.frc2026.Climber;
@@ -33,6 +34,7 @@ import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.util.CanId;
 import org.team100.lib.visualization.RobotPoseVisualization;
+import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -61,10 +63,12 @@ public class Machinery {
     private final Runnable m_groundTruthViz;
     private final SwerveModuleCollection m_modules;
     private final Runnable m_simulatedTagDetector;
+    private final Consumer<Pose2d> m_groundTruthResetter;
 
-    final SwerveKinodynamics m_swerveKinodynamics;
+    public final TrajectoryVisualization m_trajectoryViz;
+    public final SwerveKinodynamics m_swerveKinodynamics;
     final AprilTagRobotLocalizer m_localizer;
-    final SwerveDriveSubsystem m_drive;
+    public final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
     final Shooter m_shooter;
     final Intake m_intake;
@@ -96,7 +100,7 @@ public class Machinery {
         // VISUALIZATIONS
         //
 
-        // Visualization initializers go here
+        m_trajectoryViz = new TrajectoryVisualization(fieldLogger);
 
         ////////////////////////////////////////////////////////////
         //
@@ -187,6 +191,8 @@ public class Machinery {
             };
             m_simulatedTagDetector = () -> {
             };
+            m_groundTruthResetter = (p) -> {
+            };
         } else {
             // This is all for simulation only.
             final LoggerFactory simLog = logger.name("Simulation");
@@ -213,6 +219,7 @@ public class Machinery {
                     simLog, m_swerveKinodynamics, groundTruthGyro,
                     groundTruthHistory, m_modules::positions,
                     UnaryOperator.identity());
+            m_groundTruthResetter = (p) -> groundTruthUpdater.reset(p, IsotropicNoiseSE2.high());
 
             GroundTruthCache groundTruthCache = new GroundTruthCache(
                     groundTruthUpdater, groundTruthHistory);
@@ -236,6 +243,14 @@ public class Machinery {
 
         // This makes beeps to warn about testing.
         m_beeper = new Beeper(m_drive);
+    }
+
+    /**
+     * Purge the history and assert the given pose as the current estimate.
+     */
+    public void resetPose(Pose2d p) {
+        m_drive.resetPose(p, IsotropicNoiseSE2.high());
+        m_groundTruthResetter.accept(p);
     }
 
     public void periodic() {

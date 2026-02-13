@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import org.team100.lib.field.FieldConstants;
-import org.team100.lib.field.FieldConstants.CoralStation;
+import org.team100.frc2025.field.FieldConstants2025;
+import org.team100.frc2025.field.FieldConstants2025.CoralStation;
 import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
@@ -54,7 +54,7 @@ public class GoToCoralStation implements Function<Pose2d, TrajectorySE2> {
 
         Translation2d currTranslation = currentPose.getTranslation();
         Rotation2d courseToGoal = goal.getTranslation().minus(currTranslation).getAngle();
-        Rotation2d newInitialSpline = FieldConstants.calculateDeltaSpline(
+        Rotation2d newInitialSpline = FieldConstants2025.calculateDeltaSpline(
                 courseToGoal, courseToGoal.rotateBy(Rotation2d.fromDegrees(-90)), scaleAdjust);
 
         List<WaypointSE2> waypoints = new ArrayList<>();

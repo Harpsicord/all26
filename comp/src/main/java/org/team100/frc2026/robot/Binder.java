@@ -36,13 +36,17 @@ public class Binder {
     private static final LoggerFactory rootLogger = Logging.instance().rootLogger;
     private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
     private final Machinery m_machinery;
+    public final ControllerSE2 m_holonomicController;
+    final LoggerFactory m_log;
 
     public Binder(Machinery machinery) {
         m_machinery = machinery;
+        m_log = rootLogger.name("Commands");
+        m_holonomicController = ControllerFactorySE2.byIdentity(m_log);
+
     }
 
     public void bind() {
-        final LoggerFactory log = rootLogger.name("Commands");
 
         /////////////////////////////////////////////////
         ///
@@ -56,7 +60,7 @@ public class Binder {
         //
 
         SwerveLimiter limiter = new SwerveLimiter(
-                log,
+                m_log,
                 m_machinery.m_swerveKinodynamics,
                 RobotController::getBatteryVoltage);
         limiter.updateSetpoint(m_machinery.m_drive.getVelocity());
@@ -67,7 +71,7 @@ public class Binder {
                 m_machinery.m_drive,
                 limiter);
         m_machinery.m_drive.setDefaultCommand(driveManually.withName("drive default"));
-        final LoggerFactory manLog = log.type(driveManually);
+        final LoggerFactory manLog = m_log.type(driveManually);
 
         driveManually.register("MODULE_STATE", false,
                 new SimpleManualModuleStates(manLog, m_machinery.m_swerveKinodynamics));
@@ -122,22 +126,20 @@ public class Binder {
         // DRIVETRAIN
         //
 
-        final ControllerSE2 holonomicController = ControllerFactorySE2.byIdentity(log);
-
         // This is for testing pose estimation accuracy and drivetrain positioning
         // accuracy.
         HolonomicProfile profile = HolonomicProfileFactory.get(
-                log, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
+                m_log, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
         onTrue(driver::a,
                 new DriveToPoseWithProfile(
-                        log, m_machinery.m_drive, holonomicController, profile,
+                        m_log, m_machinery.m_drive, m_holonomicController, profile,
                         () -> new Pose2d(15.387, 3.501, new Rotation2d(0))));
         /////////////////////////////////////////////////////////
         ///
         /// SUBSYSTEMS
         ///
         whileTrue(driver::b, m_machinery.m_shooter.shoot());
-        
+
         whileTrue(driver::x, m_machinery.m_intake.intake());
 
         whileTrue(driver::y, m_machinery.m_serializer.serialize());
@@ -145,18 +147,16 @@ public class Binder {
         // Test bindings
         whileTrue(driver::leftBumper, m_machinery.m_extender.goToExtendedPosition());
         whileTrue(driver::rightBumper, m_machinery.m_extender.goToRetractedPosition());
-        whileTrue(driver:: rightTrigger, m_machinery.m_ClimberExtension.setPosition());
-         whileTrue(driver:: x, m_machinery.m_Climber.setClimb0());
-         whileTrue(driver:: y, m_machinery.m_Climber.setClimb1());
-         whileTrue(driver:: b, m_machinery.m_Climber.setClimb3());
+        whileTrue(driver::rightTrigger, m_machinery.m_ClimberExtension.setPosition());
+        whileTrue(driver::x, m_machinery.m_Climber.setClimb0());
+        whileTrue(driver::y, m_machinery.m_Climber.setClimb1());
+        whileTrue(driver::b, m_machinery.m_Climber.setClimb3());
 
         // The real bindings
         whileTrue(driver::leftBumper, m_machinery.m_extender.goToRetractedPosition());
         whileTrue(driver::leftTrigger,
                 m_machinery.m_extender.goToExtendedPosition()
                         .andThen(m_machinery.m_intake.intake()));
-        
-       
 
         ///////////////////////////////////////////////////////////
         //
