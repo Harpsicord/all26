@@ -35,7 +35,8 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
     public OnboardAngularPositionServo(
             LoggerFactory parent,
             RotaryMechanism mech,
-            ProfileReferenceR1 ref) {
+            ProfileReferenceR1 ref,
+            FeedbackR1 feedback) {
         super(parent, mech, ref);
         if (feedback.handlesWrapping())
             throw new IllegalArgumentException("Do not supply wrapping feedback");
@@ -93,16 +94,6 @@ public class OnboardAngularPositionServo extends AngularPositionServoImpl {
         m_log_u_TOTAL.log(() -> u_TOTAL);
         m_log_error.log(() -> currentUnwrappedSetpoint.x() - unwrappedMeasurement.x());
         m_log_velocity_error.log(() -> currentUnwrappedSetpoint.v() - unwrappedMeasurement.v());
-    }
-
-    public void setPosition(double mLevel1) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
-    }
-
-    public void setPosition(double mLevel3) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
     }
 
 }

@@ -9,7 +9,6 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
 import org.team100.lib.logging.LoggerFactory.SetpointsR1Logger;
 import org.team100.lib.profile.r1.IncrementalProfile;
-import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
 import org.team100.lib.state.ControlR1;
 import org.team100.lib.state.ModelR1;
 
@@ -30,7 +29,7 @@ public class IncrementalProfileReferenceR1 implements ProfileReferenceR1 {
 
     public IncrementalProfileReferenceR1(
             LoggerFactory parent,
-            TrapezoidIncrementalProfile profile,
+            Supplier<IncrementalProfile> profile,
             double positionTolerance,
             double velocityTolerance) {
         LoggerFactory log = parent.type(this);
