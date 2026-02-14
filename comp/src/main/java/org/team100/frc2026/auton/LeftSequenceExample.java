@@ -39,7 +39,7 @@ public class LeftSequenceExample implements AnnotatedCommand {
             SwerveKinodynamics kinodynamics,
             ControllerSE2 controller,
             Machinery machinery) {
-        log = parent.name("RightTrenchLeave");
+        log = parent.name(name());
         this.controller = controller;
         this.machinery = machinery;
         constraints = new TimingConstraintFactory(kinodynamics).auto(log.type(this));
@@ -56,45 +56,31 @@ public class LeftSequenceExample implements AnnotatedCommand {
     // go to the middle while spinning 90 degrees
     TrajectorySE2 t1(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(
-                        startingPose,
-                        new DirectionSE2(-1, 0, 0),
-                        1),
-                new WaypointSE2(
-                        new Pose2d(2, 4, Rotation2d.kCW_Pi_2),
-                        new DirectionSE2(0, -1, 0),
-                        1));
+                new WaypointSE2(startingPose,
+                        new DirectionSE2(-1, 0, 0), 1),
+                new WaypointSE2(new Pose2d(2, 4, Rotation2d.kCW_Pi_2),
+                        new DirectionSE2(0, -1, 0), 1));
         return planner.restToRest(waypoints);
     }
 
     // go back where we started.
     TrajectorySE2 t2(Pose2d startingPose) {
         List<WaypointSE2> waypoints = List.of(
-                new WaypointSE2(
-                        startingPose,
-                        new DirectionSE2(0, 1, 0),
-                        1),
-                new WaypointSE2(
-                        StartingPositions.LEFT_TRENCH,
-                        new DirectionSE2(1, 0, 0),
-                        1));
+                new WaypointSE2(startingPose,
+                        new DirectionSE2(0, 1, 0), 1),
+                new WaypointSE2(StartingPositions.LEFT_TRENCH,
+                        new DirectionSE2(1, 0, 0), 1));
         return planner.restToRest(waypoints);
     }
 
     @Override
     public Command command() {
         DriveWithTrajectoryFunction n1 = new DriveWithTrajectoryFunction(
-                log,
-                machinery.m_drive,
-                controller,
-                machinery.m_trajectoryViz,
-                this::t1);
+                log, machinery.m_drive, controller,
+                machinery.m_trajectoryViz, this::t1);
         DriveWithTrajectoryFunction n2 = new DriveWithTrajectoryFunction(
-                log,
-                machinery.m_drive,
-                controller,
-                machinery.m_trajectoryViz,
-                this::t2);
+                log, machinery.m_drive, controller,
+                machinery.m_trajectoryViz, this::t2);
         return sequence(
                 n1.until(n1::isDone),
                 waitSeconds(1),
