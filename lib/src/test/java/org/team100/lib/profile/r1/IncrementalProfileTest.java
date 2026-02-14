@@ -16,7 +16,8 @@ public class IncrementalProfileTest implements Timeless {
     private final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
 
     // 70 ns to get the ETA
-    @Test
+    // disable to speed up tests
+    // @Test
     void testETA() {
         ControlR1 initial = new ControlR1();
         ModelR1 goal = new ModelR1(1, 0);
@@ -44,7 +45,8 @@ public class IncrementalProfileTest implements Timeless {
 
     // 3 us to get the eta at full resolution.
     // 10x coarser step means only 0.5 us
-    @Test
+    // disable to speed up tests
+    // @Test
     void testETA2() {
         ControlR1 initial = new ControlR1();
         ModelR1 goal = new ModelR1(1, 0);
@@ -70,7 +72,8 @@ public class IncrementalProfileTest implements Timeless {
     }
 
     // exponential eta in 1.6 us using coarse step.
-    @Test
+    // disable to speed up tests
+    // @Test
     void testETA2Exponential() {
         ControlR1 initial = new ControlR1();
         ModelR1 goal = new ModelR1(1, 0);

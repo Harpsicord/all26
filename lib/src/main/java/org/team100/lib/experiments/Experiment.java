@@ -26,10 +26,6 @@ public enum Experiment {
      */
     StickyHeading,
     /**
-     * Use softer vision update gains
-     */
-    AvoidVisionJitter,
-    /**
      * Filter snap rotational output to remove oscillation
      */
     SnapThetaFilter,
@@ -85,5 +81,9 @@ public enum Experiment {
     /**
      * Use "shooting method" for turret solution
      */
-    TurretShootingMethod
+    TurretShootingMethod,
+    /**
+     * Treat the robot as "real" for the auton alert messages.
+     */
+    TestAutonAlert
 }

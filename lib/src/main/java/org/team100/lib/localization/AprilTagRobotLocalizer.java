@@ -18,6 +18,8 @@ import org.team100.lib.logging.LoggerFactory.Pose2dLogger;
 import org.team100.lib.logging.LoggerFactory.Transform3dLogger;
 import org.team100.lib.network.CameraReader;
 import org.team100.lib.state.ModelSE2;
+import org.team100.lib.uncertainty.NoisyPose2d;
+import org.team100.lib.uncertainty.Uncertainty;
 import org.team100.lib.util.TrailingHistory;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -284,8 +286,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
                 continue;
             }
             ///
-            double distanceM = Metrics.translationalDistance(m_prevPose, robotPose2d);
-            if (distanceM > VISION_CHANGE_TOLERANCE_M) {
+            if (Metrics.translationalDistance(m_prevPose, robotPose2d) > VISION_CHANGE_TOLERANCE_M) {
                 // No, the new estimate is too far from the previous one.
                 m_prevPose = robotPose2d;
                 continue;
@@ -296,13 +297,14 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
             //////////////////////////////////////////////////////////////////
 
             m_usedTags.add(correctedTimestamp, estimatedTagInField);
-            
-            double offAxisAngleRad = Metrics.offAxisAngleRad(tagInCamera);
-            
-            m_visionUpdater.put(
-                    correctedTimestamp,
+
+            NoisyPose2d noisyMeasurement = new NoisyPose2d(
                     robotPose2d,
-                    Uncertainty.visionMeasurementStdDevs(distanceM, offAxisAngleRad));
+                    Uncertainty.visionMeasurementStdDevs(
+                            tagInCamera.getTranslation().getNorm(),
+                            Metrics.offAxisAngleRad(tagInCamera)));
+
+            m_visionUpdater.put(correctedTimestamp, noisyMeasurement);
             m_prevPose = robotPose2d;
         }
     }

@@ -22,6 +22,21 @@ import edu.wpi.first.math.util.Units;
  * here corrects for that difference.
  */
 public class ReduxGyro implements Gyro {
+    /**
+     * Gyro data rate in Hz.
+     * 
+     * For the purpose of estimating sample noise, we assume the averaging period is
+     * the same.
+     */
+    private static final double SAMPLE_RATE = 100;
+    /**
+     * Standard deviation of rate measurements in rad/s.
+     */
+    private static final double NOISE = 4e-4 * Math.sqrt(SAMPLE_RATE);
+    /**
+     * Standard deviation of bias in rad/s.
+     */
+    private static final double BIAS_NOISE = 1e-5;
 
     private final Canandgyro m_gyro;
 
@@ -39,8 +54,8 @@ public class ReduxGyro implements Gyro {
 
         // Both position and velocity should be reasonably fresh.
         CanandgyroSettings settings = new CanandgyroSettings();
-        settings.setAngularPositionFramePeriod(0.01);
-        settings.setAngularVelocityFramePeriod(0.01);
+        settings.setAngularPositionFramePeriod(1 / SAMPLE_RATE);
+        settings.setAngularVelocityFramePeriod(1 / SAMPLE_RATE);
 
         if (!m_gyro.setSettings(settings, 0.1)) {
             System.out.println("WARNING: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -57,6 +72,16 @@ public class ReduxGyro implements Gyro {
         m_log_yaw_rate = log.doubleLogger(Level.TRACE, "Yaw Rate NWU (rad_s)");
         m_log_pitch = log.rotation2dLogger(Level.TRACE, "Pitch NWU (rad)");
         m_log_roll = log.rotation2dLogger(Level.TRACE, "Roll NWU (rad)");
+    }
+
+    @Override
+    public double white_noise() {
+        return NOISE;
+    }
+
+    @Override
+    public double bias_noise() {
+        return BIAS_NOISE;
     }
 
     /** This is latency-compensated to the current Takt time. */

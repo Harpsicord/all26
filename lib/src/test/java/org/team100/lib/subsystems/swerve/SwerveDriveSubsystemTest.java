@@ -7,8 +7,8 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
-import org.team100.lib.localization.IsotropicNoiseSE2;
 import org.team100.lib.testing.Timeless;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;

@@ -7,6 +7,16 @@ public class MockGyro implements Gyro {
     public double rate = 0;
 
     @Override
+    public double white_noise() {
+        return 4e-4;
+    }
+
+    @Override
+    public double bias_noise() {
+        return 1e-5;
+    }
+
+    @Override
     public Rotation2d getYawNWU() {
         return rotation;
     }

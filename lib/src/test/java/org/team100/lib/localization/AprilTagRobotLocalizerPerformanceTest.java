@@ -15,6 +15,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.state.ModelSE2;
+import org.team100.lib.uncertainty.NoisyPose2d;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -40,8 +41,8 @@ class AprilTagRobotLocalizerPerformanceTest {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, IsotropicNoiseSE2 sd2) {
-                poseEstimate.add(p);
+            public void put(double t, NoisyPose2d p) {
+                poseEstimate.add(p.pose());
                 timeEstimate.add(t);
             }
         };

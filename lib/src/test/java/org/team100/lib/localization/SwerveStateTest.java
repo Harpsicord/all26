@@ -15,6 +15,8 @@ import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.testing.Timeless;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.VariableR1;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -36,8 +38,9 @@ class SwerveStateTest implements Timeless {
                 new SwerveModulePosition100(0, Optional.empty()),
                 new SwerveModulePosition100(0, Optional.empty()));
         Rotation2d gyroYaw0 = new Rotation2d();
+        VariableR1 gyroBias = VariableR1.fromVariance(0, 0.001);
         SwerveState r0 = new SwerveState(
-                kinodynamics.getKinematics(), s0, n0, p0, gyroYaw0);
+                s0, n0, p0, gyroYaw0, gyroBias);
         assertEquals(0, r0.state().theta().x(), 0.001);
         assertEquals(0, r0.state().theta().v(), 0.001);
 
@@ -65,37 +68,15 @@ class SwerveStateTest implements Timeless {
 
         // current speed is 1 rad/s
         SwerveState r1 = new SwerveState(
-                kinodynamics.getKinematics(), s1, n1, p1, gyroYaw1);
+                s1, n1, p1, gyroYaw1, VariableR1.fromVariance(0, 1));
 
         assertEquals(1, r1.state().theta().x(), 0.001);
         assertEquals(1, r1.state().theta().v(), 0.001);
 
-        {
-            // t=0 should return r0. note "t" is not time
-            SwerveState lerp = r0.interpolate(r1, 0.0);
-            assertEquals(0, lerp.state().theta().x(), 0.001);
-            assertEquals(0, lerp.state().theta().v(), 0.001);
-            assertEquals(0, lerp.gyroYaw().getRadians(), 0.001);
-
-        }
-        {
-            // t=1 should return r1. note this is a special case.
-            SwerveState lerp = r0.interpolate(r1, 1.0);
-            assertEquals(1, lerp.state().theta().x(), 0.001);
-            assertEquals(1, lerp.state().theta().v(), 0.001);
-            assertEquals(1, lerp.gyroYaw().getRadians(), 0.001);
-        }
-        {
-            // t=0.5 is just halfway there.
-            SwerveState lerp = r0.interpolate(r1, 0.5);
-            assertEquals(0.5, lerp.state().theta().x(), 0.001);
-            assertEquals(0.5, lerp.state().theta().v(), 0.001);
-            assertEquals(0.5, lerp.gyroYaw().getRadians(), 0.001);
-        }
     }
 
     @Test
-    void testInterp1() {
+    void test1() {
         ModelSE2 s0 = new ModelSE2();
         IsotropicNoiseSE2 n0 = IsotropicNoiseSE2.fromStdDev(1, 1);
         // initally driving straight
@@ -106,7 +87,7 @@ class SwerveStateTest implements Timeless {
                 new SwerveModulePosition100(0, Optional.of(new Rotation2d())));
         Rotation2d gyroYaw0 = new Rotation2d();
         SwerveState r0 = new SwerveState(
-                kinodynamics.getKinematics(), s0, n0, p0, gyroYaw0);
+                s0, n0, p0, gyroYaw0, VariableR1.fromVariance(0, 1));
         assertEquals(0, r0.state().theta().x(), 0.001);
         assertEquals(0, r0.state().theta().v(), 0.001);
 
@@ -133,34 +114,11 @@ class SwerveStateTest implements Timeless {
 
         // current speed is 1 rad/s
         SwerveState r1 = new SwerveState(
-                kinodynamics.getKinematics(), s1, n1, p1, gyroYaw1);
+                s1, n1, p1, gyroYaw1, VariableR1.fromVariance(0, 1));
 
         assertEquals(1, r1.state().theta().x(), 0.001);
         assertEquals(1, r1.state().theta().v(), 0.001);
 
-        {
-            // t=0 should return r0. note "t" is not time
-            SwerveState lerp = r0.interpolate(r1, 0.0);
-            assertEquals(0, lerp.state().theta().x(), 0.001);
-            assertEquals(0, lerp.state().theta().v(), 0.001);
-            assertEquals(0, lerp.gyroYaw().getRadians(), 0.001);
-        }
-        {
-            // t=1 should return r1. note this is a special case.
-            SwerveState lerp = r0.interpolate(r1, 1.0);
-            assertEquals(1, lerp.state().theta().x(), 0.001);
-            assertEquals(1, lerp.state().theta().v(), 0.001);
-            assertEquals(1, lerp.gyroYaw().getRadians(), 0.001);
-        }
-        {
-            // t=0.5
-            SwerveState lerp = r0.interpolate(r1, 0.5);
-            // wheels are assumed to turn immediately to the r1 angles,
-            // so this case is the same as the case above.
-            assertEquals(0.5, lerp.state().theta().x(), 0.001);
-            assertEquals(0.5, lerp.state().theta().v(), 0.001);
-            assertEquals(0.5, lerp.gyroYaw().getRadians(), 0.001);
-        }
     }
 
 }

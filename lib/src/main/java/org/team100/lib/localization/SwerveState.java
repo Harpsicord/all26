@@ -2,87 +2,36 @@ package org.team100.lib.localization;
 
 import java.util.Objects;
 
-import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.state.ModelSE2;
-import org.team100.lib.subsystems.swerve.kinodynamics.SwerveDriveKinematics100;
-import org.team100.lib.subsystems.swerve.module.state.SwerveModuleDeltas;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.VariableR1;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.math.interpolation.Interpolatable;
 
-class SwerveState implements Interpolatable<SwerveState> {
-    /** For interpolation. */
-    private final SwerveDriveKinematics100 m_kinematics;
-    /** Position and velocity. */
+public class SwerveState {
+    /** Estimate for position and velocity. */
     private final ModelSE2 m_state;
-    /** Position uncertainty. */
+    /** Estimate for position uncertainty. */
     private final IsotropicNoiseSE2 m_noise;
-    /** Wheel position and angle. */
+    /** Verbatim measurement of wheel position and angle. */
     private final SwerveModulePositions m_positions;
-    /** Yaw observation from the gyro. */
+    /** Verbatim measurement of yaw from the gyro, uncorrected. */
     private final Rotation2d m_gyroYaw;
+    /** Estimate for the gyro bias (drift rate) in rad/s. */
+    private final VariableR1 m_gyroBiasRad_S;
 
     SwerveState(
-            SwerveDriveKinematics100 kinematics,
             ModelSE2 state,
             IsotropicNoiseSE2 noise,
             SwerveModulePositions positions,
-            Rotation2d gyroYaw) {
-        m_kinematics = kinematics;
+            Rotation2d gyroYaw,
+            VariableR1 gyroBiasRad_S) {
         m_state = state;
         m_noise = noise;
         m_positions = positions;
         m_gyroYaw = gyroYaw;
-    }
-
-    /**
-     * Return the "interpolated" record. This object is assumed to be the starting
-     * position, or lower bound.
-     * 
-     * Interpolates the wheel positions.
-     * Integrates wheel positions to find the interpolated pose.
-     * Interpolates the velocity.
-     *
-     * @param endValue The upper bound, or end.
-     * @param t        How far between the lower and upper bound we are. This should
-     *                 be bounded in [0, 1].
-     * @return The interpolated value.
-     */
-    @Override
-    public SwerveState interpolate(SwerveState endValue, double t) {
-        if (t <= 0) {
-            return this;
-        }
-        if (t >= 1) {
-            return endValue;
-        }
-        // Find the new wheel distances.
-        SwerveModulePositions wheelLerp = new SwerveModulePositions(
-                m_positions.frontLeft().interpolate(endValue.m_positions.frontLeft(), t),
-                m_positions.frontRight().interpolate(endValue.m_positions.frontRight(), t),
-                m_positions.rearLeft().interpolate(endValue.m_positions.rearLeft(), t),
-                m_positions.rearRight().interpolate(endValue.m_positions.rearRight(), t));
-
-        // Create a twist to represent the change based on the interpolated sensor
-        // inputs.
-        SwerveModuleDeltas delta = SwerveModuleDeltas.modulePositionDelta(m_positions, wheelLerp);
-        Twist2d twist = m_kinematics.toTwist2d(delta);
-        Pose2d pose = m_state.pose().exp(twist);
-
-        // These lerps are wrong but maybe close enough
-        VelocitySE2 startVelocity = m_state.velocity();
-        VelocitySE2 endVelocity = endValue.m_state.velocity();
-        VelocitySE2 velocity = startVelocity.plus(endVelocity.minus(startVelocity).times(t));
-
-        ModelSE2 newState = new ModelSE2(pose, velocity);
-        IsotropicNoiseSE2 newNoise = m_noise.interpolate(endValue.m_noise, t);
-
-        Rotation2d gyroLerp = m_gyroYaw.interpolate(endValue.m_gyroYaw, t);
-
-        return new SwerveState(m_kinematics, newState, newNoise, wheelLerp, gyroLerp);
+        m_gyroBiasRad_S = gyroBiasRad_S;
     }
 
     @Override
@@ -112,6 +61,11 @@ class SwerveState implements Interpolatable<SwerveState> {
 
     public Rotation2d gyroYaw() {
         return m_gyroYaw;
+    }
+
+    /** Bias in rad/s */
+    public VariableR1 gyroBias() {
+        return m_gyroBiasRad_S;
     }
 
     @Override

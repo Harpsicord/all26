@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.DoubleFunction;
 
+import org.team100.frc2025.field.FieldConstants2025;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.Camera;
-import org.team100.lib.field.FieldConstants;
 import org.team100.lib.localization.SwerveHistory;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
@@ -86,9 +86,9 @@ public class SimulatedTargetWriter {
                         Camera.CORAL_RIGHT),
                 history,
                 new Translation2d[] {
-                        FieldConstants.CoralMark.LEFT.value,
-                        FieldConstants.CoralMark.CENTER.value,
-                        FieldConstants.CoralMark.RIGHT.value });
+                        FieldConstants2025.CoralMark.LEFT.value,
+                        FieldConstants2025.CoralMark.CENTER.value,
+                        FieldConstants2025.CoralMark.RIGHT.value });
         return tsim::update;
     }
 

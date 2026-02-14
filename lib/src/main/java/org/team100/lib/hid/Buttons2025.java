@@ -1,7 +1,7 @@
 package org.team100.lib.hid;
 
+import org.team100.frc2025.field.FieldConstants2025.ReefPoint;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
-import org.team100.lib.field.FieldConstants.ReefPoint;
 
 import edu.wpi.first.wpilibj.GenericHID;
 

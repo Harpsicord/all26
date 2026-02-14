@@ -13,6 +13,7 @@ import org.team100.lib.geometry.GlobalVelocityR2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.localization.Blip24;
+import org.team100.lib.localization.SwerveState;
 import org.team100.lib.logging.primitive.PrimitiveLogger;
 import org.team100.lib.reference.r1.SetpointsR1;
 import org.team100.lib.state.ControlR1;
@@ -27,6 +28,8 @@ import org.team100.lib.subsystems.swerve.module.state.SwerveModulePosition100;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 import org.team100.lib.trajectory.TrajectorySE2Entry;
 import org.team100.lib.trajectory.path.PathSE2Point;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.VariableR1;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -1016,6 +1019,90 @@ public class LoggerFactory {
 
     public JointForceLogger logJointForce(Level level, String leaf) {
         return new JointForceLogger(level, leaf);
+    }
+
+    public class VariableR1Logger {
+        private final Level m_level;
+        private final DoubleLogger m_mean;
+        private final DoubleLogger m_sigma;
+
+        VariableR1Logger(Level level, String leaf) {
+            m_level = level;
+            m_mean = doubleLogger(level, join(leaf, "mean"));
+            m_sigma = doubleLogger(level, join(leaf, "sigma"));
+        }
+
+        public void log(Supplier<VariableR1> vals) {
+            if (!allow(m_level))
+                return;
+            VariableR1 val = vals.get();
+            m_mean.log(val::mean);
+            m_sigma.log(val::sigma);
+        }
+
+    }
+
+    public VariableR1Logger variableR1Logger(Level level, String leaf) {
+        return new VariableR1Logger(level, leaf);
+    }
+
+    public class IsotropicNoiseSE2Logger {
+        private final Level m_level;
+        private final DoubleLogger m_cartesian;
+        private final DoubleLogger m_rotation;
+
+        IsotropicNoiseSE2Logger(Level level, String leaf) {
+            m_level = level;
+            m_cartesian = doubleLogger(level, join(leaf, "cartesian"));
+            m_rotation = doubleLogger(level, join(leaf, "rotation"));
+        }
+
+        public void log(Supplier<IsotropicNoiseSE2> vals) {
+            if (!allow(m_level))
+                return;
+            IsotropicNoiseSE2 val = vals.get();
+            m_cartesian.log(val::cartesian);
+            m_rotation.log(val::rotation);
+        }
+
+    }
+
+    public IsotropicNoiseSE2Logger isotropicNoiseSE2Logger(Level level, String leaf) {
+        return new IsotropicNoiseSE2Logger(level, leaf);
+    }
+
+    public class SwerveStateLogger {
+        private final Level m_level;
+        private final ModelSE2Logger m_model;
+        private final IsotropicNoiseSE2Logger m_noise;
+        private final SwerveModulePositionsLogger m_positions;
+        private final Rotation2dLogger m_gyroYaw;
+        private final VariableR1Logger m_gyroBias;
+
+        SwerveStateLogger(Level level, String leaf) {
+            m_level = level;
+            m_model = modelSE2Logger(level, join(leaf, "model"));
+            m_noise = isotropicNoiseSE2Logger(level, join(leaf, "noise"));
+            m_positions = swerveModulePositionsLogger(level, join(leaf, "positions"));
+            m_gyroYaw = rotation2dLogger(level, join(leaf, "gyro yaw (rad)"));
+            m_gyroBias = variableR1Logger(level, join(leaf, "gyro bias (rad_s)"));
+        }
+
+        public void log(Supplier<SwerveState> vals) {
+            if (!allow(m_level))
+                return;
+            SwerveState val = vals.get();
+            m_model.log(val::state);
+            m_noise.log(val::noise);
+            m_positions.log(val::positions);
+            m_gyroYaw.log(val::gyroYaw);
+            m_gyroBias.log(val::gyroBias);
+        }
+
+    }
+
+    public SwerveStateLogger swerveStateLogger(Level level, String leaf) {
+        return new SwerveStateLogger(level, leaf);
     }
 
 }

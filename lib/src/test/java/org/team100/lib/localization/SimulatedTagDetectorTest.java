@@ -42,8 +42,8 @@ public class SimulatedTagDetectorTest {
                 Camera.FUNNEL,
                 Camera.CORAL_LEFT,
                 Camera.CORAL_RIGHT);
-        AprilTagFieldLayoutWithCorrectOrientation layout = 
-        new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
         // right in front of tag 7
         SimulatedTagDetector sim = new SimulatedTagDetector(
                 cameras,
@@ -61,7 +61,8 @@ public class SimulatedTagDetectorTest {
         Pose3d cameraPose3d = new Pose3d();
         // tag in front
         Pose3d tagPose = new Pose3d(1, 0, 0, new Rotation3d());
-        Transform3d tagInCamera = SimulatedTagDetector.tagInCamera(cameraPose3d, tagPose);
+        Transform3d tagInCamera = SimulatedTagDetector.tagInCamera(
+                () -> 0.0, cameraPose3d, tagPose);
         assertEquals(1, tagInCamera.getTranslation().getX(), DELTA);
         assertEquals(0, tagInCamera.getTranslation().getY(), DELTA);
         assertEquals(0, tagInCamera.getTranslation().getZ(), DELTA);
@@ -76,7 +77,8 @@ public class SimulatedTagDetectorTest {
         Pose3d cameraPose3d = new Pose3d(0, 1, 0, new Rotation3d());
         // tag in front
         Pose3d tagPose = new Pose3d(1, 0, 0, new Rotation3d());
-        Transform3d tagInCamera = SimulatedTagDetector.tagInCamera(cameraPose3d, tagPose);
+        Transform3d tagInCamera = SimulatedTagDetector.tagInCamera(
+                () -> 0.0, cameraPose3d, tagPose);
         assertEquals(1, tagInCamera.getTranslation().getX(), DELTA);
         assertEquals(-1, tagInCamera.getTranslation().getY(), DELTA);
         assertEquals(0, tagInCamera.getTranslation().getZ(), DELTA);
@@ -91,7 +93,8 @@ public class SimulatedTagDetectorTest {
         Pose3d cameraPose3d = new Pose3d(0, 0, 0, new Rotation3d(0, 0, Math.PI / 4));
         // tag in front
         Pose3d tagPose = new Pose3d(1, 0, 0, new Rotation3d());
-        Transform3d tagInCamera = SimulatedTagDetector.tagInCamera(cameraPose3d, tagPose);
+        Transform3d tagInCamera = SimulatedTagDetector.tagInCamera(
+                () -> 0.0, cameraPose3d, tagPose);
         assertEquals(0.707, tagInCamera.getTranslation().getX(), DELTA);
         assertEquals(-0.707, tagInCamera.getTranslation().getY(), DELTA);
         assertEquals(0, tagInCamera.getTranslation().getZ(), DELTA);
@@ -106,7 +109,10 @@ public class SimulatedTagDetectorTest {
         Pose3d cameraPose3d = new Pose3d(0, 0, 0, new Rotation3d(0, 0, Math.PI / 4));
         // tag rotated
         Pose3d tagPose = new Pose3d(1, 0, 1, new Rotation3d(1, 2, 3));
-        Transform3d tagInCamera = SimulatedTagDetector.tagInCamera(cameraPose3d, tagPose);
+        // note this is looking at the tag from behind, which is silly.
+        // TODO: fix that
+        Transform3d tagInCamera = SimulatedTagDetector.tagInCamera(
+                () -> 0.0, cameraPose3d, tagPose);
         // position is not affectted by tag rotation
         assertEquals(0.707, tagInCamera.getTranslation().getX(), DELTA);
         assertEquals(-0.707, tagInCamera.getTranslation().getY(), DELTA);
@@ -172,8 +178,8 @@ public class SimulatedTagDetectorTest {
     @Test
     void testTag6() throws IOException {
         Camera camera = Camera.TEST6;
-        AprilTagFieldLayoutWithCorrectOrientation layout =
-         new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
         // right in front of tag 7
         Pose2d robotPose = new Pose2d(2.6576, 4.0259, Rotation2d.kZero);
         Pose3d robotPose3d = new Pose3d(robotPose);

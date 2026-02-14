@@ -10,11 +10,11 @@ import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
 
 import org.team100.frc2025.CalgamesArm.CalgamesMech;
+import org.team100.frc2025.field.FieldConstants2025;
+import org.team100.frc2025.field.FieldConstants2025.ReefPoint;
 import org.team100.frc2025.grip.Manipulator;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 import org.team100.lib.controller.se2.ControllerSE2;
-import org.team100.lib.field.FieldConstants;
-import org.team100.lib.field.FieldConstants.ReefPoint;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.profile.se2.ProfileSE2;
 import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
@@ -36,7 +36,7 @@ public class ScoreCoralSmart {
             DoubleConsumer heedRadiusM,
             Supplier<ScoringLevel> level,
             Supplier<ReefPoint> point) {
-        Supplier<Pose2d> goal = () -> FieldConstants.makeGoal(level.get(), point.get());
+        Supplier<Pose2d> goal = () -> FieldConstants2025.makeGoal(level.get(), point.get());
         return parallel(
                 runOnce(() -> heedRadiusM.accept(HEED_RADIUS_M)),
                 select(Map.ofEntries(

@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import edu.wpi.first.math.interpolation.Interpolatable;
+import edu.wpi.first.math.interpolation.Interpolator;
 
 /**
  * Uses an Interpolator to provide interpolated sampling with a history limit.
@@ -19,11 +19,13 @@ import edu.wpi.first.math.interpolation.Interpolatable;
  * use zero) and the module positions really are zero). It's simpler not to do
  * that.
  */
-public class TimeInterpolatableBuffer100<T extends Interpolatable<T>> {
+public class TimeInterpolatableBuffer100<T> {
     private static final boolean DEBUG = false;
 
+    private final Interpolator<T> m_interpolator;
+    /** Length of the buffer in seconds */
     private final double m_historyS;
-    /** key is timestamp in seconds */
+    /** Key is timestamp in seconds */
     private final NavigableMap<Double, T> m_pastSnapshots = new ConcurrentSkipListMap<>();
 
     /**
@@ -35,7 +37,12 @@ public class TimeInterpolatableBuffer100<T extends Interpolatable<T>> {
      */
     private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
 
-    public TimeInterpolatableBuffer100(double historyS, double timeS, T initialValue) {
+    public TimeInterpolatableBuffer100(
+            Interpolator<T> interpolator,
+            double historyS,
+            double timeS,
+            T initialValue) {
+        m_interpolator = interpolator;
         m_historyS = historyS;
         m_pastSnapshots.put(timeS, initialValue);
     }
@@ -126,7 +133,8 @@ public class TimeInterpolatableBuffer100<T extends Interpolatable<T>> {
         if (DEBUG) {
             System.out.printf("interpolate %f\n", timeFraction);
         }
-        return bottomBound.getValue().interpolate(topBound.getValue(), timeFraction);
+        return m_interpolator.interpolate(
+                bottomBound.getValue(), topBound.getValue(), timeFraction);
     }
 
     public SortedMap<Double, T> tailMap(double t, boolean inclusive) {

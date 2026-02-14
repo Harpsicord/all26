@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.controller.se2.ControllerFactorySE2;
@@ -14,7 +15,6 @@ import org.team100.lib.experiments.Experiments;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagRobotLocalizer;
 import org.team100.lib.localization.FreshSwerveEstimate;
-import org.team100.lib.localization.IsotropicNoiseSE2;
 import org.team100.lib.localization.NudgingVisionUpdater;
 import org.team100.lib.localization.OdometryUpdater;
 import org.team100.lib.localization.SwerveHistory;
@@ -40,6 +40,8 @@ import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.examples.TrajectoryExamples;
 import org.team100.lib.trajectory.path.PathSE2Factory;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.visualization.TrajectoryVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -171,15 +173,19 @@ public class DriveWithTrajectoryTest implements Timeless {
         SwerveHistory history = new SwerveHistory(
                 logger,
                 swerveKinodynamics,
+                0.2,
                 Rotation2d.kZero,
+                VariableR1.fromVariance(0, 1),
                 SwerveModulePositions.kZero(),
                 Pose2d.kZero,
                 IsotropicNoiseSE2.high(),
                 0); // initial time is zero here for testing
-        OdometryUpdater odometryUpdater = new OdometryUpdater(swerveKinodynamics, gyro, history, collection::positions);
+        OdometryUpdater odometryUpdater = new OdometryUpdater(
+                logger, swerveKinodynamics, gyro, history, collection::positions, UnaryOperator.identity());
         odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
 
-        NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(history, odometryUpdater);
+        NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(
+                logger, history, odometryUpdater);
 
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 

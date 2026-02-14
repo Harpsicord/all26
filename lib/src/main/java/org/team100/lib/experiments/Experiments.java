@@ -30,7 +30,6 @@ public class Experiments {
 
     /** These experiments are enabled on every robot type. */
     private final Set<Experiment> globalExperiments = Set.of(
-            Experiment.AvoidVisionJitter,
             Experiment.HeedVision,
             Experiment.ReduceCrossTrackError,
             Experiment.UseSetpointGenerator);

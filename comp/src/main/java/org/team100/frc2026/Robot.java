@@ -1,6 +1,6 @@
 package org.team100.frc2026;
 
-import org.team100.frc2026.robot.AllAutons;
+import org.team100.frc2026.auton.AllAutons;
 import org.team100.frc2026.robot.Binder;
 import org.team100.frc2026.robot.Machinery;
 import org.team100.frc2026.robot.Prewarmer;
@@ -10,6 +10,8 @@ import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.framework.TimedRobot100;
+import org.team100.lib.indicator.Alerts;
+import org.team100.lib.indicator.AutonAlerts;
 import org.team100.lib.logging.RobotLog;
 import org.team100.lib.util.Banner;
 
@@ -28,6 +30,8 @@ public class Robot extends TimedRobot100 {
 
     private final RobotLog m_robotLog;
     private final Machinery m_machinery;
+    private final Alerts m_alerts;
+    private final AutonAlerts m_autonAlerts;
     private final AllAutons m_allAutons;
     private final Binder m_binder;
 
@@ -53,9 +57,16 @@ public class Robot extends TimedRobot100 {
         m_robotLog = new RobotLog();
 
         m_machinery = new Machinery();
-        m_allAutons = new AllAutons(m_machinery);
         m_binder = new Binder(m_machinery);
         m_binder.bind();
+
+        m_allAutons = new AllAutons(m_machinery, m_binder.m_holonomicController);
+        m_alerts = new Alerts();
+        m_autonAlerts = new AutonAlerts(
+                m_allAutons::getAnnotated,
+                m_alerts,
+                m_machinery.m_drive::getPose,
+                m_machinery::resetPose);
 
         Prewarmer.init(m_machinery);
     }
@@ -75,6 +86,12 @@ public class Robot extends TimedRobot100 {
             // StrUtil.warn("FLUSHING EVERY LOOP, DO NOT USE IN COMP");
             NetworkTableInstance.getDefault().flush();
         }
+    }
+
+    /** Check the auton configuration when disabled. */
+    @Override
+    public void disabledPeriodic() {
+        m_autonAlerts.run();
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -125,10 +142,6 @@ public class Robot extends TimedRobot100 {
 
     @Override
     public void simulationPeriodic() {
-    }
-
-    @Override
-    public void disabledPeriodic() {
     }
 
     @Override

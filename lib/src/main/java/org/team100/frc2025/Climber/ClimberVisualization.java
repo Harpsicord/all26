@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class ClimberVisualization implements Runnable {
 
-    private final Climber m_climber;
+    private final Climber2025 m_climber;
     private final ClimberIntake m_intake;
     private final Mechanism2d m_view;
     private final MechanismRoot2d m_root;
@@ -20,7 +20,7 @@ public class ClimberVisualization implements Runnable {
     private final MechanismLigament2d m_arm;
     private final MechanismLigament2d m_wheels;
 
-    public ClimberVisualization(Climber climber, ClimberIntake intake) {
+    public ClimberVisualization(Climber2025 climber, ClimberIntake intake) {
         m_climber = climber;
         m_intake = intake;
         m_view = new Mechanism2d(100, 100);

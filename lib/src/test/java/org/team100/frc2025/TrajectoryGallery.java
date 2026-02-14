@@ -9,10 +9,10 @@ import org.jfree.data.xy.VectorSeries;
 import org.junit.jupiter.api.Test;
 import org.team100.frc2025.CalgamesArm.CalgamesMech;
 import org.team100.frc2025.Swerve.Auto.GoToCoralStation;
+import org.team100.frc2025.field.FieldConstants2025;
+import org.team100.frc2025.field.FieldConstants2025.CoralStation;
+import org.team100.frc2025.field.FieldConstants2025.ReefPoint;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
-import org.team100.lib.field.FieldConstants;
-import org.team100.lib.field.FieldConstants.CoralStation;
-import org.team100.lib.field.FieldConstants.ReefPoint;
 import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
@@ -113,7 +113,7 @@ public class TrajectoryGallery {
     private List<VectorSeries> series(CoralStation coralStation, ReefPoint reefPoint, ScoringLevel scoringLevel) {
         GoToCoralStation toStation = new GoToCoralStation(log, swerveKinodynamics, coralStation, 0.5);
         // the start is the goal from the previous maneuver
-        Pose2d start = FieldConstants.makeGoal(scoringLevel, reefPoint);
+        Pose2d start = FieldConstants2025.makeGoal(scoringLevel, reefPoint);
         TrajectorySE2 trajectory = toStation.apply(start);
         return new TrajectorySE2ToVectorSeries(0.1).convert(trajectory);
     }

@@ -7,10 +7,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.DoubleFunction;
+import java.util.function.DoubleSupplier;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.Camera;
+import org.team100.lib.geometry.Metrics;
 import org.team100.lib.state.ModelSE2;
+import org.team100.lib.uncertainty.IsotropicNoiseSE2;
+import org.team100.lib.uncertainty.Uncertainty;
 
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -151,7 +155,8 @@ public class SimulatedTagDetector {
                             tagPose.getTranslation().getZ(), tagPose.getRotation().getX(), tagPose.getRotation().getY(),
                             tagPose.getRotation().getZ());
                 }
-                Transform3d tagInCamera = tagInCamera(cameraPose3d, tagPose);
+                Transform3d tagInCamera = tagInCamera(
+                        () -> m_rand.nextGaussian(), cameraPose3d, tagPose);
                 if (visible(tagInCamera)) {
                     // publish it
                     if (DEBUG) {
@@ -190,9 +195,34 @@ public class SimulatedTagDetector {
         m_inst.flush();
     }
 
-    /** Return the transform from the camera pose to the tag pose. */
-    static Transform3d tagInCamera(Pose3d cameraPose3d, Pose3d tagPose) {
-        return new Transform3d(cameraPose3d, tagPose);
+    /**
+     * Return the transform from the camera pose to the tag pose.
+     * 
+     * New! Includes noise.
+     * 
+     * @param rand         should supply nextGaussian. Doublesupplier for
+     *                     deterministic testing. supply Random.nextGaussian for
+     *                     simulation, or 0 for real robot.
+     * @param cameraPose3d derived from ground-truth pose estimator
+     * @param tagPose      canonical tag pose on the field
+     */
+    static Transform3d tagInCamera(
+            DoubleSupplier rand, Pose3d cameraPose3d, Pose3d tagPose) {
+        Transform3d tagInCamera = new Transform3d(cameraPose3d, tagPose);
+        IsotropicNoiseSE2 n = Uncertainty.visionMeasurementStdDevs(
+                tagInCamera.getTranslation().getNorm(),
+                Metrics.offAxisAngleRad(tagInCamera));
+        Translation3d t = tagInCamera.getTranslation();
+        t = new Translation3d(
+                t.getX() + n.cartesian() * rand.getAsDouble(),
+                t.getY() + n.cartesian() * rand.getAsDouble(),
+                t.getZ() + n.cartesian() * rand.getAsDouble());
+        Rotation3d r = tagInCamera.getRotation();
+        r = new Rotation3d(
+                r.getX() + n.rotation() * rand.getAsDouble(),
+                r.getY() + n.rotation() * rand.getAsDouble(),
+                r.getZ() + n.rotation() * rand.getAsDouble());
+        return new Transform3d(t, r);
     }
 
     /**

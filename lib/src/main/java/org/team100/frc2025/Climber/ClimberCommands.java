@@ -13,7 +13,7 @@ public class ClimberCommands {
     /**
      * Set arm position and start spinning.
      */
-    public static Command climbIntake(Climber climber, ClimberIntake intake, CalgamesMech mech) {
+    public static Command climbIntake(Climber2025 climber, ClimberIntake intake, CalgamesMech mech) {
         return parallel(
                 climber.goToIntakePosition(),
                 intake.intake(),
@@ -24,7 +24,7 @@ public class ClimberCommands {
     /**
      * Pull the climber in while driving slowly forward.
      */
-    public static Command climb(Climber climber, SwerveDriveSubsystem drive, CalgamesMech mech) {
+    public static Command climb(Climber2025 climber, SwerveDriveSubsystem drive, CalgamesMech mech) {
         return parallel(
                 climber.goToClimbPosition(),
                 new DriveForwardSlowly(drive),
@@ -36,7 +36,7 @@ public class ClimberCommands {
     /**
      * Pull the climber in while driving slowly forward.
      */
-    public static Command climbAuto(Climber climber, ClimberIntake intake, SwerveDriveSubsystem drive,
+    public static Command climbAuto(Climber2025 climber, ClimberIntake intake, SwerveDriveSubsystem drive,
             CalgamesMech shoulder) {
         return sequence(
                 climbIntake(climber, intake, shoulder), climb(climber, drive, shoulder));
