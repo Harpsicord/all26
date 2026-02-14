@@ -4,15 +4,18 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.team100.lib.config.AnnotatedCommand;
+import org.team100.lib.geometry.Metrics;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public class AutonAlerts implements Runnable {
     private final Supplier<AnnotatedCommand> m_autons;
+    private final Supplier<Pose2d> m_robotPose;
     private final Consumer<Pose2d> m_poseSetter;
     private final Alert m_noStartingPosition;
     private final Alert m_mismatchedAlliance;
@@ -20,8 +23,10 @@ public class AutonAlerts implements Runnable {
     public AutonAlerts(
             Supplier<AnnotatedCommand> autons,
             Alerts alerts,
+            Supplier<Pose2d> robotPose,
             Consumer<Pose2d> poseSetter) {
         m_autons = autons;
+        m_robotPose = robotPose;
         m_poseSetter = poseSetter;
         m_noStartingPosition = alerts.add("No starting position!", AlertType.kWarning);
         m_mismatchedAlliance = alerts.add("Wrong Alliance!", AlertType.kWarning);
@@ -42,7 +47,15 @@ public class AutonAlerts implements Runnable {
             m_noStartingPosition.set(true);
         } else {
             m_noStartingPosition.set(false);
-            m_poseSetter.accept(start);
+            if (RobotBase.isReal()) {
+                // for a real robot, we complain if we're far from the correct place.
+                Pose2d pose = m_robotPose.get();
+                double r = Metrics.doubleGeodesicDistance(start, pose);
+                m_noStartingPosition.setText(null);
+            } else {
+                // in simulation we force the position
+                m_poseSetter.accept(start);
+            }
         }
     }
 
